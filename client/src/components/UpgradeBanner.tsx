@@ -8,16 +8,17 @@ interface UpgradeBannerProps {
 
 export default function UpgradeBanner({ onUpgradeClick }: UpgradeBannerProps) {
   return (
-    <Card className="inline-flex items-center gap-3 border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10 px-4 py-2">
-      <Sparkles className="h-4 w-4 text-primary" />
-      <span className="text-sm">
-        <span className="font-medium">Free Trial</span>
-        <span className="text-muted-foreground"> • Upgrade to unlock more</span>
-      </span>
+    <Card className="flex w-fit items-center gap-3 border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10 px-4 py-2">
+      <div className="flex items-center gap-2">
+        <Sparkles className="h-4 w-4 shrink-0 text-primary" />
+        <span className="whitespace-nowrap text-sm">
+          <span className="font-medium">Free Trial</span>
+        </span>
+      </div>
       <Button
         onClick={onUpgradeClick}
         size="sm"
-        className="group ml-2"
+        className="group shrink-0"
         data-testid="button-upgrade"
       >
         Upgrade
