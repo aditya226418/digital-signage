@@ -66,7 +66,7 @@ export default function ScreensOverviewCard({
                 <div>
                   <div className="flex items-center gap-2">
                     <Monitor className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm font-medium">{screen.name}</span>
+                    <span className="cursor-pointer text-sm font-medium hover:underline">{screen.name}</span>
                   </div>
                   <div className="text-xs text-muted-foreground">
                     {screen.status === "offline" ? `Last Active: ${screen.lastSeen}` : screen.lastSeen}
