@@ -20,12 +20,6 @@ export default function PublishStep({ onComplete }: PublishStepProps) {
       description: "Test your content for the next 10 minutes",
     },
     {
-      id: "quick-30",
-      icon: <Clock className="h-6 w-6" />,
-      title: "Quick Play - 30 Minutes",
-      description: "Run your content for half an hour",
-    },
-    {
       id: "go-live",
       icon: <Radio className="h-6 w-6" />,
       title: "Go Live",
