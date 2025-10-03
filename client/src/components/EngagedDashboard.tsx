@@ -52,16 +52,17 @@ export default function EngagedDashboard({
   return (
     <div className="min-h-screen p-6">
       <div className="mx-auto max-w-7xl">
-        <div className="mb-8">
-          <h1 className="mb-2 text-2xl font-semibold" data-testid="text-dashboard-title">
-            Welcome Brian
-          </h1>
-          <p className="text-base text-muted-foreground">
-            Manage your digital signage screens and content
-          </p>
+        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h1 className="mb-2 text-2xl font-semibold" data-testid="text-dashboard-title">
+              Welcome Brian
+            </h1>
+            <p className="text-base text-muted-foreground">
+              Manage your digital signage screens and content
+            </p>
+          </div>
+          <UpgradeBanner onUpgradeClick={() => setIsPricingModalOpen(true)} />
         </div>
-
-        <UpgradeBanner onUpgradeClick={() => setIsPricingModalOpen(true)} />
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           <div className="space-y-6">
