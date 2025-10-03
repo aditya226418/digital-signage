@@ -68,7 +68,9 @@ export default function ScreensOverviewCard({
                     <Monitor className="h-4 w-4 text-muted-foreground" />
                     <span className="text-sm font-medium">{screen.name}</span>
                   </div>
-                  <div className="text-xs text-muted-foreground">{screen.lastSeen}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {screen.status === "offline" ? `Last Active: ${screen.lastSeen}` : screen.lastSeen}
+                  </div>
                 </div>
               </div>
               <span
