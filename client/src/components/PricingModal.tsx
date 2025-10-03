@@ -36,7 +36,7 @@ export default function PricingModal({ open, onOpenChange }: PricingModalProps) 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto bg-gradient-to-br from-background to-primary/5">
         <DialogHeader>
           <DialogTitle className="text-2xl">Choose Your Plan</DialogTitle>
           <DialogDescription>
@@ -45,10 +45,10 @@ export default function PricingModal({ open, onOpenChange }: PricingModalProps) 
         </DialogHeader>
 
         <div className="grid gap-6 md:grid-cols-2">
-          <Card className="relative overflow-hidden border-2 hover-elevate">
+          <Card className="relative overflow-hidden border-2 bg-gradient-to-br from-card to-card/90 hover-elevate">
             <div className="p-6">
               <div className="mb-4 flex items-center gap-2">
-                <div className="rounded-lg bg-primary/10 p-2">
+                <div className="rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 p-2">
                   <Sparkles className="h-5 w-5 text-primary" />
                 </div>
                 <h3 className="text-xl font-semibold">Personal</h3>
@@ -83,13 +83,13 @@ export default function PricingModal({ open, onOpenChange }: PricingModalProps) 
             </div>
           </Card>
 
-          <Card className="relative overflow-hidden border-2 border-primary hover-elevate">
-            <div className="absolute right-0 top-0 bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
+          <Card className="relative overflow-hidden border-2 border-primary bg-gradient-to-br from-primary/5 to-card hover-elevate">
+            <div className="absolute right-0 top-0 bg-gradient-to-br from-primary to-primary/80 px-3 py-1 text-xs font-semibold text-primary-foreground">
               POPULAR
             </div>
             <div className="p-6">
               <div className="mb-4 flex items-center gap-2">
-                <div className="rounded-lg bg-primary/10 p-2">
+                <div className="rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 p-2">
                   <Building2 className="h-5 w-5 text-primary" />
                 </div>
                 <h3 className="text-xl font-semibold">Enterprise</h3>

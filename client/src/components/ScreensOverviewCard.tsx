@@ -22,8 +22,8 @@ export default function ScreensOverviewCard({
   offlineCount,
 }: ScreensOverviewCardProps) {
   return (
-    <Card>
-      <CardHeader>
+    <Card className="overflow-hidden">
+      <CardHeader className="bg-gradient-to-br from-chart-2/5 to-transparent">
         <CardTitle>Screens Overview</CardTitle>
       </CardHeader>
       <CardContent>

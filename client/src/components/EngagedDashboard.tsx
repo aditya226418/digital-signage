@@ -50,7 +50,7 @@ export default function EngagedDashboard({
   const [isPricingModalOpen, setIsPricingModalOpen] = useState(false);
 
   return (
-    <div className="min-h-screen p-6">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 p-6">
       <div className="mx-auto max-w-7xl">
         <div className="mb-8">
           <h1 className="mb-2 text-2xl font-semibold" data-testid="text-dashboard-title">

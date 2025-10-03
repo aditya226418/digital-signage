@@ -30,15 +30,15 @@ export default function OnboardingDashboard({
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-6">
-      <Card className="w-full max-w-2xl p-12">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-6">
+      <Card className="w-full max-w-2xl overflow-hidden bg-gradient-to-br from-card to-card/80 p-12">
         <div className="mb-8">
           <ProgressIndicator steps={getSteps()} />
         </div>
 
         <div className="mb-8 text-center">
           <div className="mb-4 flex justify-center">
-            <div className="rounded-full bg-primary/10 p-6">
+            <div className="rounded-full bg-gradient-to-br from-primary/20 to-primary/5 p-6">
               <Monitor className="h-12 w-12 text-primary" />
             </div>
           </div>

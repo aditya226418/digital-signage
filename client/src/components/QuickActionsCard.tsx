@@ -14,8 +14,8 @@ export default function QuickActionsCard({
   onCreatePlaylist,
 }: QuickActionsCardProps) {
   return (
-    <Card>
-      <CardHeader>
+    <Card className="overflow-hidden">
+      <CardHeader className="bg-gradient-to-br from-primary/5 to-transparent">
         <CardTitle>Quick Actions</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">

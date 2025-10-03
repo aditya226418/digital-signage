@@ -8,14 +8,14 @@ interface ReportsCardProps {
 
 export default function ReportsCard({ activeCampaigns, uptime }: ReportsCardProps) {
   return (
-    <Card>
-      <CardHeader>
+    <Card className="overflow-hidden">
+      <CardHeader className="bg-gradient-to-br from-chart-2/5 to-transparent">
         <CardTitle>Reports Snapshot</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
           <div className="flex items-center gap-4">
-            <div className="rounded-lg bg-chart-4/10 p-3">
+            <div className="rounded-lg bg-gradient-to-br from-chart-4/20 to-chart-4/5 p-3">
               <Activity className="h-6 w-6 text-chart-4" />
             </div>
             <div className="flex-1">
@@ -27,7 +27,7 @@ export default function ReportsCard({ activeCampaigns, uptime }: ReportsCardProp
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="rounded-lg bg-chart-2/10 p-3">
+            <div className="rounded-lg bg-gradient-to-br from-chart-2/20 to-chart-2/5 p-3">
               <TrendingUp className="h-6 w-6 text-chart-2" />
             </div>
             <div className="flex-1">

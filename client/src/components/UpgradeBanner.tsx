@@ -11,7 +11,7 @@ export default function UpgradeBanner({ onUpgradeClick }: UpgradeBannerProps) {
     <Card className="mb-6 border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10">
       <div className="flex flex-col items-start justify-between gap-4 p-6 sm:flex-row sm:items-center">
         <div className="flex items-start gap-3">
-          <div className="rounded-lg bg-primary/10 p-2">
+          <div className="rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 p-2">
             <Sparkles className="h-5 w-5 text-primary" />
           </div>
           <div>

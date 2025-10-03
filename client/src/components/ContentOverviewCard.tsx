@@ -17,14 +17,14 @@ export default function ContentOverviewCard({
   playlists,
 }: ContentOverviewCardProps) {
   return (
-    <Card>
-      <CardHeader>
+    <Card className="overflow-hidden">
+      <CardHeader className="bg-gradient-to-br from-primary/5 to-transparent">
         <CardTitle>Content Overview</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="mb-6">
           <div className="flex items-center gap-3">
-            <div className="rounded-lg bg-primary/10 p-3">
+            <div className="rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 p-3">
               <Image className="h-6 w-6 text-primary" />
             </div>
             <div>
