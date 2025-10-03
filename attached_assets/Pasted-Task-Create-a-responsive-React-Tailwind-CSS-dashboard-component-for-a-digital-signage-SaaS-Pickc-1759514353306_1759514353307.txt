@@ -1,0 +1,86 @@
+Task:
+Create a responsive React + Tailwind CSS dashboard component for a digital signage SaaS (Pickcel). The dashboard should adapt to two user states:
+
+New User (no screens added yet)
+
+Engaged User (at least 1 screen + content published)
+
+Only create the dashboard section (main content after login), not the entire app shell.
+
+🎯 State 1: First-Time User Dashboard (Onboarding Mode)
+
+The goal is to help users reach first value quickly: add a screen, upload content, and publish.
+
+Layout should feel clean, minimal, and welcoming.
+
+Elements:
+
+Welcome Card (centered, large, friendly message) → “Welcome to Pickcel! Let’s set up your first screen.”
+
+Primary CTA Button (large, colored) → “+ Add Your First Screen.”
+
+Secondary Actions (smaller buttons):
+
+Upload Media
+
+Try a Template Playlist
+
+Progress Indicator: Step 1 of 3 → Add Screen → Add Content → Publish.
+
+Subtle illustration or iconography to make it visually engaging, but not cluttered.
+
+Keep distractions low: hide metrics, reports, upsell banners at this stage.
+
+🎯 State 2: Returning/Engaged User Dashboard
+
+The goal is to surface useful information at a glance while keeping it clean.
+
+Layout: 3-column grid (on desktop), stacked on mobile.
+
+Sections to include:
+
+Quick Actions Panel
+
+Add Screen
+
+Upload Media
+
+Create Playlist
+
+Screens Overview Card
+
+Show total screens, online/offline count.
+
+Status indicators (green for online, red for offline).
+
+Compact list of last 3 screens (with status).
+
+Content Overview Card
+
+Number of media files uploaded.
+
+Recent playlists.
+
+Small thumbnail previews.
+
+Reports Snapshot (lightweight)
+
+Campaigns running.
+
+Uptime %.
+
+Only key highlights, no overwhelming data.
+
+Tips / Learn More card (small, dismissible) → links to tutorials/templates.
+
+Design principles:
+
+Use white space generously; cards should be rounded, with soft shadows.
+
+Keep primary CTAs visually distinct (blue/brand-colored).
+
+Limit number of visible elements (max 5 cards).
+
+Typography hierarchy: clear headlines (lg), body (base), captions (sm).
+
+Icons from lucide-react or Heroicons for quick recognition.
