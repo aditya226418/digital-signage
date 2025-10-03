@@ -1,8 +1,11 @@
+import { useState } from "react";
 import QuickActionsCard from "./QuickActionsCard";
 import ScreensOverviewCard from "./ScreensOverviewCard";
 import ContentOverviewCard from "./ContentOverviewCard";
 import ReportsCard from "./ReportsCard";
 import TipsCard from "./TipsCard";
+import UpgradeBanner from "./UpgradeBanner";
+import PricingModal from "./PricingModal";
 
 interface Screen {
   id: string;
@@ -44,17 +47,21 @@ export default function EngagedDashboard({
   onUploadMedia,
   onCreatePlaylist,
 }: EngagedDashboardProps) {
+  const [isPricingModalOpen, setIsPricingModalOpen] = useState(false);
+
   return (
     <div className="min-h-screen p-6">
       <div className="mx-auto max-w-7xl">
         <div className="mb-8">
           <h1 className="mb-2 text-2xl font-semibold" data-testid="text-dashboard-title">
-            Dashboard
+            Welcome Brian
           </h1>
           <p className="text-base text-muted-foreground">
             Manage your digital signage screens and content
           </p>
         </div>
+
+        <UpgradeBanner onUpgradeClick={() => setIsPricingModalOpen(true)} />
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           <div className="space-y-6">
@@ -82,6 +89,11 @@ export default function EngagedDashboard({
           </div>
         </div>
       </div>
+
+      <PricingModal
+        open={isPricingModalOpen}
+        onOpenChange={setIsPricingModalOpen}
+      />
     </div>
   );
 }
