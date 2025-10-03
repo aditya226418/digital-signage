@@ -22,7 +22,7 @@ export default function TipsCard({ onDismiss }: TipsCardProps) {
       <CardContent className="p-6">
         <div className="flex items-start justify-between gap-4">
           <div className="flex gap-3">
-            <div className="rounded-lg bg-primary/10 p-2">
+            <div className="shrink-0 self-start rounded-lg bg-primary/10 p-2">
               <BookOpen className="h-5 w-5 text-primary" />
             </div>
             <div className="flex-1">
