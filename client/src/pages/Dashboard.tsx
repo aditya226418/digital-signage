@@ -2,17 +2,46 @@ import { useState } from "react";
 import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import OnboardingDashboard from "@/components/OnboardingDashboard";
+import AddScreenModal from "@/components/AddScreenModal";
+import ActivationCodeModal from "@/components/ActivationCodeModal";
+import ContentStep from "@/components/ContentStep";
+import PublishStep from "@/components/PublishStep";
 import EngagedDashboard from "@/components/EngagedDashboard";
 
 export default function Dashboard() {
   const [isDark, setIsDark] = useState(false);
-  
-  // Toggle between onboarding and engaged state for demo
-  const [isFirstTimeUser, setIsFirstTimeUser] = useState(true);
+  const [currentStep, setCurrentStep] = useState(1);
+  const [showAddScreenModal, setShowAddScreenModal] = useState(false);
+  const [showActivationModal, setShowActivationModal] = useState(false);
+  const [selectedScreenType, setSelectedScreenType] = useState("");
+  const [onboardingComplete, setOnboardingComplete] = useState(false);
 
   const toggleTheme = () => {
     setIsDark(!isDark);
     document.documentElement.classList.toggle("dark");
+  };
+
+  const handleAddScreenClick = () => {
+    setShowAddScreenModal(true);
+  };
+
+  const handleScreenTypeSelect = (screenType: string) => {
+    setSelectedScreenType(screenType);
+    setShowAddScreenModal(false);
+    setShowActivationModal(true);
+  };
+
+  const handleScreenConnected = () => {
+    setShowActivationModal(false);
+    setCurrentStep(2);
+  };
+
+  const handleContentComplete = () => {
+    setCurrentStep(3);
+  };
+
+  const handlePublishComplete = () => {
+    setOnboardingComplete(true);
   };
 
   // Mock data for engaged dashboard
@@ -30,24 +59,22 @@ export default function Dashboard() {
     { id: "3", name: "Promotional Content", itemCount: 12 },
   ];
 
-  const handleAddScreen = () => {
-    console.log("Add screen action triggered");
-    // Simulate adding a screen and transitioning to engaged state
-    setIsFirstTimeUser(false);
-  };
-
   return (
     <div className="relative min-h-screen">
       <div className="fixed right-6 top-6 z-50 flex gap-2">
-        {/* Demo toggle button */}
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setIsFirstTimeUser(!isFirstTimeUser)}
-          data-testid="button-toggle-state"
-        >
-          {isFirstTimeUser ? "Show Engaged View" : "Show Onboarding"}
-        </Button>
+        {onboardingComplete && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setOnboardingComplete(false);
+              setCurrentStep(1);
+            }}
+            data-testid="button-reset-onboarding"
+          >
+            Reset Onboarding
+          </Button>
+        )}
         
         <Button
           variant="outline"
@@ -59,12 +86,32 @@ export default function Dashboard() {
         </Button>
       </div>
 
-      {isFirstTimeUser ? (
-        <OnboardingDashboard
-          onAddScreen={handleAddScreen}
-          onUploadMedia={() => console.log("Upload media")}
-          onTryTemplate={() => console.log("Try template")}
-        />
+      {!onboardingComplete ? (
+        <>
+          {currentStep === 1 && (
+            <OnboardingDashboard
+              currentStep={currentStep}
+              onAddScreen={handleAddScreenClick}
+            />
+          )}
+          
+          {currentStep === 2 && <ContentStep onComplete={handleContentComplete} />}
+          
+          {currentStep === 3 && <PublishStep onComplete={handlePublishComplete} />}
+
+          <AddScreenModal
+            open={showAddScreenModal}
+            onClose={() => setShowAddScreenModal(false)}
+            onSelectOption={handleScreenTypeSelect}
+          />
+
+          <ActivationCodeModal
+            open={showActivationModal}
+            onClose={() => setShowActivationModal(false)}
+            screenType={selectedScreenType}
+            onComplete={handleScreenConnected}
+          />
+        </>
       ) : (
         <EngagedDashboard
           screens={mockScreens}
