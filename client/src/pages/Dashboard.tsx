@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import ThemeSelector from "@/components/ThemeSelector";
 import OnboardingDashboard from "@/components/OnboardingDashboard";
 import AddScreenModal from "@/components/AddScreenModal";
 import ActivationCodeModal from "@/components/ActivationCodeModal";
@@ -75,6 +76,8 @@ export default function Dashboard() {
             Reset Onboarding
           </Button>
         )}
+        
+        <ThemeSelector />
         
         <Button
           variant="outline"

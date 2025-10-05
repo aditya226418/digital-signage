@@ -1,11 +1,50 @@
 import { useState } from "react";
-import QuickActionsCard from "./QuickActionsCard";
-import ScreensOverviewCard from "./ScreensOverviewCard";
-import ContentOverviewCard from "./ContentOverviewCard";
-import ReportsCard from "./ReportsCard";
-import TipsCard from "./TipsCard";
-import UpgradeBanner from "./UpgradeBanner";
-import PricingModal from "./PricingModal";
+import {
+  LayoutDashboard,
+  Monitor,
+  Image,
+  Layers,
+  Send,
+  Settings,
+  User,
+  ChevronRight,
+  FileImage,
+  Music,
+  Video,
+  FileText,
+  ListVideo,
+  LayoutGrid,
+} from "lucide-react";
+import DashboardContent from "./DashboardContent";
+import ScreensTable from "./ScreensTable";
+import { ImagesTable, AudioTable, VideoTable, PDFTable } from "./MediaTables";
+import { PlaylistsTable, LayoutsTable } from "./CompositionTables";
+import PublishTable from "./PublishTable";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarInset,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
+  SidebarProvider,
+  SidebarRail,
+  SidebarSeparator,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 interface Screen {
   id: string;
@@ -47,53 +86,258 @@ export default function EngagedDashboard({
   onUploadMedia,
   onCreatePlaylist,
 }: EngagedDashboardProps) {
-  const [isPricingModalOpen, setIsPricingModalOpen] = useState(false);
+  const [activeModule, setActiveModule] = useState("dashboard");
+  const [openMenus, setOpenMenus] = useState<string[]>(["media", "compositions"]);
+
+  const toggleMenu = (menuId: string) => {
+    setOpenMenus((prev) =>
+      prev.includes(menuId) ? prev.filter((id) => id !== menuId) : [...prev, menuId]
+    );
+  };
+
+  const mainNavItems = [
+    { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { id: "screens", label: "Screens", icon: Monitor },
+    {
+      id: "media",
+      label: "Media",
+      icon: Image,
+      subItems: [
+        { id: "images", label: "Images", icon: FileImage },
+        { id: "audio", label: "Audio", icon: Music },
+        { id: "video", label: "Video", icon: Video },
+        { id: "pdfs", label: "PDFs", icon: FileText },
+      ],
+    },
+    {
+      id: "compositions",
+      label: "Compositions",
+      icon: Layers,
+      subItems: [
+        { id: "playlists", label: "Playlists", icon: ListVideo },
+        { id: "layouts", label: "Layouts", icon: LayoutGrid },
+      ],
+    },
+    { id: "publish", label: "Publish", icon: Send },
+  ];
+
+  const footerNavItems = [
+    { id: "settings", label: "Settings", icon: Settings },
+    { id: "account", label: "Account Settings", icon: User },
+  ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 p-6">
-      <div className="mx-auto max-w-7xl">
-        <div className="mb-8">
-          <h1 className="mb-2 text-2xl font-semibold" data-testid="text-dashboard-title">
-            Welcome Brian
-          </h1>
-          <p className="text-base text-muted-foreground">
-            Manage your digital signage screens and content
-          </p>
-        </div>
-
-        <UpgradeBanner onUpgradeClick={() => setIsPricingModalOpen(true)} />
-
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <div className="space-y-6">
-            <QuickActionsCard
-              onAddScreen={onAddScreen}
-              onUploadMedia={onUploadMedia}
-              onCreatePlaylist={onCreatePlaylist}
-            />
-            <ReportsCard activeCampaigns={activeCampaigns} uptime={uptime} />
-          </div>
-
-          <div className="lg:col-span-2">
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <ScreensOverviewCard
-                screens={screens}
-                totalScreens={totalScreens}
-                onlineCount={onlineCount}
-                offlineCount={offlineCount}
-              />
-              <ContentOverviewCard mediaCount={mediaCount} playlists={playlists} />
+    <SidebarProvider defaultOpen={true}>
+      <Sidebar collapsible="icon" className="border-r border-border/40">
+        <SidebarHeader className="border-b border-border/40 bg-gradient-to-br from-primary/5 to-transparent shrink-0">
+          <div className="flex items-center gap-2 px-2 py-2">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/70 text-primary-foreground shadow-sm font-bold text-base">
+              P
             </div>
-            <div className="mt-6">
-              <TipsCard />
+            <div className="flex flex-col group-data-[collapsible=icon]:hidden">
+              <span className="text-sm font-semibold">Pickel</span>
+              <span className="text-xs text-muted-foreground">Digital Signage</span>
             </div>
           </div>
-        </div>
-      </div>
+        </SidebarHeader>
 
-      <PricingModal
-        open={isPricingModalOpen}
-        onOpenChange={setIsPricingModalOpen}
-      />
-    </div>
+        <SidebarContent className="bg-gradient-to-b from-sidebar via-sidebar to-sidebar-accent/20">
+          <SidebarGroup>
+            <SidebarGroupLabel className="text-xs uppercase tracking-wider text-muted-foreground/70">
+              Main Menu
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {mainNavItems.map((item) => {
+                  const hasSubItems = "subItems" in item && item.subItems;
+                  const isOpen = openMenus.includes(item.id);
+
+                  if (hasSubItems) {
+                    return (
+                      <Collapsible
+                        key={item.id}
+                        open={isOpen}
+                        onOpenChange={() => toggleMenu(item.id)}
+                        className="group/collapsible"
+                      >
+                        <SidebarMenuItem>
+                          <CollapsibleTrigger asChild>
+                            <SidebarMenuButton
+                              tooltip={item.label}
+                              className="group/item"
+                            >
+                              <item.icon className="h-4 w-4" />
+                              <span>{item.label}</span>
+                              <ChevronRight className="ml-auto h-4 w-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                            </SidebarMenuButton>
+                          </CollapsibleTrigger>
+                          <CollapsibleContent>
+                            <SidebarMenuSub>
+                              {item.subItems.map((subItem) => (
+                                <SidebarMenuSubItem key={subItem.id}>
+                                  <SidebarMenuSubButton
+                                    isActive={activeModule === subItem.id}
+                                    onClick={() => setActiveModule(subItem.id)}
+                                  >
+                                    <subItem.icon className="h-4 w-4" />
+                                    <span>{subItem.label}</span>
+                                  </SidebarMenuSubButton>
+                                </SidebarMenuSubItem>
+                              ))}
+                            </SidebarMenuSub>
+                          </CollapsibleContent>
+                        </SidebarMenuItem>
+                      </Collapsible>
+                    );
+                  }
+
+                  return (
+                    <SidebarMenuItem key={item.id}>
+                      <SidebarMenuButton
+                        isActive={activeModule === item.id}
+                        onClick={() => setActiveModule(item.id)}
+                        tooltip={item.label}
+                        className="group/item"
+                      >
+                        <item.icon className="h-4 w-4" />
+                        <span>{item.label}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+
+          <SidebarSeparator className="my-2" />
+
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {footerNavItems.map((item) => (
+                  <SidebarMenuItem key={item.id}>
+                    <SidebarMenuButton
+                      isActive={activeModule === item.id}
+                      onClick={() => setActiveModule(item.id)}
+                      tooltip={item.label}
+                    >
+                      <item.icon className="h-4 w-4" />
+                      <span>{item.label}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+
+        <SidebarFooter className="border-t border-border/40 bg-gradient-to-t from-primary/5 to-transparent shrink-0">
+          <div className="px-3 py-2 group-data-[collapsible=icon]:hidden">
+            <p className="text-xs text-muted-foreground">
+              © 2025 Pickel
+            </p>
+          </div>
+        </SidebarFooter>
+
+        <SidebarRail />
+      </Sidebar>
+
+      <SidebarInset>
+        <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+          <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b border-border/40 bg-background/80 px-6 backdrop-blur-sm">
+            <SidebarTrigger className="hover:bg-accent" />
+            <div className="flex flex-1 items-center justify-between">
+              <div>
+                {activeModule === "dashboard" ? (
+                  <>
+                    <h1 className="text-lg font-semibold" data-testid="text-dashboard-title">
+                      Welcome Brian
+                    </h1>
+                    <p className="text-sm text-muted-foreground">
+                      Manage your digital signage screens and content
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <h1 className="text-lg font-semibold capitalize">
+                      {activeModule === "pdfs" ? "PDFs" : activeModule}
+                    </h1>
+                    <p className="text-sm text-muted-foreground">
+                      {activeModule === "screens" && "Manage and monitor your screens"}
+                      {activeModule === "images" && "Manage your image library"}
+                      {activeModule === "audio" && "Manage your audio files"}
+                      {activeModule === "video" && "Manage your video content"}
+                      {activeModule === "pdfs" && "Manage your PDF documents"}
+                      {activeModule === "playlists" && "Create and manage playlists"}
+                      {activeModule === "layouts" && "Design and manage layouts"}
+                      {activeModule === "publish" && "Schedule and publish content"}
+                      {activeModule === "settings" && "Configure application settings"}
+                      {activeModule === "account" && "Manage your account"}
+                    </p>
+                  </>
+                )}
+              </div>
+            </div>
+          </header>
+
+          <div className="p-6">
+            <div className="mx-auto max-w-7xl">
+              <div 
+                key={activeModule} 
+                className="animate-in fade-in slide-in-from-bottom-4 duration-500"
+              >
+                {activeModule === "dashboard" && (
+                  <DashboardContent
+                    screens={screens}
+                    totalScreens={totalScreens}
+                    onlineCount={onlineCount}
+                    offlineCount={offlineCount}
+                    mediaCount={mediaCount}
+                    playlists={playlists}
+                    activeCampaigns={activeCampaigns}
+                    uptime={uptime}
+                    onAddScreen={onAddScreen}
+                    onUploadMedia={onUploadMedia}
+                    onCreatePlaylist={onCreatePlaylist}
+                  />
+                )}
+
+                {activeModule === "screens" && <ScreensTable />}
+
+                {activeModule === "images" && <ImagesTable />}
+                {activeModule === "audio" && <AudioTable />}
+                {activeModule === "video" && <VideoTable />}
+                {activeModule === "pdfs" && <PDFTable />}
+
+                {activeModule === "playlists" && <PlaylistsTable />}
+                {activeModule === "layouts" && <LayoutsTable />}
+
+                {activeModule === "publish" && <PublishTable />}
+
+                {activeModule === "settings" && (
+                  <div className="rounded-lg border border-border/40 bg-card p-12 text-center">
+                    <Settings className="mx-auto h-12 w-12 text-muted-foreground" />
+                    <h3 className="mt-4 text-lg font-semibold">Settings</h3>
+                    <p className="mt-2 text-muted-foreground">
+                      Configure your application settings
+                    </p>
+                  </div>
+                )}
+
+                {activeModule === "account" && (
+                  <div className="rounded-lg border border-border/40 bg-card p-12 text-center">
+                    <User className="mx-auto h-12 w-12 text-muted-foreground" />
+                    <h3 className="mt-4 text-lg font-semibold">Account Settings</h3>
+                    <p className="mt-2 text-muted-foreground">
+                      Manage your account and preferences
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }

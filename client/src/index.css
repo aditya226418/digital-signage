@@ -172,6 +172,238 @@
   --shadow-2xl: 0px 25px 50px -12px rgba(0, 0, 0, 0.6);
 }
 
+/* Ocean Theme - Deep Sea Blues */
+[data-theme="ocean"] {
+  --primary: 199 89% 48%;
+  --primary-foreground: 0 0% 100%;
+  --sidebar-primary: 199 89% 48%;
+  --sidebar-accent-foreground: 199 89% 48%;
+  --accent-foreground: 199 89% 48%;
+  --ring: 199 89% 48%;
+  --chart-1: 199 89% 48%;
+  --chart-2: 187 85% 53%;
+  --chart-3: 183 91% 41%;
+  --chart-4: 197 71% 73%;
+  --chart-5: 204 94% 64%;
+}
+
+.dark[data-theme="ocean"] {
+  --primary: 199 89% 58%;
+  --sidebar-primary: 199 89% 58%;
+  --sidebar-accent-foreground: 199 89% 58%;
+  --accent-foreground: 199 89% 58%;
+  --ring: 199 89% 58%;
+}
+
+/* Forest Theme - Natural Greens */
+[data-theme="forest"] {
+  --primary: 142 71% 45%;
+  --primary-foreground: 0 0% 100%;
+  --sidebar-primary: 142 71% 45%;
+  --sidebar-accent-foreground: 142 71% 45%;
+  --accent-foreground: 142 71% 45%;
+  --ring: 142 71% 45%;
+  --chart-1: 142 71% 45%;
+  --chart-2: 158 64% 52%;
+  --chart-3: 122 39% 49%;
+  --chart-4: 144 61% 55%;
+  --chart-5: 164 86% 30%;
+}
+
+.dark[data-theme="forest"] {
+  --primary: 142 71% 55%;
+  --sidebar-primary: 142 71% 55%;
+  --sidebar-accent-foreground: 142 71% 55%;
+  --accent-foreground: 142 71% 55%;
+  --ring: 142 71% 55%;
+}
+
+/* Crimson Theme - Bold Reds */
+[data-theme="crimson"] {
+  --primary: 0 84% 50%;
+  --primary-foreground: 0 0% 100%;
+  --sidebar-primary: 0 84% 50%;
+  --sidebar-accent-foreground: 0 84% 50%;
+  --accent-foreground: 0 84% 50%;
+  --ring: 0 84% 50%;
+  /* Keep default chart colors for progress bars and charts */
+}
+
+.dark[data-theme="crimson"] {
+  --primary: 0 84% 60%;
+  --sidebar-primary: 0 84% 60%;
+  --sidebar-accent-foreground: 0 84% 60%;
+  --accent-foreground: 0 84% 60%;
+  --ring: 0 84% 60%;
+  /* Keep default chart colors for progress bars and charts */
+}
+
+/* Sunset Theme - Warm Oranges */
+[data-theme="sunset"] {
+  --primary: 24 94% 53%;
+  --primary-foreground: 0 0% 100%;
+  --sidebar-primary: 24 94% 53%;
+  --sidebar-accent-foreground: 24 94% 53%;
+  --accent-foreground: 24 94% 53%;
+  --ring: 24 94% 53%;
+  --chart-1: 24 94% 53%;
+  --chart-2: 38 92% 50%;
+  --chart-3: 12 88% 59%;
+  --chart-4: 31 97% 72%;
+  --chart-5: 45 93% 47%;
+}
+
+.dark[data-theme="sunset"] {
+  --primary: 24 94% 63%;
+  --sidebar-primary: 24 94% 63%;
+  --sidebar-accent-foreground: 24 94% 63%;
+  --accent-foreground: 24 94% 63%;
+  --ring: 24 94% 63%;
+}
+
+/* Lavender Theme - Soft Purples */
+[data-theme="lavender"] {
+  --primary: 270 60% 55%;
+  --primary-foreground: 0 0% 100%;
+  --sidebar-primary: 270 60% 55%;
+  --sidebar-accent-foreground: 270 60% 55%;
+  --accent-foreground: 270 60% 55%;
+  --ring: 270 60% 55%;
+  --chart-1: 270 60% 55%;
+  --chart-2: 280 65% 60%;
+  --chart-3: 291 64% 42%;
+  --chart-4: 262 52% 47%;
+  --chart-5: 271 76% 53%;
+}
+
+.dark[data-theme="lavender"] {
+  --primary: 270 60% 65%;
+  --sidebar-primary: 270 60% 65%;
+  --sidebar-accent-foreground: 270 60% 65%;
+  --accent-foreground: 270 60% 65%;
+  --ring: 270 60% 65%;
+}
+
+/* Midnight Theme - Deep Navy */
+[data-theme="midnight"] {
+  --primary: 217 91% 60%;
+  --primary-foreground: 0 0% 100%;
+  --sidebar-primary: 217 91% 60%;
+  --sidebar-accent-foreground: 217 91% 60%;
+  --accent-foreground: 217 91% 60%;
+  --ring: 217 91% 60%;
+  --chart-1: 217 91% 60%;
+  --chart-2: 221 83% 53%;
+  --chart-3: 213 94% 68%;
+  --chart-4: 212 92% 43%;
+  --chart-5: 215 89% 52%;
+}
+
+.dark[data-theme="midnight"] {
+  --primary: 217 91% 70%;
+  --sidebar-primary: 217 91% 70%;
+  --sidebar-accent-foreground: 217 91% 70%;
+  --accent-foreground: 217 91% 70%;
+  --ring: 217 91% 70%;
+}
+
+/* Rose Theme - Elegant Pinks */
+[data-theme="rose"] {
+  --primary: 330 81% 60%;
+  --primary-foreground: 0 0% 100%;
+  --sidebar-primary: 330 81% 60%;
+  --sidebar-accent-foreground: 330 81% 60%;
+  --accent-foreground: 330 81% 60%;
+  --ring: 330 81% 60%;
+  --chart-1: 330 81% 60%;
+  --chart-2: 338 76% 67%;
+  --chart-3: 322 65% 56%;
+  --chart-4: 346 84% 61%;
+  --chart-5: 350 89% 60%;
+}
+
+.dark[data-theme="rose"] {
+  --primary: 330 81% 70%;
+  --sidebar-primary: 330 81% 70%;
+  --sidebar-accent-foreground: 330 81% 70%;
+  --accent-foreground: 330 81% 70%;
+  --ring: 330 81% 70%;
+}
+
+/* Cyberpunk Theme - Neon Future */
+[data-theme="cyberpunk"] {
+  --background: 280 50% 8%;
+  --foreground: 300 100% 95%;
+  --border: 300 50% 20%;
+  
+  --card: 280 40% 12%;
+  --card-foreground: 300 100% 95%;
+  --card-border: 300 50% 22%;
+  
+  --sidebar: 280 50% 8%;
+  --sidebar-foreground: 300 100% 95%;
+  --sidebar-border: 300 50% 20%;
+  --sidebar-primary: 320 100% 50%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 280 40% 12%;
+  --sidebar-accent-foreground: 320 100% 60%;
+  --sidebar-ring: 320 100% 50%;
+  
+  --popover: 280 40% 12%;
+  --popover-foreground: 300 100% 95%;
+  --popover-border: 300 50% 22%;
+  
+  --primary: 320 100% 50%;
+  --primary-foreground: 0 0% 100%;
+  
+  --secondary: 280 50% 20%;
+  --secondary-foreground: 300 100% 95%;
+  
+  --muted: 280 40% 15%;
+  --muted-foreground: 300 20% 65%;
+  
+  --accent: 280 40% 12%;
+  --accent-foreground: 320 100% 60%;
+  
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  
+  --input: 300 50% 22%;
+  --ring: 320 100% 50%;
+  
+  --chart-1: 320 100% 50%;
+  --chart-2: 280 100% 60%;
+  --chart-3: 260 100% 65%;
+  --chart-4: 340 100% 55%;
+  --chart-5: 300 100% 60%;
+  
+  --success: 160 84% 39%;
+  --warning: 38 92% 50%;
+  --info: 199 89% 48%;
+  
+  /* Neon glow effects */
+  --shadow-sm: 0 0 2px hsl(320 100% 50% / 0.5);
+  --shadow-md: 0 0 4px hsl(320 100% 50% / 0.5), 0 2px 4px -1px hsl(320 100% 50% / 0.3);
+  --shadow-lg: 0 0 8px hsl(320 100% 50% / 0.6), 0 4px 6px -1px hsl(320 100% 50% / 0.4);
+  --shadow-xl: 0 0 15px hsl(320 100% 50% / 0.7), 0 8px 10px -1px hsl(320 100% 50% / 0.5);
+}
+
+[data-theme="cyberpunk"] .border-primary,
+[data-theme="cyberpunk"] [class*="border-primary"] {
+  box-shadow: 0 0 8px hsl(320 100% 50% / 0.3);
+}
+
+[data-theme="cyberpunk"] button[data-variant="default"],
+[data-theme="cyberpunk"] [data-primary] {
+  box-shadow: 0 0 10px hsl(320 100% 50% / 0.4);
+  transition: all 0.3s ease;
+}
+
+[data-theme="cyberpunk"] button[data-variant="default"]:hover,
+[data-theme="cyberpunk"] [data-primary]:hover {
+  box-shadow: 0 0 20px hsl(320 100% 50% / 0.6);
+}
+
 @layer base {
   * {
     @apply border-border;
