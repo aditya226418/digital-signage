@@ -7,7 +7,7 @@ import ReportsCard from "./ReportsCard";
 import TipsCard from "./TipsCard";
 import UpgradeBanner from "./UpgradeBanner";
 import PricingModal from "./PricingModal";
-import NewUserOnboarding from "./NewUserOnboarding";
+import OnboardingQuickStart from "./OnboardingQuickStart";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -53,14 +53,13 @@ export default function DashboardContent({
 }: DashboardContentProps) {
   const [isPricingModalOpen, setIsPricingModalOpen] = useState(false);
   const [showNewUserView, setShowNewUserView] = useState(false);
-  const [onboardingStep, setOnboardingStep] = useState(0);
 
-  const handleOnboardingAction = (step: number) => {
-    setOnboardingStep(step);
-    // Trigger the appropriate action
-    if (step === 1) onAddScreen?.();
-    if (step === 2) onUploadMedia?.();
-    if (step === 3) onCreatePlaylist?.();
+  const handleOnboardingComplete = () => {
+    setShowNewUserView(false);
+  };
+
+  const handleOnboardingSkip = () => {
+    setShowNewUserView(false);
   };
 
   return (
@@ -98,12 +97,9 @@ export default function DashboardContent({
       {/* Conditional Content */}
       <div className="mt-6">
         {showNewUserView ? (
-          <NewUserOnboarding
-            currentStep={onboardingStep}
-            onAddScreen={() => handleOnboardingAction(1)}
-            onUploadContent={() => handleOnboardingAction(2)}
-            onPublish={() => handleOnboardingAction(3)}
-            onReset={() => setOnboardingStep(0)}
+          <OnboardingQuickStart
+            onComplete={handleOnboardingComplete}
+            onSkip={handleOnboardingSkip}
           />
         ) : (
           <>
