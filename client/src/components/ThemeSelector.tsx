@@ -75,6 +75,12 @@ const themes: Theme[] = [
     description: "Neon future",
     colors: { primary: "#ff0080", secondary: "#7928ca" },
   },
+  {
+    id: "noir",
+    name: "Noir",
+    description: "Classic black & white",
+    colors: { primary: "#0a0a0a", secondary: "#525252" },
+  },
 ];
 
 export default function ThemeSelector() {
