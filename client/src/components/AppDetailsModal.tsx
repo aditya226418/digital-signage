@@ -12,7 +12,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import AddAppToScreenModal from "./AddAppToScreenModal";
+import AddAppToScreenModal from "@/components/AddAppToScreenModal";
 import type { App } from "./AppsGallery";
 
 interface AppDetailsModalProps {
@@ -54,12 +54,7 @@ export default function AppDetailsModal({ app, isOpen, onClose }: AppDetailsModa
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <HelpCircle className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onClose}>
-                <X className="h-4 w-4" />
-              </Button>
+          
             </div>
           </div>
 
