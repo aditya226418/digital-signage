@@ -381,28 +381,11 @@ export default function MediaPickerModal({
               Upload your images & videos or choose a ready-made template to launch faster.
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="h-8 w-8">
-              <HelpCircle className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleClose}>
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
+      
         </div>
 
         {/* Quick Start Hint */}
-        {showQuickStartHint && (
-          <Alert className="m-6 mb-0 border-primary bg-primary/5">
-            <AlertCircle className="h-4 w-4 text-primary" />
-            <AlertDescription>
-              <strong>Tip:</strong> Upload one asset to complete Step 2{" "}
-              <button className="underline" onClick={handleCreatePlaylist}>
-                proceed to publish
-              </button>
-            </AlertDescription>
-          </Alert>
-        )}
+      
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "upload" | "template")} className="flex flex-col flex-1 overflow-hidden">
