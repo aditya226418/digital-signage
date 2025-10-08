@@ -296,7 +296,7 @@ export default function MyPlan() {
                   ease: "easeInOut",
                 }}
               >
-                See what you're missing
+                Get more with premium
               </motion.span>
               <motion.div
                 animate={{ rotate: showMissingFeatures ? 180 : 0 }}
