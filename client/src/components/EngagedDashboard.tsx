@@ -14,12 +14,14 @@ import {
   FileText,
   ListVideo,
   LayoutGrid,
+  Grid3x3,
 } from "lucide-react";
 import DashboardContent from "./DashboardContent";
 import ScreensTable from "./ScreensTable";
 import { ImagesTable, AudioTable, VideoTable, PDFTable } from "./MediaTables";
 import { PlaylistsTable, LayoutsTable } from "./CompositionTables";
 import PublishTable from "./PublishTable";
+import AppsGallery from "./AppsGallery";
 import {
   Sidebar,
   SidebarContent,
@@ -118,6 +120,7 @@ export default function EngagedDashboard({
         { id: "layouts", label: "Layouts", icon: LayoutGrid },
       ],
     },
+    { id: "apps", label: "Apps", icon: Grid3x3 },
     { id: "publish", label: "Publish", icon: Send },
   ];
 
@@ -270,6 +273,7 @@ export default function EngagedDashboard({
                       {activeModule === "pdfs" && "Manage your PDF documents"}
                       {activeModule === "playlists" && "Create and manage playlists"}
                       {activeModule === "layouts" && "Design and manage layouts"}
+                      {activeModule === "apps" && "Browse and add app integrations"}
                       {activeModule === "publish" && "Schedule and publish content"}
                       {activeModule === "settings" && "Configure application settings"}
                       {activeModule === "account" && "Manage your account"}
@@ -311,6 +315,8 @@ export default function EngagedDashboard({
 
                 {activeModule === "playlists" && <PlaylistsTable />}
                 {activeModule === "layouts" && <LayoutsTable />}
+
+                {activeModule === "apps" && <AppsGallery />}
 
                 {activeModule === "publish" && <PublishTable />}
 
