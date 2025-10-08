@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Monitor, Upload, Rocket, CheckCircle2, AlertCircle, Play, HelpCircle } from "lucide-react";
+import { Monitor, Upload, Rocket, CheckCircle2, AlertCircle, Play, HelpCircle, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import MediaPickerModal from "./MediaPickerModal";
@@ -172,7 +173,7 @@ export default function OnboardingQuickStart({ onComplete, onSkip }: OnboardingQ
   };
 
   return (
-    <>
+    <TooltipProvider>
       <Card className="mx-auto max-w-6xl shadow-lg">
         <CardHeader>
           <div className="flex items-start justify-between">
@@ -181,9 +182,21 @@ export default function OnboardingQuickStart({ onComplete, onSkip }: OnboardingQ
                 <Rocket className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <CardTitle className="text-2xl">Quick Start — Get your first screen live</CardTitle>
+                <div className="flex items-center gap-2">
+                  <CardTitle className="text-2xl">Deploy Your First Screen in 3 Steps</CardTitle>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex  items-center py-1 px-2 rounded-md justify-center bg-primary/10 ring-2 ring-primary/20 transition-all hover:bg-primary/20 hover:ring-primary/30 cursor-pointer">
+                        <Clock className="h-4 w-4 text-primary mr-1" /> ~ 3 min
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent className="">
+                      <p className="font-medium">⏱️ Takes about 3 minutes</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
                 <CardDescription className="mt-1">
-                  Complete these 3 simple steps to see your content on a screen. Should take less than 5 minutes.
+                  Transform any display into a smart communication screen in minutes.
                 </CardDescription>
               </div>
             </div>
@@ -621,7 +634,7 @@ export default function OnboardingQuickStart({ onComplete, onSkip }: OnboardingQ
           </div>
         </DialogContent>
       </Dialog>
-    </>
+    </TooltipProvider>
   );
 }
 
