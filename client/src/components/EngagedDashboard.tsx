@@ -15,6 +15,7 @@ import {
   ListVideo,
   LayoutGrid,
   Grid3x3,
+  CreditCard,
 } from "lucide-react";
 import DashboardContent from "./DashboardContent";
 import ScreensTable from "./ScreensTable";
@@ -22,6 +23,7 @@ import { ImagesTable, AudioTable, VideoTable, PDFTable } from "./MediaTables";
 import { PlaylistsTable, LayoutsTable } from "./CompositionTables";
 import PublishTable from "./PublishTable";
 import AppsGallery from "./AppsGallery";
+import MyPlan from "./MyPlan";
 import {
   Sidebar,
   SidebarContent,
@@ -125,6 +127,7 @@ export default function EngagedDashboard({
   ];
 
   const footerNavItems = [
+    { id: "myplan", label: "My Plan", icon: CreditCard },
     { id: "settings", label: "Settings", icon: Settings },
     { id: "account", label: "Account Settings", icon: User },
   ];
@@ -263,7 +266,7 @@ export default function EngagedDashboard({
                 ) : (
                   <>
                     <h1 className="text-lg font-semibold capitalize">
-                      {activeModule === "pdfs" ? "PDFs" : activeModule}
+                      {activeModule === "pdfs" ? "PDFs" : activeModule === "myplan" ? "My Plan" : activeModule}
                     </h1>
                     <p className="text-sm text-muted-foreground">
                       {activeModule === "screens" && "Manage and monitor your screens"}
@@ -275,6 +278,7 @@ export default function EngagedDashboard({
                       {activeModule === "layouts" && "Design and manage layouts"}
                       {activeModule === "apps" && "Browse and add app integrations"}
                       {activeModule === "publish" && "Schedule and publish content"}
+                      {activeModule === "myplan" && "View and manage your subscription"}
                       {activeModule === "settings" && "Configure application settings"}
                       {activeModule === "account" && "Manage your account"}
                     </p>
@@ -319,6 +323,8 @@ export default function EngagedDashboard({
                 {activeModule === "apps" && <AppsGallery />}
 
                 {activeModule === "publish" && <PublishTable />}
+
+                {activeModule === "myplan" && <MyPlan />}
 
                 {activeModule === "settings" && (
                   <div className="rounded-lg border border-border/40 bg-card p-12 text-center">

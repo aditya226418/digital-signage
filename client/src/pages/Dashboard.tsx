@@ -15,7 +15,7 @@ export default function Dashboard() {
   const [showAddScreenModal, setShowAddScreenModal] = useState(false);
   const [showActivationModal, setShowActivationModal] = useState(false);
   const [selectedScreenType, setSelectedScreenType] = useState("");
-  const [onboardingComplete, setOnboardingComplete] = useState(false);
+  const [onboardingComplete, setOnboardingComplete] = useState(true);
 
   const toggleTheme = () => {
     setIsDark(!isDark);
