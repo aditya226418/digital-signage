@@ -7,7 +7,8 @@ import ReportsCard from "./ReportsCard";
 import TipsCard from "./TipsCard";
 import UpgradeBanner from "./UpgradeBanner";
 import PricingModal from "./PricingModal";
-import OnboardingQuickStart from "./OnboardingQuickStart";
+// import OnboardingQuickStart from "./OnboardingQuickStart";
+import DashboardQuickPlay from "./DashboardQuickPlay";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -97,10 +98,18 @@ export default function DashboardContent({
       {/* Conditional Content */}
       <div className="mt-6">
         {showNewUserView ? (
-          <OnboardingQuickStart
-            onComplete={handleOnboardingComplete}
-            onSkip={handleOnboardingSkip}
-          />
+          <>
+            {/* New QuickPlay Component */}
+            <DashboardQuickPlay
+              onComplete={handleOnboardingComplete}
+            />
+            {/* Old component (commented out):
+            <OnboardingQuickStart
+              onComplete={handleOnboardingComplete}
+              onSkip={handleOnboardingSkip}
+            />
+            */}
+          </>
         ) : (
           <>
             <UpgradeBanner onUpgradeClick={() => setIsPricingModalOpen(true)} />
