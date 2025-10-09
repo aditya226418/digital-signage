@@ -124,7 +124,7 @@ const premiumFeatureHighlights = [
 ];
 
 // Helper
-const formatCurrency = (amount: number) => `US$${amount.toFixed(2)}`;
+const formatCurrency = (amount: number) => `$${amount.toFixed(2)}`;
 
 export default function MyPlan() {
   const { toast } = useToast();
@@ -696,7 +696,7 @@ function Step1PlanSelection({
                       <span className="text-sm text-muted-foreground">/screen</span>
                     </motion.div>
                     <p className="text-xs text-muted-foreground">
-                      per {billingFrequency === "monthly" ? "month" : "year"}
+                      per month
                     </p>
                     
                    
