@@ -13,6 +13,8 @@ import {
   Zap,
   TrendingUp,
   X,
+  Users,
+  User,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,13 +22,6 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-} from "@/components/ui/drawer";
 import {
   Dialog,
   DialogContent,
@@ -69,60 +64,62 @@ const plans: Plan[] = [
   {
     id: "professional",
     name: "Professional",
-    tagline: "Best for single-location setups",
+    tagline: "Perfect for solo managers or small businesses managing displays independently.",
     priceMonthlyPerScreen: 15,
     yearlyDiscountPercent: 10,
     isPopular: true,
     topBenefits: [
-      "Self-management of displays",
-      "Access to free media repositories",
-      "Built-in graphic design tool (Artboard)",
-      "100+ free templates",
+      "1 user account — perfect for solo management",
+      "Manage displays across Android, Windows, Fire TV, and more",
+      "100+ ready templates and 60+ content apps",
+      "Advanced scheduling and content playback controls",
+      "3 GB cloud storage for media per screen",
     ],
     fullBenefits: [
-      "Self-management of displays",
-      "Access to free media repositories",
-      "Built-in graphic design tool (Artboard)",
-      "100+ free templates",
-      "60+ content apps & integrations",
+      "1 user account — perfect for solo management",
+      "Manage displays across Android, Windows, Fire TV, and more",
+      "100+ ready templates and 60+ content apps",
+      "Advanced scheduling and content playback controls",
+      "3 GB cloud storage for media per screen",
       "Composition & playlist creation",
-      "Advanced content scheduling",
       "User audit logs & proof-of-play reports",
+      "Email support",
     ],
   },
   {
     id: "business",
     name: "Business",
-    tagline: "Ideal for large or multi-location organizations",
+    tagline: "Built for teams that need to collaborate on content and manage displays together.",
     priceMonthlyPerScreen: 25,
     yearlyDiscountPercent: 10,
     isPopular: false,
     topBenefits: [
-      "Everything in Professional, plus",
-      "Multi-Factor Authentication (MFA)",
-      "4K content support",
-      "API access & Zapier integration",
+      "5 user accounts — collaborate with your team",
+      "Everything in Professional, plus:",
+      "Multi-Factor Authentication for secure team access",
+      "Supports 4K playback and live Zoom streaming",
+      "8 GB cloud storage per screen + Dashboard integrations (Power BI, etc.)",
     ],
     fullBenefits: [
+      "5 user accounts — collaborate with your team",
       "Everything in Professional, plus:",
-      "Multi-Factor Authentication (MFA)",
-      "Access to premium apps",
-      "4K content support",
+      "Multi-Factor Authentication for secure team access",
+      "Supports 4K playback and live Zoom streaming",
+      "8 GB cloud storage per screen + Dashboard integrations (Power BI, etc.)",
       "Advanced playlists",
-      "Live Zoom event streaming",
       "Campaign apps",
-      "8 GB storage per screen",
       "API access & Zapier integration",
+      "Priority support",
     ],
   },
 ];
 
 const premiumFeatureHighlights = [
+  { icon: Users, text: "Add team members for collaboration" },
   { icon: Sparkles, text: "Manage unlimited screens effortlessly" },
   { icon: TrendingUp, text: "Get advanced scheduling & analytics" },
   { icon: Zap, text: "Unlock 4K playback & premium integrations" },
   { icon: BadgeCheck, text: "Access 100+ premium templates" },
-  { icon: ArrowRight, text: "Multi-Factor Authentication (MFA)" },
   { icon: Star, text: "Priority 24/7 support" },
 ];
 
@@ -141,7 +138,7 @@ export default function MyPlan() {
 
   const trialProgress = ((30 - currentUser.trialEndsInDays) / 30) * 100;
 
-  // Auto-open "See what you're missing" after delay to grab attention
+  // Auto-open "Unlock premium features" after delay to grab attention
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowMissingFeatures(true);
@@ -153,11 +150,13 @@ export default function MyPlan() {
   // Calculate pricing
   const selectedPlanData = plans.find((p) => p.id === selectedPlan);
   const monthlyPricePerScreen = selectedPlanData?.priceMonthlyPerScreen || 0;
-  const yearlyPricePerScreen = monthlyPricePerScreen * (1 - (selectedPlanData?.yearlyDiscountPercent || 0) / 100);
-  const pricePerScreen = billingFrequency === "monthly" ? monthlyPricePerScreen : yearlyPricePerScreen;
-  const totalPrice = pricePerScreen * deviceCount;
-  const annualSavings = billingFrequency === "yearly" 
-    ? deviceCount * (monthlyPricePerScreen * 12 - yearlyPricePerScreen * 12)
+  const reducedMonthlyPerScreen = monthlyPricePerScreen * (1 - (selectedPlanData?.yearlyDiscountPercent || 0) / 100);
+  const pricePerScreen = billingFrequency === "monthly" ? monthlyPricePerScreen : reducedMonthlyPerScreen; // always monthly unit for display
+  const totalPrice = billingFrequency === "monthly"
+    ? deviceCount * monthlyPricePerScreen
+    : deviceCount * reducedMonthlyPerScreen * 12; // annual billing: pay 12 months upfront at reduced monthly rate
+  const annualSavings = billingFrequency === "yearly"
+    ? deviceCount * ((monthlyPricePerScreen * 12) - (reducedMonthlyPerScreen * 12))
     : 0;
 
   const handleDeviceCountChange = (delta: number) => {
@@ -283,7 +282,7 @@ export default function MyPlan() {
 
           <Separator />
 
-          {/* Collapsible - What You're Missing */}
+          {/* Collapsible - Unlock Premium Features */}
           <Collapsible open={showMissingFeatures} onOpenChange={setShowMissingFeatures}>
             <CollapsibleTrigger className="flex items-center justify-between w-full group">
               <motion.span
@@ -296,7 +295,7 @@ export default function MyPlan() {
                   ease: "easeInOut",
                 }}
               >
-                Get more with premium
+                Unlock premium features
               </motion.span>
               <motion.div
                 animate={{ rotate: showMissingFeatures ? 180 : 0 }}
@@ -358,19 +357,17 @@ export default function MyPlan() {
         </p>
       </div>
 
-      {/* Upgrade Drawer */}
-      <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
-        <DrawerContent className="max-h-[96vh]">
-          <div className="mx-auto w-full max-w-5xl flex flex-col h-full">
+      {/* Upgrade Modal */}
+      <Dialog open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+        <DialogContent className="!max-w-none w-screen h-screen !translate-x-0 !translate-y-0 left-0 top-0 p-0 gap-0 overflow-hidden rounded-none border-0 [&>button]:hidden">
+          <div className="flex flex-col h-full w-full overflow-hidden">
             {/* Header with Step Indicator */}
-            <DrawerHeader className="border-b">
-              <div className="flex items-center justify-between">
-                <DrawerClose asChild>
-                  <Button variant="ghost" onClick={handleCloseDrawer}>
-                    <X className="h-4 w-4 mr-2" />
-                    Close
-                  </Button>
-                </DrawerClose>
+            <div className="border-b px-6 py-4 bg-card">
+              <div className="flex items-center justify-between max-w-6xl mx-auto">
+                <Button variant="ghost" onClick={handleCloseDrawer}>
+                  <X className="h-4 w-4 mr-2" />
+                  Close
+                </Button>
                 
                 {/* Step Indicator */}
                 <div className="flex items-center gap-2">
@@ -400,18 +397,25 @@ export default function MyPlan() {
                   ))}
                 </div>
 
-                <div className="w-10" /> {/* Spacer for alignment */}
+                <div className="w-[100px]" /> {/* Spacer for alignment */}
               </div>
-              
-              <DrawerTitle className="text-2xl text-center mt-4">
-                {currentStep === 1 && "Choose Your Plan"}
-                {currentStep === 2 && "Select Screen Count"}
-                {currentStep === 3 && "Review Your Order"}
-              </DrawerTitle>
-            </DrawerHeader>
+            </div>
 
-            {/* Content Area */}
-            <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-6">
+            {/* Content Area with Scroll */}
+            <div className="flex-1 overflow-y-auto overflow-x-hidden">
+              <div className="px-6 py-8 max-w-6xl mx-auto min-h-full">
+                <div className="text-center mb-8">
+                  <h2 className="text-3xl font-bold">
+                    {currentStep === 1 && "Choose Your Plan"}
+                    {currentStep === 2 && "Select Screen Count"}
+                    {currentStep === 3 && "Review Your Order"}
+                  </h2>
+                  {currentStep === 1 && (
+                    <p className="text-muted-foreground mt-2">
+                      Pick the plan that fits your needs today — you can always upgrade later
+                    </p>
+                  )}
+                </div>
               <AnimatePresence mode="wait">
                 {currentStep === 1 && (
                   <Step1PlanSelection
@@ -450,20 +454,19 @@ export default function MyPlan() {
                   />
                 )}
               </AnimatePresence>
+              </div>
             </div>
 
-            {/* Footer with Navigation */}
-            <div className="border-t bg-card p-4 sm:p-6">
-              <div className="flex items-center justify-between gap-4">
+            {/* Sticky Footer with Navigation */}
+            <div className="border-t bg-card px-6 py-4 shadow-lg">
+              <div className="flex items-center justify-between gap-4 max-w-6xl mx-auto">
                 {currentStep > 1 ? (
                   <Button variant="outline" onClick={handlePreviousStep}>
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back
                   </Button>
                 ) : (
-                  <DrawerClose asChild>
-                    <Button variant="outline" onClick={handleCloseDrawer}>Cancel</Button>
-                  </DrawerClose>
+                  <Button variant="outline" onClick={handleCloseDrawer}>Cancel</Button>
                 )}
 
                 {currentStep === 1 && (
@@ -505,8 +508,8 @@ export default function MyPlan() {
               </div>
             </div>
           </div>
-        </DrawerContent>
-      </Drawer>
+        </DialogContent>
+      </Dialog>
 
       {/* Confirmation Dialog */}
       <Dialog open={isConfirmDialogOpen} onOpenChange={setIsConfirmDialogOpen}>
@@ -580,13 +583,22 @@ function Step1PlanSelection({
   handleSelectPlan,
   plans,
 }: Step1Props) {
+  const [priceFlash, setPriceFlash] = useState(false);
+
+  useEffect(() => {
+    if (billingFrequency === "yearly") {
+      setPriceFlash(true);
+      const t = setTimeout(() => setPriceFlash(false), 800);
+      return () => clearTimeout(t);
+    }
+  }, [billingFrequency]);
   return (
     <motion.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
       transition={{ duration: 0.3 }}
-      className="space-y-6"
+      className="space-y-8"
     >
       {/* Billing Toggle */}
       <div className="flex justify-center">
@@ -620,13 +632,18 @@ function Step1PlanSelection({
       </div>
 
       {/* Plan Cards Side-by-Side */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {plans.map((plan, index) => {
           const price =
             billingFrequency === "monthly"
               ? plan.priceMonthlyPerScreen
               : plan.priceMonthlyPerScreen * (1 - plan.yearlyDiscountPercent / 100);
           const isSelected = selectedPlan === plan.id;
+
+          // Define recommended for personas
+          const recommendedFor = plan.id === "professional" 
+            ? ["Solo operators", "Small cafes", "Single stores", "Independent businesses"]
+            : ["Marketing teams", "Multi-location businesses", "Large organizations", ];
 
           return (
             <motion.div
@@ -641,7 +658,7 @@ function Step1PlanSelection({
             >
               <Card
                 className={cn(
-                  "relative transition-all duration-300 h-full",
+                  "relative transition-all duration-300 h-full flex flex-col",
                   isSelected && "ring-2 ring-primary shadow-lg"
                 )}
               >
@@ -651,10 +668,15 @@ function Step1PlanSelection({
                   </div>
                 )}
 
-                <CardHeader className="pb-4">
-                  <CardTitle className="text-xl">{plan.name}</CardTitle>
-                  <p className="text-sm text-muted-foreground">{plan.tagline}</p>
-                  <div className="pt-3">
+                <CardHeader className="pb-4 space-y-3">
+                  <div>
+                    <CardTitle className="text-2xl mb-2">{plan.name}</CardTitle>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {plan.tagline}
+                    </p>
+                  </div>
+                  
+                  <div className="pt-2 space-y-3">
                     <motion.div
                       key={`${plan.id}-${billingFrequency}`}
                       initial={{ scale: 0.95 }}
@@ -662,50 +684,95 @@ function Step1PlanSelection({
                       transition={{ duration: 0.2 }}
                       className="flex items-baseline gap-2"
                     >
-                      <span className="text-3xl font-bold">{formatCurrency(price)}</span>
+                      <motion.span
+                        key={`${plan.id}-${billingFrequency}-price`}
+                        initial={priceFlash ? { y: -6 } : { y: 0 }}
+                        animate={{ y: 0 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                        className={cn("text-4xl font-bold", priceFlash && "text-emerald-500")}
+                      >
+                        {formatCurrency(price)}
+                      </motion.span>
                       <span className="text-sm text-muted-foreground">/screen</span>
                     </motion.div>
-                    <p className="text-xs text-muted-foreground mt-1">
+                    <p className="text-xs text-muted-foreground">
                       per {billingFrequency === "monthly" ? "month" : "year"}
+                    </p>
+                    
+                   
+                  </div>
+
+                  {/* Outcome line */}
+                  <div className="pt-2 border-t">
+                    <p className="text-sm font-medium text-foreground">
+                      {plan.id === "professional" 
+                        ? "Everything you need to manage screens independently — no team collaboration needed."
+                        : "Perfect for teams who need to work together on content and share display management."}
                     </p>
                   </div>
                 </CardHeader>
 
-                <CardContent className="space-y-4">
-                  <ul className="space-y-2.5">
-                    {plan.topBenefits.map((benefit, idx) => (
-                      <motion.li
-                        key={idx}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.1 + idx * 0.05 }}
-                        className="flex items-start gap-2"
-                      >
-                        <CheckCircle2 className="h-4 w-4 shrink-0 text-primary mt-0.5" />
-                        <span className="text-sm">{benefit}</span>
-                      </motion.li>
-                    ))}
-                  </ul>
+                <CardContent className="space-y-4 flex-1 flex flex-col">
+                  {/* Top highlights */}
+                  <div className="space-y-3">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                      What's included
+                    </p>
+                    <ul className="space-y-2.5">
+                      {plan.topBenefits.map((benefit, idx) => (
+                        <motion.li
+                          key={idx}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.1 + idx * 0.05 }}
+                          className="flex items-start gap-2"
+                        >
+                          <CheckCircle2 className="h-4 w-4 shrink-0 text-primary mt-0.5" />
+                          <span className="text-sm leading-relaxed">{benefit}</span>
+                        </motion.li>
+                      ))}
+                    </ul>
+                  </div>
 
+                  {/* Collapsible full features */}
                   <Collapsible>
                     <CollapsibleTrigger className="text-sm text-primary hover:text-primary/80 flex items-center gap-1">
-                      View all {plan.fullBenefits.length} features
+                      View all features
                       <ArrowRight className="h-3 w-3 rotate-90" />
                     </CollapsibleTrigger>
                     <CollapsibleContent>
                       <ul className="space-y-2 mt-3 pt-3 border-t">
                         {plan.fullBenefits.slice(plan.topBenefits.length).map((benefit, idx) => (
                           <li key={idx} className="flex items-start gap-2">
-                            <CheckCircle2 className="h-4 w-4 shrink-0 text-primary mt-0.5" />
-                            <span className="text-sm">{benefit}</span>
+                            <CheckCircle2 className="h-4 w-4 shrink-0 text-muted-foreground mt-0.5" />
+                            <span className="text-sm text-muted-foreground">{benefit}</span>
                           </li>
                         ))}
                       </ul>
                     </CollapsibleContent>
                   </Collapsible>
 
+                  {/* Spacer to push button to bottom */}
+                  <div className="flex-1" />
+
+                  {/* Recommended For band */}
+                  <div className="pt-4 border-t">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                      Recommended For
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {recommendedFor.map((type, idx) => (
+                        <Badge key={idx} variant="secondary" className="text-xs">
+                          {type}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* CTA Button */}
                   <Button
                     className="w-full mt-4"
+                    size="lg"
                     variant={isSelected ? "default" : "outline"}
                     onClick={() => handleSelectPlan(plan.id)}
                   >
@@ -718,11 +785,42 @@ function Step1PlanSelection({
                       `Select ${plan.name}`
                     )}
                   </Button>
+
+                  {/* Help text below button */}
+                  <p className="text-xs text-center text-muted-foreground">
+                    {plan.id === "professional"
+                      ? "Perfect if you're managing screens solo and don't need team access."
+                      : "Required if multiple people need to access and manage your displays."}
+                  </p>
                 </CardContent>
               </Card>
             </motion.div>
           );
         })}
+      </div>
+
+      {/* Upgrade reassurance and hint box */}
+      <div className="space-y-4 max-w-3xl mx-auto">
+        {/* Hint box for Business plan */}
+        <Alert className="border-primary/20 bg-primary/5">
+          <Sparkles className="h-4 w-4 text-primary" />
+          <AlertDescription className="text-sm">
+            <p className="font-semibold mb-2">Need the Business plan?</p>
+            <p className="text-xs text-muted-foreground mb-2">
+              The <strong>key difference</strong> is team collaboration:
+            </p>
+            <ul className="space-y-1 text-xs text-muted-foreground">
+              <li>✓ <strong>Multiple team members</strong> need to login and manage displays</li>
+              <li>✓ You need <strong>role-based access control</strong> for your team</li>
+              <li>✓ You require <strong>4K content</strong> or live streaming capabilities</li>
+            </ul>
+          </AlertDescription>
+        </Alert>
+
+        {/* Upgrade reassurance */}
+        <p className="text-center text-sm text-muted-foreground">
+          💡 Working solo? Start with Professional — upgrade anytime when you add team members
+        </p>
       </div>
     </motion.div>
   );
