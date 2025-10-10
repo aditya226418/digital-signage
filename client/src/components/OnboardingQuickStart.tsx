@@ -324,14 +324,14 @@ export default function OnboardingQuickStart({ onComplete, onSkip }: OnboardingQ
                   >
                     {isStepComplete(1) ? "Screen Added ✓" : "+ Add Screen"}
                   </Button>
-                  <Button 
+                  {/* <Button 
                     variant="ghost" 
                     size="sm"
                     className="h-auto p-0 text-xs"
                     onClick={() => setShowHelpModal(true)}
                   >
                     Show me how to find the 6-digit code
-                  </Button>
+                  </Button> */}
                 </CardContent>
               </Card>
 
@@ -368,14 +368,14 @@ export default function OnboardingQuickStart({ onComplete, onSkip }: OnboardingQ
                   >
                     {isStepComplete(2) ? "Media Uploaded ✓" : "Upload Media"}
                   </Button>
-                  <Button 
+                  {/* <Button 
                     variant="ghost" 
                     size="sm"
                     className="h-auto p-0 text-xs"
                     disabled={!canAccessStep(2)}
                   >
                     Browse template gallery
-                  </Button>
+                  </Button> */}
                 </CardContent>
               </Card>
 
