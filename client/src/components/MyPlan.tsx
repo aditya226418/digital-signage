@@ -15,6 +15,8 @@ import {
   X,
   Users,
   User,
+  LifeBuoy,
+  Mail,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -355,6 +357,13 @@ export default function MyPlan() {
         <p className="text-sm text-muted-foreground">
           See which plan suits your business best.
         </p>
+    {/* Support CTA */}
+    <div className="mt-2 inline-flex items-center gap-2 text-xs text-muted-foreground">
+      <LifeBuoy className="h-4 w-4" />
+      <span>
+        Need help deciding? <a href="#" className="underline hover:text-foreground">Contact support</a> for assistance.
+      </span>
+    </div>
       </div>
 
       {/* Upgrade Modal */}
