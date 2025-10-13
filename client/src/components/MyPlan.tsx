@@ -407,27 +407,38 @@ export default function MyPlan() {
 
           <Separator />
 
-          {/* Enterprise & Support CTA */}
-          <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground pt-2">
-            <LifeBuoy className="h-3.5 w-3.5" />
-            <span>
-              Looking for Enterprise or custom solutions? 
-              <a href="#" className="ml-1 underline hover:text-foreground">Contact sales</a>
-            </span>
+          {/* Upgrade CTA */}
+          <div className="text-center space-y-3 pt-2">
+            <Button size="lg" className="w-full" onClick={() => setIsDrawerOpen(true)}>
+              <Sparkles className="mr-2 h-5 w-5" />
+              Upgrade Now
+            </Button>
+            <p className="text-xs text-muted-foreground">
+              Choose the plan that fits your needs • Start instantly
+            </p>
           </div>
         </CardContent>
       </Card>
 
-      {/* Primary CTA */}
-      <div className="text-center space-y-3">
-        <Button size="lg" className="px-8" onClick={() => setIsDrawerOpen(true)}>
-          <Sparkles className="mr-2 h-5 w-5" />
-          Explore Upgrade Options
-        </Button>
-        <p className="text-sm text-muted-foreground">
-          See which plan suits your business best.
-        </p>
-      </div>
+      {/* Enterprise & Support CTA */}
+      <Alert className="border-primary/30 bg-primary/5">
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/15 shrink-0">
+            <LifeBuoy className="h-4 w-4 text-primary" />
+          </div>
+          <AlertDescription className="flex-1">
+            <span className="text-sm font-medium text-foreground">
+              Looking for Enterprise or custom solutions?
+            </span>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Need 100+ screens, custom integrations, or dedicated support?{" "}
+              <a href="#" className="underline hover:text-foreground font-medium">
+                Contact our sales team
+              </a>
+            </p>
+          </AlertDescription>
+        </div>
+      </Alert>
 
       {/* Upgrade Modal */}
       <Dialog open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
@@ -759,9 +770,37 @@ function Step1PlanSelection({
                     <p className="text-xs text-muted-foreground">
                       per month
                     </p>
-                    
-                   
                   </div>
+
+                  {/* Recommended For band */}
+                  <div className="pt-2">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                      Recommended For
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {recommendedFor.map((type, idx) => (
+                        <Badge key={idx} variant="secondary" className="text-xs">
+                          {type}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* CTA Button */}
+                  <Button
+                    className="w-full"
+                    size="lg"
+                    onClick={() => handleSelectPlan(plan.id)}
+                  >
+                    {isSelected ? (
+                      <>
+                        <CheckCircle2 className="mr-2 h-4 w-4" />
+                        Selected
+                      </>
+                    ) : (
+                      `Select ${plan.name}`
+                    )}
+                  </Button>
 
                   {/* Outcome line */}
                   <div className="pt-2 border-t">
@@ -813,46 +852,8 @@ function Step1PlanSelection({
                     </CollapsibleContent>
                   </Collapsible>
 
-                  {/* Spacer to push button to bottom */}
+                  {/* Spacer to push content to bottom */}
                   <div className="flex-1" />
-
-                  {/* Recommended For band */}
-                  <div className="pt-4 border-t">
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-                      Recommended For
-                    </p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {recommendedFor.map((type, idx) => (
-                        <Badge key={idx} variant="secondary" className="text-xs">
-                          {type}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* CTA Button */}
-                  <Button
-                    className="w-full mt-4"
-                    size="lg"
-                    variant={isSelected ? "default" : "outline"}
-                    onClick={() => handleSelectPlan(plan.id)}
-                  >
-                    {isSelected ? (
-                      <>
-                        <CheckCircle2 className="mr-2 h-4 w-4" />
-                        Selected
-                      </>
-                    ) : (
-                      `Select ${plan.name}`
-                    )}
-                  </Button>
-
-                  {/* Help text below button */}
-                  <p className="text-xs text-center text-muted-foreground">
-                    {plan.id === "professional"
-                      ? "Perfect if you're managing screens solo and don't need team access."
-                      : "Required if multiple people need to access and manage your displays."}
-                  </p>
                 </CardContent>
               </Card>
             </motion.div>
