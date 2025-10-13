@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { MoreVertical, Eye, Settings as SettingsIcon, Power } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import DataTableView from "./DataTableView";
+import UpgradeLimitModal from "@/components/UpgradeLimitModal";
 
 interface Screen {
   id: string;
@@ -97,6 +99,23 @@ const mockScreens: Screen[] = [
 ];
 
 export default function ScreensTable() {
+  const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+
+  const handleAddScreen = () => {
+    // Check if user has reached trial limit (1 screen)
+    // In production, this would check actual user data
+    const isTrialUser = true;
+    const currentScreenCount = mockScreens.length;
+    const trialLimit = 1;
+
+    if (isTrialUser && currentScreenCount >= trialLimit) {
+      setIsUpgradeModalOpen(true);
+    } else {
+      // Open add screen modal (to be implemented)
+      console.log("Open add screen modal");
+    }
+  };
+
   const columns = [
     {
       key: "name",
@@ -197,18 +216,28 @@ export default function ScreensTable() {
   ];
 
   return (
-    <DataTableView
-      data={mockScreens}
-      columns={columns}
-      searchPlaceholder="Search screens by name, location, or composition..."
-      filterOptions={filterOptions}
-      actions={
-        <Button className="gap-2 transition-all duration-200 hover:shadow-md">
-          <Power className="h-4 w-4" />
-          Add Screen
-        </Button>
-      }
-    />
+    <>
+      <DataTableView
+        data={mockScreens}
+        columns={columns}
+        searchPlaceholder="Search screens by name, location, or composition..."
+        filterOptions={filterOptions}
+        actions={
+          <Button 
+            className="gap-2 transition-all duration-200 hover:shadow-md"
+            onClick={handleAddScreen}
+          >
+            <Power className="h-4 w-4" />
+            Add Screen
+          </Button>
+        }
+      />
+
+      <UpgradeLimitModal 
+        isOpen={isUpgradeModalOpen}
+        onClose={() => setIsUpgradeModalOpen(false)}
+      />
+    </>
   );
 }
 
