@@ -929,12 +929,12 @@ function Step2OrderSummary({
       transition={{ duration: 0.3 }}
       className="max-w-4xl mx-auto"
     >
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Left Column: Inputs */}
-        <div className="space-y-6">
-          {/* Selected Plan Summary */}
-          <Card className="bg-muted/30">
-            <CardContent className="p-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+        {/* Left Column: Inputs (Combined Card) */}
+        <Card className="h-full">
+          <CardContent className="p-6 space-y-6">
+            {/* Selected Plan Summary */}
+            <div>
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Selected Plan</p>
@@ -947,16 +947,14 @@ function Step2OrderSummary({
                   Change
                 </Button>
               </div>
-            </CardContent>
-          </Card>
+            </div>
 
-          {/* Device Count Selector */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Number of Screens</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-center gap-6">
+            <Separator />
+
+            {/* Device Count Selector */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Number of Screens</h3>
+              <div className="flex items-center justify-center gap-6 py-4">
                 <Button
                   variant="outline"
                   size="icon"
@@ -987,18 +985,16 @@ function Step2OrderSummary({
                   <Plus className="h-5 w-5" />
                 </Button>
               </div>
-            </CardContent>
-          </Card>
+            </div>
 
-          {/* Coupon Code Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
+            <Separator />
+
+            {/* Coupon Code Section */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold flex items-center gap-2">
                 <Tag className="h-5 w-5 text-primary" />
                 Have a Coupon Code?
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+              </h3>
               {!appliedCoupon ? (
                 <>
                   <div className="flex gap-2">
@@ -1056,13 +1052,12 @@ function Step2OrderSummary({
                   </Button>
                 </motion.div>
               )}
-            </CardContent>
-          </Card>
-        </div>
+            </div>
+          </CardContent>
+        </Card>
 
-        {/* Right Column: Order Summary */}
-        <div className="space-y-6">
-          <Card className="border-2 border-primary/20">
+        {/* Right Column: Order Summary with Trust Indicators */}
+        <Card className="border-2 border-primary/20 h-full">
             <CardHeader className="bg-primary/5">
               <CardTitle>Order Summary</CardTitle>
             </CardHeader>
@@ -1188,29 +1183,28 @@ function Step2OrderSummary({
                   </div>
                 </motion.div>
               </motion.div>
-            </CardContent>
-          </Card>
 
-          {/* Trust Indicators */}
-          <Card className="bg-muted/30">
-            <CardContent className="p-4 space-y-3">
-              <div className="flex flex-wrap items-center justify-center gap-3 text-sm">
-                <div className="flex items-center gap-1">
-                  <Star className="h-4 w-4 fill-primary text-primary" />
-                  <span className="font-medium">4.8/5 on G2</span>
+              {/* Trust Indicators Section */}
+              <Separator className="my-6" />
+              
+              <div className="space-y-2 pt-2">
+                <div className="flex flex-wrap items-center justify-center gap-2 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-1">
+                    <Star className="h-3 w-3 fill-muted-foreground/60 text-muted-foreground/60" />
+                    <span>4.8/5 G2</span>
+                  </div>
+                  <span>•</span>
+                  <div className="flex items-center gap-1">
+                    <Star className="h-3 w-3 fill-muted-foreground/60 text-muted-foreground/60" />
+                    <span>4.7/5 Capterra</span>
+                  </div>
                 </div>
-                <Separator orientation="vertical" className="h-4" />
-                <div className="flex items-center gap-1">
-                  <Star className="h-4 w-4 fill-primary text-primary" />
-                  <span className="font-medium">4.7/5 on Capterra</span>
-                </div>
+                <p className="text-xs text-center text-muted-foreground/80">
+                  14-day free trial • Cancel anytime • Trusted by 1,200+ businesses
+                </p>
               </div>
-              <p className="text-xs text-center text-muted-foreground">
-                14-day free trial • Cancel anytime • Trusted by 1,200+ businesses
-              </p>
             </CardContent>
           </Card>
-        </div>
       </div>
     </motion.div>
   );
