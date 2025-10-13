@@ -17,6 +17,8 @@ import {
   User,
   LifeBuoy,
   Mail,
+  Tag,
+  Trash2,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,6 +26,7 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
@@ -50,6 +53,12 @@ interface Plan {
   topBenefits: string[];
   fullBenefits: string[];
   isPopular?: boolean;
+}
+
+interface Coupon {
+  code: string;
+  discountPercent: number;
+  description: string;
 }
 
 // Mock Data
@@ -125,6 +134,13 @@ const premiumFeatureHighlights = [
   { icon: Star, text: "Priority 24/7 support" },
 ];
 
+// Mock valid coupons
+const validCoupons: Coupon[] = [
+  { code: "WELCOME10", discountPercent: 10, description: "10% off your first payment" },
+  { code: "SAVE20", discountPercent: 20, description: "20% off your subscription" },
+  { code: "LAUNCH50", discountPercent: 50, description: "Special launch offer: 50% off" },
+];
+
 // Helper
 const formatCurrency = (amount: number) => `$${amount.toFixed(2)}`;
 
@@ -137,6 +153,9 @@ export default function MyPlan() {
   const [deviceCount, setDeviceCount] = useState<number>(1);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
   const [showMissingFeatures, setShowMissingFeatures] = useState(false);
+  const [couponCode, setCouponCode] = useState<string>("");
+  const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
+  const [couponError, setCouponError] = useState<string>("");
 
   const trialProgress = ((30 - currentUser.trialEndsInDays) / 30) * 100;
 
@@ -154,12 +173,14 @@ export default function MyPlan() {
   const monthlyPricePerScreen = selectedPlanData?.priceMonthlyPerScreen || 0;
   const reducedMonthlyPerScreen = monthlyPricePerScreen * (1 - (selectedPlanData?.yearlyDiscountPercent || 0) / 100);
   const pricePerScreen = billingFrequency === "monthly" ? monthlyPricePerScreen : reducedMonthlyPerScreen; // always monthly unit for display
-  const totalPrice = billingFrequency === "monthly"
+  const subtotal = billingFrequency === "monthly"
     ? deviceCount * monthlyPricePerScreen
     : deviceCount * reducedMonthlyPerScreen * 12; // annual billing: pay 12 months upfront at reduced monthly rate
   const annualSavings = billingFrequency === "yearly"
     ? deviceCount * ((monthlyPricePerScreen * 12) - (reducedMonthlyPerScreen * 12))
     : 0;
+  const couponDiscount = appliedCoupon ? (subtotal * appliedCoupon.discountPercent) / 100 : 0;
+  const totalPrice = subtotal - couponDiscount;
 
   const handleDeviceCountChange = (delta: number) => {
     setDeviceCount((prev) => Math.max(1, Math.min(999, prev + delta)));
@@ -171,6 +192,44 @@ export default function MyPlan() {
     // Analytics: event('plan_selected', { plan: planId })
   };
 
+  const handleApplyCoupon = () => {
+    setCouponError("");
+    const trimmedCode = couponCode.trim().toUpperCase();
+    
+    if (!trimmedCode) {
+      setCouponError("Please enter a coupon code");
+      return;
+    }
+
+    const foundCoupon = validCoupons.find((c) => c.code === trimmedCode);
+    
+    if (foundCoupon) {
+      setAppliedCoupon(foundCoupon);
+      toast({
+        title: "Coupon applied!",
+        description: `${foundCoupon.description}`,
+      });
+      // Analytics: event('coupon_applied', { code: trimmedCode, discount: foundCoupon.discountPercent })
+    } else {
+      setCouponError("Invalid coupon code");
+      toast({
+        title: "Invalid coupon",
+        description: "The coupon code you entered is not valid.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode("");
+    setCouponError("");
+    toast({
+      title: "Coupon removed",
+      description: "The coupon discount has been removed from your order.",
+    });
+  };
+
   const handleNextStep = () => {
     if (currentStep === 1 && !selectedPlan) {
       toast({
@@ -180,7 +239,7 @@ export default function MyPlan() {
       });
       return;
     }
-    setCurrentStep((prev) => Math.min(prev + 1, 3));
+    setCurrentStep((prev) => Math.min(prev + 1, 2));
   };
 
   const handlePreviousStep = () => {
@@ -380,7 +439,7 @@ export default function MyPlan() {
                 
                 {/* Step Indicator */}
                 <div className="flex items-center gap-2">
-                  {[1, 2, 3].map((step) => (
+                  {[1, 2].map((step) => (
                     <div key={step} className="flex items-center">
                       <div
                         className={cn(
@@ -394,7 +453,7 @@ export default function MyPlan() {
                       >
                         {currentStep > step ? <CheckCircle2 className="h-4 w-4" /> : step}
                       </div>
-                      {step < 3 && (
+                      {step < 2 && (
                         <div
                           className={cn(
                             "w-12 h-0.5 mx-1",
@@ -416,12 +475,16 @@ export default function MyPlan() {
                 <div className="text-center mb-8">
                   <h2 className="text-3xl font-bold">
                     {currentStep === 1 && "Choose Your Plan"}
-                    {currentStep === 2 && "Select Screen Count"}
-                    {currentStep === 3 && "Review Your Order"}
+                    {currentStep === 2 && "Complete Your Order"}
                   </h2>
                   {currentStep === 1 && (
                     <p className="text-muted-foreground mt-2">
                       Pick the plan that fits your needs today — you can always upgrade later
+                    </p>
+                  )}
+                  {currentStep === 2 && (
+                    <p className="text-muted-foreground mt-2">
+                      Review your selection and finalize your upgrade
                     </p>
                   )}
                 </div>
@@ -437,29 +500,24 @@ export default function MyPlan() {
                   />
                 )}
                 {currentStep === 2 && (
-                  <Step2ScreenCount
+                  <Step2OrderSummary
                     key="step2"
                     selectedPlanData={selectedPlanData}
                     billingFrequency={billingFrequency}
                     deviceCount={deviceCount}
                     handleDeviceCountChange={handleDeviceCountChange}
                     pricePerScreen={pricePerScreen}
+                    subtotal={subtotal}
                     totalPrice={totalPrice}
                     annualSavings={annualSavings}
+                    couponCode={couponCode}
+                    setCouponCode={setCouponCode}
+                    appliedCoupon={appliedCoupon}
+                    couponError={couponError}
+                    handleApplyCoupon={handleApplyCoupon}
+                    handleRemoveCoupon={handleRemoveCoupon}
+                    couponDiscount={couponDiscount}
                     onChangePlan={() => handleGoToStep(1)}
-                  />
-                )}
-                {currentStep === 3 && (
-                  <Step3OrderSummary
-                    key="step3"
-                    selectedPlanData={selectedPlanData}
-                    billingFrequency={billingFrequency}
-                    deviceCount={deviceCount}
-                    pricePerScreen={pricePerScreen}
-                    totalPrice={totalPrice}
-                    annualSavings={annualSavings}
-                    onChangePlan={() => handleGoToStep(1)}
-                    onChangeScreens={() => handleGoToStep(2)}
                   />
                 )}
               </AnimatePresence>
@@ -490,16 +548,6 @@ export default function MyPlan() {
                 )}
 
                 {currentStep === 2 && (
-                  <Button
-                    onClick={handleNextStep}
-                    className="ml-auto"
-                  >
-                    Continue
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                )}
-
-                {currentStep === 3 && (
                   <Button
                     onClick={() => {
                       // Placeholder for payment action
@@ -835,26 +883,42 @@ function Step1PlanSelection({
   );
 }
 
-// Step 2: Screen Count Component
+// Step 2: Order Summary (includes screen count, coupon, and order details)
 interface Step2Props {
   selectedPlanData: Plan | undefined;
   billingFrequency: "monthly" | "yearly";
   deviceCount: number;
   handleDeviceCountChange: (delta: number) => void;
   pricePerScreen: number;
+  subtotal: number;
   totalPrice: number;
   annualSavings: number;
+  couponCode: string;
+  setCouponCode: (code: string) => void;
+  appliedCoupon: Coupon | null;
+  couponError: string;
+  handleApplyCoupon: () => void;
+  handleRemoveCoupon: () => void;
+  couponDiscount: number;
   onChangePlan: () => void;
 }
 
-function Step2ScreenCount({
+function Step2OrderSummary({
   selectedPlanData,
   billingFrequency,
   deviceCount,
   handleDeviceCountChange,
   pricePerScreen,
+  subtotal,
   totalPrice,
   annualSavings,
+  couponCode,
+  setCouponCode,
+  appliedCoupon,
+  couponError,
+  handleApplyCoupon,
+  handleRemoveCoupon,
+  couponDiscount,
   onChangePlan,
 }: Step2Props) {
   return (
@@ -863,265 +927,291 @@ function Step2ScreenCount({
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
       transition={{ duration: 0.3 }}
-      className="max-w-2xl mx-auto space-y-6"
+      className="max-w-4xl mx-auto"
     >
-      {/* Selected Plan Summary */}
-      <Card className="bg-muted/30">
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground">Selected Plan</p>
-              <p className="font-semibold">{selectedPlanData?.name}</p>
-              <p className="text-xs text-muted-foreground capitalize">
-                {billingFrequency} billing
-              </p>
-            </div>
-            <Button variant="ghost" size="sm" onClick={onChangePlan} className="text-primary">
-              Change plan
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Device Stepper */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-center">How many screens do you need?</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex items-center justify-center gap-6">
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-12 w-12"
-              onClick={() => handleDeviceCountChange(-1)}
-              disabled={deviceCount <= 1}
-            >
-              <Minus className="h-5 w-5" />
-            </Button>
-            <motion.div
-              key={deviceCount}
-              initial={{ scale: 1.2 }}
-              animate={{ scale: 1 }}
-              className="text-center min-w-[100px]"
-            >
-              <div className="text-5xl font-bold">{deviceCount}</div>
-              <div className="text-sm text-muted-foreground">
-                {deviceCount === 1 ? "screen" : "screens"}
-              </div>
-            </motion.div>
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-12 w-12"
-              onClick={() => handleDeviceCountChange(1)}
-              disabled={deviceCount >= 999}
-            >
-              <Plus className="h-5 w-5" />
-            </Button>
-          </div>
-
-          {/* Live Price Calculation */}
-          <div className="bg-muted/50 rounded-lg p-6 text-center space-y-2">
-            <p className="text-sm text-muted-foreground">
-              {deviceCount} {deviceCount === 1 ? "screen" : "screens"} × {formatCurrency(pricePerScreen)} ={" "}
-            </p>
-            <motion.p
-              key={totalPrice}
-              initial={{ scale: 1.1 }}
-              animate={{ scale: 1 }}
-              className="text-4xl font-bold text-primary"
-            >
-              {formatCurrency(totalPrice)}
-            </motion.p>
-            <p className="text-sm text-muted-foreground">
-              per {billingFrequency === "monthly" ? "month" : "year"}
-            </p>
-            {annualSavings > 0 && (
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-sm text-primary font-medium pt-2"
-              >
-                💰 Save {formatCurrency(annualSavings)} annually
-              </motion.p>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-    </motion.div>
-  );
-}
-
-// Step 3: Order Summary Component
-interface Step3Props {
-  selectedPlanData: Plan | undefined;
-  billingFrequency: "monthly" | "yearly";
-  deviceCount: number;
-  pricePerScreen: number;
-  totalPrice: number;
-  annualSavings: number;
-  onChangePlan: () => void;
-  onChangeScreens: () => void;
-}
-
-function Step3OrderSummary({
-  selectedPlanData,
-  billingFrequency,
-  deviceCount,
-  pricePerScreen,
-  totalPrice,
-  annualSavings,
-  onChangePlan,
-  onChangeScreens,
-}: Step3Props) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -20 }}
-      transition={{ duration: 0.3 }}
-      className="max-w-2xl mx-auto space-y-6"
-    >
-      {/* Order Summary Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Order Summary</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={{
-              visible: {
-                transition: {
-                  staggerChildren: 0.1,
-                },
-              },
-            }}
-            className="space-y-4"
-          >
-            <motion.div
-              variants={{
-                hidden: { opacity: 0, x: -20 },
-                visible: { opacity: 1, x: 0 },
-              }}
-              className="flex items-center justify-between"
-            >
-              <div>
-                <p className="text-sm text-muted-foreground">Plan</p>
-                <p className="font-semibold flex items-center gap-2">
-                  {selectedPlanData?.name}
-                  {selectedPlanData?.isPopular && (
-                    <Badge variant="secondary" className="text-xs">
-                      Popular
-                    </Badge>
-                  )}
-                </p>
-              </div>
-              <Button variant="ghost" size="sm" onClick={onChangePlan} className="text-primary">
-                Change
-              </Button>
-            </motion.div>
-
-            <Separator />
-
-            <motion.div
-              variants={{
-                hidden: { opacity: 0, x: -20 },
-                visible: { opacity: 1, x: 0 },
-              }}
-              className="flex items-center justify-between"
-            >
-              <div>
-                <p className="text-sm text-muted-foreground">Billing frequency</p>
-                <p className="font-semibold capitalize">{billingFrequency}</p>
-              </div>
-            </motion.div>
-
-            <Separator />
-
-            <motion.div
-              variants={{
-                hidden: { opacity: 0, x: -20 },
-                visible: { opacity: 1, x: 0 },
-              }}
-              className="flex items-center justify-between"
-            >
-              <div>
-                <p className="text-sm text-muted-foreground">Number of screens</p>
-                <p className="font-semibold">{deviceCount}</p>
-              </div>
-              <Button variant="ghost" size="sm" onClick={onChangeScreens} className="text-primary">
-                Change
-              </Button>
-            </motion.div>
-
-            <Separator />
-
-            <motion.div
-              variants={{
-                hidden: { opacity: 0, x: -20 },
-                visible: { opacity: 1, x: 0 },
-              }}
-              className="space-y-2"
-            >
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Price per screen</span>
-                <span>{formatCurrency(pricePerScreen)}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Subtotal</span>
-                <span>{formatCurrency(totalPrice)}</span>
-              </div>
-              {annualSavings > 0 && (
-                <div className="flex justify-between text-sm text-primary">
-                  <span>Annual savings</span>
-                  <span>-{formatCurrency(annualSavings)}</span>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Left Column: Inputs */}
+        <div className="space-y-6">
+          {/* Selected Plan Summary */}
+          <Card className="bg-muted/30">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Selected Plan</p>
+                  <p className="font-semibold">{selectedPlanData?.name}</p>
+                  <p className="text-xs text-muted-foreground capitalize">
+                    {billingFrequency} billing
+                  </p>
                 </div>
-              )}
-            </motion.div>
-
-            <Separator />
-
-            <motion.div
-              variants={{
-                hidden: { opacity: 0, scale: 0.9 },
-                visible: { opacity: 1, scale: 1 },
-              }}
-              className="flex items-center justify-between pt-2"
-            >
-              <span className="text-lg font-semibold">Total</span>
-              <div className="text-right">
-                <p className="text-3xl font-bold text-primary">{formatCurrency(totalPrice)}</p>
-                <p className="text-xs text-muted-foreground">
-                  per {billingFrequency === "monthly" ? "month" : "year"}
-                </p>
+                <Button variant="ghost" size="sm" onClick={onChangePlan} className="text-primary">
+                  Change
+                </Button>
               </div>
-            </motion.div>
-          </motion.div>
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
 
-      {/* Trust Indicators */}
-      <Card className="bg-muted/30">
-        <CardContent className="p-4 space-y-3">
-          <div className="flex flex-wrap items-center justify-center gap-3 text-sm">
-            <div className="flex items-center gap-1">
-              <Star className="h-4 w-4 fill-primary text-primary" />
-              <span className="font-medium">4.8/5 on G2</span>
-            </div>
-            <Separator orientation="vertical" className="h-4" />
-            <div className="flex items-center gap-1">
-              <Star className="h-4 w-4 fill-primary text-primary" />
-              <span className="font-medium">4.7/5 on Capterra</span>
-            </div>
-          </div>
-          <p className="text-xs text-center text-muted-foreground">
-            14-day free trial • Cancel anytime • Trusted by 1,200+ businesses
-          </p>
-        </CardContent>
-      </Card>
+          {/* Device Count Selector */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Number of Screens</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-center gap-6">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-12 w-12"
+                  onClick={() => handleDeviceCountChange(-1)}
+                  disabled={deviceCount <= 1}
+                >
+                  <Minus className="h-5 w-5" />
+                </Button>
+                <motion.div
+                  key={deviceCount}
+                  initial={{ scale: 1.2 }}
+                  animate={{ scale: 1 }}
+                  className="text-center min-w-[100px]"
+                >
+                  <div className="text-5xl font-bold">{deviceCount}</div>
+                  <div className="text-sm text-muted-foreground">
+                    {deviceCount === 1 ? "screen" : "screens"}
+                  </div>
+                </motion.div>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-12 w-12"
+                  onClick={() => handleDeviceCountChange(1)}
+                  disabled={deviceCount >= 999}
+                >
+                  <Plus className="h-5 w-5" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Coupon Code Section */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Tag className="h-5 w-5 text-primary" />
+                Have a Coupon Code?
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {!appliedCoupon ? (
+                <>
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Enter code"
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          handleApplyCoupon();
+                        }
+                      }}
+                      className={cn(couponError && "border-destructive")}
+                    />
+                    <Button
+                      onClick={handleApplyCoupon}
+                      variant="secondary"
+                      disabled={!couponCode.trim()}
+                    >
+                      Apply
+                    </Button>
+                  </div>
+                  {couponError && (
+                    <p className="text-sm text-destructive flex items-center gap-1">
+                      <AlertCircle className="h-3 w-3" />
+                      {couponError}
+                    </p>
+                  )}
+                  <p className="text-xs text-muted-foreground">
+                    Try: <code className="px-1.5 py-0.5 rounded bg-muted font-mono">WELCOME10</code>, <code className="px-1.5 py-0.5 rounded bg-muted font-mono">SAVE20</code>
+                  </p>
+                </>
+              ) : (
+                <motion.div
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  className="flex items-center justify-between p-3 rounded-lg bg-primary/10 border border-primary/20"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/20">
+                      <CheckCircle2 className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-sm">{appliedCoupon.code}</p>
+                      <p className="text-xs text-muted-foreground">{appliedCoupon.description}</p>
+                    </div>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleRemoveCoupon}
+                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </motion.div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Right Column: Order Summary */}
+        <div className="space-y-6">
+          <Card className="border-2 border-primary/20">
+            <CardHeader className="bg-primary/5">
+              <CardTitle>Order Summary</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6 space-y-4">
+              <motion.div
+                initial="hidden"
+                animate="visible"
+                variants={{
+                  visible: {
+                    transition: {
+                      staggerChildren: 0.08,
+                    },
+                  },
+                }}
+                className="space-y-3"
+              >
+                <motion.div
+                  variants={{
+                    hidden: { opacity: 0, x: -10 },
+                    visible: { opacity: 1, x: 0 },
+                  }}
+                  className="flex justify-between text-sm"
+                >
+                  <span className="text-muted-foreground">Plan</span>
+                  <span className="font-medium">{selectedPlanData?.name}</span>
+                </motion.div>
+
+                <motion.div
+                  variants={{
+                    hidden: { opacity: 0, x: -10 },
+                    visible: { opacity: 1, x: 0 },
+                  }}
+                  className="flex justify-between text-sm"
+                >
+                  <span className="text-muted-foreground">Billing</span>
+                  <span className="font-medium capitalize">{billingFrequency}</span>
+                </motion.div>
+
+                <motion.div
+                  variants={{
+                    hidden: { opacity: 0, x: -10 },
+                    visible: { opacity: 1, x: 0 },
+                  }}
+                  className="flex justify-between text-sm"
+                >
+                  <span className="text-muted-foreground">Screens</span>
+                  <span className="font-medium">{deviceCount}</span>
+                </motion.div>
+
+                <Separator />
+
+                <motion.div
+                  variants={{
+                    hidden: { opacity: 0, x: -10 },
+                    visible: { opacity: 1, x: 0 },
+                  }}
+                  className="flex justify-between text-sm"
+                >
+                  <span className="text-muted-foreground">Price per screen</span>
+                  <span>{formatCurrency(pricePerScreen)}</span>
+                </motion.div>
+
+                <motion.div
+                  variants={{
+                    hidden: { opacity: 0, x: -10 },
+                    visible: { opacity: 1, x: 0 },
+                  }}
+                  className="flex justify-between text-sm"
+                >
+                  <span className="text-muted-foreground">Subtotal</span>
+                  <span>{formatCurrency(subtotal)}</span>
+                </motion.div>
+
+                {annualSavings > 0 && (
+                  <motion.div
+                    variants={{
+                      hidden: { opacity: 0, x: -10 },
+                      visible: { opacity: 1, x: 0 },
+                    }}
+                    className="flex justify-between text-sm text-emerald-600 dark:text-emerald-400"
+                  >
+                    <span>Annual savings</span>
+                    <span className="font-medium">-{formatCurrency(annualSavings)}</span>
+                  </motion.div>
+                )}
+
+                {appliedCoupon && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="flex justify-between text-sm text-primary"
+                  >
+                    <span className="flex items-center gap-1">
+                      <Tag className="h-3 w-3" />
+                      Coupon ({appliedCoupon.code})
+                    </span>
+                    <span className="font-medium">-{formatCurrency(couponDiscount)}</span>
+                  </motion.div>
+                )}
+
+                <Separator className="my-4" />
+
+                <motion.div
+                  variants={{
+                    hidden: { opacity: 0, scale: 0.95 },
+                    visible: { opacity: 1, scale: 1 },
+                  }}
+                  className="flex items-center justify-between pt-2"
+                >
+                  <span className="text-lg font-semibold">Total</span>
+                  <div className="text-right">
+                    <motion.p
+                      key={totalPrice}
+                      initial={{ scale: 1.1 }}
+                      animate={{ scale: 1 }}
+                      className="text-3xl font-bold text-primary"
+                    >
+                      {formatCurrency(totalPrice)}
+                    </motion.p>
+                    <p className="text-xs text-muted-foreground">
+                      per {billingFrequency === "monthly" ? "month" : "year"}
+                    </p>
+                  </div>
+                </motion.div>
+              </motion.div>
+            </CardContent>
+          </Card>
+
+          {/* Trust Indicators */}
+          <Card className="bg-muted/30">
+            <CardContent className="p-4 space-y-3">
+              <div className="flex flex-wrap items-center justify-center gap-3 text-sm">
+                <div className="flex items-center gap-1">
+                  <Star className="h-4 w-4 fill-primary text-primary" />
+                  <span className="font-medium">4.8/5 on G2</span>
+                </div>
+                <Separator orientation="vertical" className="h-4" />
+                <div className="flex items-center gap-1">
+                  <Star className="h-4 w-4 fill-primary text-primary" />
+                  <span className="font-medium">4.7/5 on Capterra</span>
+                </div>
+              </div>
+              <p className="text-xs text-center text-muted-foreground">
+                14-day free trial • Cancel anytime • Trusted by 1,200+ businesses
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </motion.div>
   );
 }
