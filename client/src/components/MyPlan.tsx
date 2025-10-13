@@ -404,11 +404,22 @@ export default function MyPlan() {
               </motion.div>
             </CollapsibleContent>
           </Collapsible>
+
+          <Separator />
+
+          {/* Enterprise & Support CTA */}
+          <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground pt-2">
+            <LifeBuoy className="h-3.5 w-3.5" />
+            <span>
+              Looking for Enterprise or custom solutions? 
+              <a href="#" className="ml-1 underline hover:text-foreground">Contact sales</a>
+            </span>
+          </div>
         </CardContent>
       </Card>
 
       {/* Primary CTA */}
-      <div className="text-center space-y-3 py-8">
+      <div className="text-center space-y-3">
         <Button size="lg" className="px-8" onClick={() => setIsDrawerOpen(true)}>
           <Sparkles className="mr-2 h-5 w-5" />
           Explore Upgrade Options
@@ -416,13 +427,6 @@ export default function MyPlan() {
         <p className="text-sm text-muted-foreground">
           See which plan suits your business best.
         </p>
-    {/* Support CTA */}
-    <div className="mt-2 inline-flex items-center gap-2 text-xs text-muted-foreground">
-      <LifeBuoy className="h-4 w-4" />
-      <span>
-        Need help deciding? <a href="#" className="underline hover:text-foreground">Contact support</a> for assistance.
-      </span>
-    </div>
       </div>
 
       {/* Upgrade Modal */}
@@ -1148,7 +1152,7 @@ function Step2OrderSummary({
                   <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="flex justify-between text-sm text-primary"
+                    className="flex justify-between text-sm text-emerald-600 dark:text-emerald-400"
                   >
                     <span className="flex items-center gap-1">
                       <Tag className="h-3 w-3" />
