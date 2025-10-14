@@ -8,10 +8,6 @@ import {
   Settings,
   User,
   ChevronRight,
-  FileImage,
-  Music,
-  Video,
-  FileText,
   ListVideo,
   LayoutGrid,
   Grid3x3,
@@ -19,7 +15,7 @@ import {
 } from "lucide-react";
 import DashboardContent from "./DashboardContent";
 import ScreensTable from "./ScreensTable";
-import { ImagesTable, AudioTable, VideoTable, PDFTable } from "./MediaTables";
+import { MediaTable } from "./MediaTables";
 import { PlaylistsTable, LayoutsTable } from "./CompositionTables";
 import PublishTable from "./PublishTable";
 import AppsGallery from "./AppsGallery";
@@ -91,7 +87,7 @@ export default function EngagedDashboard({
   onCreatePlaylist,
 }: EngagedDashboardProps) {
   const [activeModule, setActiveModule] = useState("dashboard");
-  const [openMenus, setOpenMenus] = useState<string[]>(["media", "compositions"]);
+  const [openMenus, setOpenMenus] = useState<string[]>(["compositions"]);
 
   const toggleMenu = (menuId: string) => {
     setOpenMenus((prev) =>
@@ -102,17 +98,7 @@ export default function EngagedDashboard({
   const mainNavItems = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
     { id: "screens", label: "Screens", icon: Monitor },
-    {
-      id: "media",
-      label: "Media",
-      icon: Image,
-      subItems: [
-        { id: "images", label: "Images", icon: FileImage },
-        { id: "audio", label: "Audio", icon: Music },
-        { id: "video", label: "Video", icon: Video },
-        { id: "pdfs", label: "PDFs", icon: FileText },
-      ],
-    },
+    { id: "media", label: "Media", icon: Image },
     {
       id: "compositions",
       label: "Compositions",
@@ -266,14 +252,11 @@ export default function EngagedDashboard({
                 ) : (
                   <>
                     <h1 className="text-lg font-semibold capitalize">
-                      {activeModule === "pdfs" ? "PDFs" : activeModule === "myplan" ? "My Plan" : activeModule}
+                      {activeModule === "myplan" ? "My Plan" : activeModule}
                     </h1>
                     <p className="text-sm text-muted-foreground">
                       {activeModule === "screens" && "Manage and monitor your screens"}
-                      {activeModule === "images" && "Manage your image library"}
-                      {activeModule === "audio" && "Manage your audio files"}
-                      {activeModule === "video" && "Manage your video content"}
-                      {activeModule === "pdfs" && "Manage your PDF documents"}
+                      {activeModule === "media" && "Manage all your media files"}
                       {activeModule === "playlists" && "Create and manage playlists"}
                       {activeModule === "layouts" && "Design and manage layouts"}
                       {activeModule === "apps" && "Browse and add app integrations"}
@@ -312,10 +295,7 @@ export default function EngagedDashboard({
 
                 {activeModule === "screens" && <ScreensTable />}
 
-                {activeModule === "images" && <ImagesTable />}
-                {activeModule === "audio" && <AudioTable />}
-                {activeModule === "video" && <VideoTable />}
-                {activeModule === "pdfs" && <PDFTable />}
+                {activeModule === "media" && <MediaTable />}
 
                 {activeModule === "playlists" && <PlaylistsTable />}
                 {activeModule === "layouts" && <LayoutsTable />}

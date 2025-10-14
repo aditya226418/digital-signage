@@ -21,12 +21,14 @@ interface MediaItem {
   duration?: string;
   dimensions?: string;
   tags: string[];
+  type: "image" | "audio" | "video" | "pdf";
 }
 
-// Mock data for Images
-const mockImages: MediaItem[] = [
+// Mock data for all media items
+const mockMediaItems: MediaItem[] = [
+  // Images
   {
-    id: "1",
+    id: "img-1",
     name: "product-banner.jpg",
     size: "2.4 MB",
     format: "JPEG",
@@ -34,9 +36,10 @@ const mockImages: MediaItem[] = [
     uploadedDate: "2024-03-15",
     dimensions: "1920x1080",
     tags: ["banner", "product"],
+    type: "image",
   },
   {
-    id: "2",
+    id: "img-2",
     name: "company-logo.png",
     size: "156 KB",
     format: "PNG",
@@ -44,9 +47,10 @@ const mockImages: MediaItem[] = [
     uploadedDate: "2024-03-14",
     dimensions: "512x512",
     tags: ["logo", "branding"],
+    type: "image",
   },
   {
-    id: "3",
+    id: "img-3",
     name: "team-photo.jpg",
     size: "3.8 MB",
     format: "JPEG",
@@ -54,13 +58,11 @@ const mockImages: MediaItem[] = [
     uploadedDate: "2024-03-13",
     dimensions: "2560x1440",
     tags: ["team", "photo"],
+    type: "image",
   },
-];
-
-// Mock data for Audio
-const mockAudio: MediaItem[] = [
+  // Audio
   {
-    id: "1",
+    id: "aud-1",
     name: "background-music.mp3",
     size: "4.2 MB",
     format: "MP3",
@@ -68,9 +70,10 @@ const mockAudio: MediaItem[] = [
     uploadedDate: "2024-03-15",
     duration: "3:24",
     tags: ["background", "music"],
+    type: "audio",
   },
   {
-    id: "2",
+    id: "aud-2",
     name: "announcement-jingle.wav",
     size: "1.8 MB",
     format: "WAV",
@@ -78,13 +81,11 @@ const mockAudio: MediaItem[] = [
     uploadedDate: "2024-03-14",
     duration: "0:45",
     tags: ["jingle", "announcement"],
+    type: "audio",
   },
-];
-
-// Mock data for Videos
-const mockVideos: MediaItem[] = [
+  // Videos
   {
-    id: "1",
+    id: "vid-1",
     name: "product-demo.mp4",
     size: "45.6 MB",
     format: "MP4",
@@ -93,9 +94,10 @@ const mockVideos: MediaItem[] = [
     duration: "2:30",
     dimensions: "1920x1080",
     tags: ["demo", "product"],
+    type: "video",
   },
   {
-    id: "2",
+    id: "vid-2",
     name: "company-intro.mp4",
     size: "89.2 MB",
     format: "MP4",
@@ -104,9 +106,10 @@ const mockVideos: MediaItem[] = [
     duration: "5:15",
     dimensions: "3840x2160",
     tags: ["intro", "company"],
+    type: "video",
   },
   {
-    id: "3",
+    id: "vid-3",
     name: "testimonial-reel.mov",
     size: "67.3 MB",
     format: "MOV",
@@ -115,39 +118,46 @@ const mockVideos: MediaItem[] = [
     duration: "4:20",
     dimensions: "1920x1080",
     tags: ["testimonial", "marketing"],
+    type: "video",
   },
-];
-
-// Mock data for PDFs
-const mockPDFs: MediaItem[] = [
+  // PDFs
   {
-    id: "1",
+    id: "pdf-1",
     name: "menu-board.pdf",
     size: "1.2 MB",
     format: "PDF",
     uploadedBy: "John Doe",
     uploadedDate: "2024-03-15",
     tags: ["menu", "restaurant"],
+    type: "pdf",
   },
   {
-    id: "2",
+    id: "pdf-2",
     name: "safety-guidelines.pdf",
     size: "856 KB",
     format: "PDF",
     uploadedBy: "Sarah Smith",
     uploadedDate: "2024-03-14",
     tags: ["safety", "guidelines"],
+    type: "pdf",
   },
   {
-    id: "3",
+    id: "pdf-3",
     name: "product-catalog.pdf",
     size: "5.4 MB",
     format: "PDF",
     uploadedBy: "Mike Johnson",
     uploadedDate: "2024-03-12",
     tags: ["catalog", "products"],
+    type: "pdf",
   },
 ];
+
+// Keep old mock data arrays for backward compatibility
+const mockImages: MediaItem[] = mockMediaItems.filter(item => item.type === "image");
+const mockAudio: MediaItem[] = mockMediaItems.filter(item => item.type === "audio");
+const mockVideos: MediaItem[] = mockMediaItems.filter(item => item.type === "video");
+const mockPDFs: MediaItem[] = mockMediaItems.filter(item => item.type === "pdf");
 
 const ActionMenu = ({ item }: { item: MediaItem }) => (
   <DropdownMenu>
@@ -383,6 +393,81 @@ export function PDFTable() {
         <Button className="gap-2 transition-all duration-200 hover:shadow-md">
           <Upload className="h-4 w-4" />
           Upload PDF
+        </Button>
+      }
+    />
+  );
+}
+
+// Unified Media Table Component
+export function MediaTable() {
+  const filterOptions = [
+    { key: "type", label: "Images", value: "image" },
+    { key: "type", label: "Audio", value: "audio" },
+    { key: "type", label: "Videos", value: "video" },
+    { key: "type", label: "PDFs", value: "pdf" },
+  ];
+
+  const columns = [
+    ...baseColumns,
+    {
+      key: "type",
+      label: "Type",
+      render: (item: MediaItem) => (
+        <Badge variant="secondary" className="capitalize">
+          {item.type}
+        </Badge>
+      ),
+    },
+    {
+      key: "duration",
+      label: "Duration",
+      render: (item: MediaItem) => (
+        <div className="text-sm text-muted-foreground">
+          {item.duration || "-"}
+        </div>
+      ),
+    },
+    {
+      key: "dimensions",
+      label: "Dimensions",
+      render: (item: MediaItem) => (
+        <div className="text-sm text-muted-foreground">
+          {item.dimensions || "-"}
+        </div>
+      ),
+    },
+    {
+      key: "uploadedBy",
+      label: "Uploaded By",
+      render: (item: MediaItem) => (
+        <div className="text-sm text-muted-foreground">{item.uploadedBy}</div>
+      ),
+    },
+    {
+      key: "uploadedDate",
+      label: "Date",
+      render: (item: MediaItem) => (
+        <div className="text-sm text-muted-foreground">{item.uploadedDate}</div>
+      ),
+    },
+    {
+      key: "actions",
+      label: "Actions",
+      render: (item: MediaItem) => <ActionMenu item={item} />,
+    },
+  ];
+
+  return (
+    <DataTableView
+      data={mockMediaItems}
+      columns={columns}
+      searchPlaceholder="Search all media..."
+      filterOptions={filterOptions}
+      actions={
+        <Button className="gap-2 transition-all duration-200 hover:shadow-md">
+          <Upload className="h-4 w-4" />
+          Upload Media
         </Button>
       }
     />
