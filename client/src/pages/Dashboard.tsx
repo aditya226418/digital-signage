@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useLocation } from "wouter";
 import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ThemeSelector from "@/components/ThemeSelector";
@@ -10,12 +11,25 @@ import PublishStep from "@/components/PublishStep";
 import EngagedDashboard from "@/components/EngagedDashboard";
 
 export default function Dashboard() {
+  const [location, setLocation] = useLocation();
   const [isDark, setIsDark] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [showAddScreenModal, setShowAddScreenModal] = useState(false);
   const [showActivationModal, setShowActivationModal] = useState(false);
   const [selectedScreenType, setSelectedScreenType] = useState("");
   const [onboardingComplete, setOnboardingComplete] = useState(true);
+
+  useEffect(() => {
+    if (!onboardingComplete && location !== "/") {
+      setLocation("/", { replace: true });
+    }
+  }, [onboardingComplete, location, setLocation]);
+
+  useEffect(() => {
+    if (onboardingComplete && location === "/") {
+      setLocation("/dashboard", { replace: true });
+    }
+  }, [onboardingComplete, location, setLocation]);
 
   const toggleTheme = () => {
     setIsDark(!isDark);
@@ -70,6 +84,7 @@ export default function Dashboard() {
             onClick={() => {
               setOnboardingComplete(false);
               setCurrentStep(1);
+              setLocation("/", { replace: true });
             }}
             data-testid="button-reset-onboarding"
           >

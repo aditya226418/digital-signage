@@ -6,10 +6,37 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Dashboard from "@/pages/Dashboard";
 import NotFound from "@/pages/not-found";
 
+const moduleRoutes = new Set([
+  "dashboard",
+  "screens",
+  "media",
+  "playlists",
+  "layouts",
+  "apps",
+  "publish",
+  "myplan",
+  "settings",
+  "account",
+]);
+
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Dashboard} />
+      <Route path="/:module*">
+        {(params) => {
+          const moduleParamRaw = params["module*"];
+          const moduleParam = Array.isArray(moduleParamRaw)
+            ? moduleParamRaw[0]
+            : moduleParamRaw;
+
+          if (moduleParam && moduleRoutes.has(moduleParam)) {
+            return <Dashboard />;
+          }
+
+          return <NotFound />;
+        }}
+      </Route>
       <Route component={NotFound} />
     </Switch>
   );

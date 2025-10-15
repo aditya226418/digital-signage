@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   LayoutDashboard,
   Monitor,
@@ -45,6 +45,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { useLocation } from "wouter";
 
 interface Screen {
   id: string;
@@ -73,6 +74,34 @@ interface EngagedDashboardProps {
   onCreatePlaylist?: () => void;
 }
 
+const moduleIds = [
+  "dashboard",
+  "screens",
+  "media",
+  "playlists",
+  "layouts",
+  "apps",
+  "publish",
+  "myplan",
+  "settings",
+  "account",
+];
+
+const moduleSet = new Set(moduleIds);
+
+const getActiveModule = (path: string) => {
+  const trimmedPath = path.replace(/^[\/]+|[\/]+$/g, "");
+  if (!trimmedPath) {
+    return "dashboard";
+  }
+
+  const [segment] = trimmedPath.split("/");
+  return moduleSet.has(segment) ? segment : "dashboard";
+};
+
+const getModulePath = (moduleId: string) =>
+  moduleId === "dashboard" ? "/dashboard" : `/${moduleId}`;
+
 export default function EngagedDashboard({
   screens,
   totalScreens,
@@ -86,13 +115,30 @@ export default function EngagedDashboard({
   onUploadMedia,
   onCreatePlaylist,
 }: EngagedDashboardProps) {
-  const [activeModule, setActiveModule] = useState("dashboard");
+  const [location, setLocation] = useLocation();
+  const activeModule = getActiveModule(location);
   const [openMenus, setOpenMenus] = useState<string[]>(["compositions"]);
+
+  useEffect(() => {
+    if (
+      (activeModule === "playlists" || activeModule === "layouts") &&
+      !openMenus.includes("compositions")
+    ) {
+      setOpenMenus((prev) => [...prev, "compositions"]);
+    }
+  }, [activeModule, openMenus]);
 
   const toggleMenu = (menuId: string) => {
     setOpenMenus((prev) =>
       prev.includes(menuId) ? prev.filter((id) => id !== menuId) : [...prev, menuId]
     );
+  };
+
+  const handleNavigate = (moduleId: string) => {
+    const nextPath = getModulePath(moduleId);
+    if (location !== nextPath) {
+      setLocation(nextPath);
+    }
   };
 
   const mainNavItems = [
@@ -169,7 +215,7 @@ export default function EngagedDashboard({
                                 <SidebarMenuSubItem key={subItem.id}>
                                   <SidebarMenuSubButton
                                     isActive={activeModule === subItem.id}
-                                    onClick={() => setActiveModule(subItem.id)}
+                                    onClick={() => handleNavigate(subItem.id)}
                                   >
                                     <subItem.icon className="h-4 w-4" />
                                     <span>{subItem.label}</span>
@@ -187,7 +233,7 @@ export default function EngagedDashboard({
                     <SidebarMenuItem key={item.id}>
                       <SidebarMenuButton
                         isActive={activeModule === item.id}
-                        onClick={() => setActiveModule(item.id)}
+                        onClick={() => handleNavigate(item.id)}
                         tooltip={item.label}
                         className="group/item"
                       >
@@ -210,7 +256,7 @@ export default function EngagedDashboard({
                   <SidebarMenuItem key={item.id}>
                     <SidebarMenuButton
                       isActive={activeModule === item.id}
-                      onClick={() => setActiveModule(item.id)}
+                      onClick={() => handleNavigate(item.id)}
                       tooltip={item.label}
                     >
                       <item.icon className="h-4 w-4" />
