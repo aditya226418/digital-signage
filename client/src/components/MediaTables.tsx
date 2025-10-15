@@ -1,4 +1,4 @@
-import { MoreVertical, Download, Trash2, Edit, Upload } from "lucide-react";
+import { MoreVertical, Download, Trash2, Edit, Upload, Layout, Image, FileType, ChevronDown, FolderOpen, Palette, Camera, Link, Store } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,6 +10,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import DataTableView from "./DataTableView";
+import { useState } from "react";
+import TemplateSelectionModal from "./TemplateSelectionModal"; // Template selection modal
 
 interface MediaItem {
   id: string;
@@ -401,6 +403,8 @@ export function PDFTable() {
 
 // Unified Media Table Component
 export function MediaTable() {
+  const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
+
   const filterOptions = [
     { key: "type", label: "Images", value: "image" },
     { key: "type", label: "Audio", value: "audio" },
@@ -458,19 +462,93 @@ export function MediaTable() {
     },
   ];
 
-  return (
-    <DataTableView
-      data={mockMediaItems}
-      columns={columns}
-      searchPlaceholder="Search all media..."
-      filterOptions={filterOptions}
-      actions={
+  const AddMediaDropdown = () => (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
         <Button className="gap-2 transition-all duration-200 hover:shadow-md">
           <Upload className="h-4 w-4" />
-          Upload Media
+          Add Media
+          <ChevronDown className="h-4 w-4" />
         </Button>
-      }
-    />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-72">
+        <DropdownMenuLabel>Add Media Options</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem className="gap-3 cursor-pointer py-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-blue-100 text-blue-600">
+            <FolderOpen className="h-4 w-4" />
+          </div>
+          <div className="flex flex-col">
+            <span className="font-medium">Upload Local Files</span>
+            <span className="text-xs text-muted-foreground">Upload images, videos, audio, or PDFs from your device</span>
+          </div>
+        </DropdownMenuItem>
+        <DropdownMenuItem 
+          className="gap-3 cursor-pointer py-3"
+          onClick={() => setIsTemplateModalOpen(true)}
+        >
+          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-purple-100 text-purple-600">
+            <Layout className="h-4 w-4" />
+          </div>
+          <div className="flex flex-col">
+            <span className="font-medium">Choose Templates</span>
+            <span className="text-xs text-muted-foreground">Browse and select from pre-designed templates</span>
+          </div>
+        </DropdownMenuItem>
+        <DropdownMenuItem className="gap-3 cursor-pointer py-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-green-100 text-green-600">
+            <Camera className="h-4 w-4" />
+          </div>
+          <div className="flex flex-col">
+            <span className="font-medium">Upload from Pexels</span>
+            <span className="text-xs text-muted-foreground">Import high-quality stock photos and videos</span>
+          </div>
+        </DropdownMenuItem>
+        <DropdownMenuItem className="gap-3 cursor-pointer py-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-orange-100 text-orange-600">
+            <Image className="h-4 w-4" />
+          </div>
+          <div className="flex flex-col">
+            <span className="font-medium">Upload from Unsplash</span>
+            <span className="text-xs text-muted-foreground">Access free professional photography collection</span>
+          </div>
+        </DropdownMenuItem>
+        <DropdownMenuItem className="gap-3 cursor-pointer py-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-pink-100 text-pink-600">
+            <Palette className="h-4 w-4" />
+          </div>
+          <div className="flex flex-col">
+            <span className="font-medium">Import from Canva</span>
+            <span className="text-xs text-muted-foreground">Connect and import your Canva designs</span>
+          </div>
+        </DropdownMenuItem>
+        <DropdownMenuItem className="gap-3 cursor-pointer py-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-indigo-100 text-indigo-600">
+            <Store className="h-4 w-4" />
+          </div>
+          <div className="flex flex-col">
+            <span className="font-medium">Browse App Store</span>
+            <span className="text-xs text-muted-foreground">Discover and install apps from our marketplace</span>
+          </div>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+
+  return (
+    <>
+      <DataTableView
+        data={mockMediaItems}
+        columns={columns}
+        searchPlaceholder="Search all media..."
+        filterOptions={filterOptions}
+        actions={<AddMediaDropdown />}
+      />
+      <TemplateSelectionModal
+        open={isTemplateModalOpen}
+        onOpenChange={setIsTemplateModalOpen}
+      />
+    </>
   );
 }
 
