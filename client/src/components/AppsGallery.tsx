@@ -322,7 +322,11 @@ const APPS: App[] = [
     fullDescription: "Show multiple time zones simultaneously with customizable cities and regions. Perfect for global offices, airports, and international businesses. Includes date and timezone information.",
     category: "Utilities",
     features: ["Multiple timezones", "Custom cities", "Date display", "Analog/Digital", "DST handling"],
-    previewImages: ["/app-previews/clock-1.jpg", "/app-previews/clock-2.jpg", "/app-previews/clock-3.jpg"],
+    previewImages: [
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop"
+    ],
     pricing: "Free",
     setupTime: "2 minutes",
   },

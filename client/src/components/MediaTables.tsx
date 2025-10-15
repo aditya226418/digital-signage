@@ -1,4 +1,4 @@
-import { MoreVertical, Download, Trash2, Edit, Upload, Layout, Image, FileType, ChevronDown, FolderOpen, Palette, Camera, Link, Store } from "lucide-react";
+import { MoreVertical, Download, Trash2, Edit, Upload, Layout, Image, FileType, ChevronDown, FolderOpen, Palette, Camera, Link, Store, Play, FileText, Music, Video } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -193,27 +193,85 @@ const ActionMenu = ({ item }: { item: MediaItem }) => (
   </DropdownMenu>
 );
 
+// Media Preview Component
+const MediaPreview = ({ item }: { item: MediaItem }) => {
+  const getThumbnailBg = () => {
+    switch (item.type) {
+      case "image":
+        return "from-blue-500/20 to-blue-600/20";
+      case "video":
+        return "from-purple-500/20 to-purple-600/20";
+      case "audio":
+        return "from-orange-500/20 to-orange-600/20";
+      case "pdf":
+        return "from-red-500/20 to-red-600/20";
+      default:
+        return "from-gray-500/20 to-gray-600/20";
+    }
+  };
+
+  const getIcon = () => {
+    switch (item.type) {
+      case "image":
+        return <Image className="h-5 w-5" />;
+      case "video":
+        return <Video className="h-5 w-5" />;
+      case "audio":
+        return <Music className="h-5 w-5" />;
+      case "pdf":
+        return <FileText className="h-5 w-5" />;
+      default:
+        return <FileType className="h-5 w-5" />;
+    }
+  };
+
+  const getIconColor = () => {
+    switch (item.type) {
+      case "image":
+        return "text-blue-600 dark:text-blue-400";
+      case "video":
+        return "text-purple-600 dark:text-purple-400";
+      case "audio":
+        return "text-orange-600 dark:text-orange-400";
+      case "pdf":
+        return "text-red-600 dark:text-red-400";
+      default:
+        return "text-gray-600 dark:text-gray-400";
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-3">
+      {/* Thumbnail */}
+      <div className={`relative flex-shrink-0 h-12 w-12 rounded-lg bg-gradient-to-br ${getThumbnailBg()} flex items-center justify-center overflow-hidden border border-border/50`}>
+        <div className={getIconColor()}>
+          {getIcon()}
+        </div>
+
+        {/* Play/Preview button - only for non-PDF items */}
+        {item.type !== "pdf" && (
+          <button className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 bg-black/40 transition-all duration-200">
+            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-black">
+              <Play className="h-3.5 w-3.5 fill-black" />
+            </div>
+          </button>
+        )}
+      </div>
+
+      {/* Filename and metadata */}
+      <div className="flex-1 min-w-0">
+        <div className="font-medium text-sm truncate text-foreground">{item.name}</div>
+        <div className="text-xs text-muted-foreground">{item.format} • {item.size}</div>
+      </div>
+    </div>
+  );
+};
+
 const baseColumns = [
   {
-    key: "name",
+    key: "filename",
     label: "File Name",
-    render: (item: MediaItem) => <div className="font-medium">{item.name}</div>,
-  },
-  {
-    key: "size",
-    label: "Size",
-    render: (item: MediaItem) => (
-      <div className="text-muted-foreground">{item.size}</div>
-    ),
-  },
-  {
-    key: "format",
-    label: "Format",
-    render: (item: MediaItem) => (
-      <Badge variant="outline" className="font-mono">
-        {item.format}
-      </Badge>
-    ),
+    render: (item: MediaItem) => <MediaPreview item={item} />,
   },
 ];
 

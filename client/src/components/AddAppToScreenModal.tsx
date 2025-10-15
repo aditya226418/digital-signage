@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Monitor, Circle, AlertCircle } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import type { App } from "./AppsGallery";
+import WorldClockSetupModal from "./WorldClockSetupModal";
 import { cn } from "@/lib/utils";
 
 interface Screen {
@@ -16,6 +17,20 @@ interface Screen {
   status: "online" | "offline";
   lastSeen: string;
   location?: string;
+}
+
+interface WorldClockSettings {
+  clocks: Array<{
+    id: string;
+    city: string;
+    timezone: string;
+    label: string;
+    format: "12h" | "24h";
+  }>;
+  backgroundColor: string;
+  clockFaceColor: string;
+  textColor: string;
+  layout: "grid-2x3" | "grid-3x2" | "grid-1x6";
 }
 
 interface AddAppToScreenModalProps {
@@ -91,6 +106,8 @@ export default function AddAppToScreenModal({
 }: AddAppToScreenModalProps) {
   const [selectedScreens, setSelectedScreens] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showWorldClockSetup, setShowWorldClockSetup] = useState(false);
+  const [worldClockSettings, setWorldClockSettings] = useState<WorldClockSettings | null>(null);
   const { toast } = useToast();
 
   const handleToggleScreen = (screenId: string) => {
@@ -149,8 +166,38 @@ export default function AddAppToScreenModal({
   const offlineScreens = MOCK_SCREENS.filter((s) => s.status === "offline");
   const allOnlineSelected = selectedScreens.length === onlineScreens.length;
 
+  // For world clock app, show setup modal first
+  React.useEffect(() => {
+    if (isOpen && app.id === "world-clock") {
+      setShowWorldClockSetup(true);
+    }
+  }, [isOpen, app.id]);
+
+  const handleWorldClockSetupSave = (settings: WorldClockSettings) => {
+    setWorldClockSettings(settings);
+    setShowWorldClockSetup(false);
+  };
+
+  const handleWorldClockSetupClose = () => {
+    setShowWorldClockSetup(false);
+    onClose();
+  };
+
+  // Don't show main modal for world clock until setup is complete
+  if (app.id === "world-clock" && !worldClockSettings) {
+    return (
+      <WorldClockSetupModal
+        isOpen={showWorldClockSetup}
+        onClose={handleWorldClockSetupClose}
+        // onSave={handleWorldClockSetupSave}
+        onSave={() => {}}
+      />
+    );
+  }
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <>
+      <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl h-[80vh] p-0 gap-0 flex flex-col">
         {/* Header */}
         <DialogHeader className="border-b p-6 pb-4">
@@ -165,8 +212,17 @@ export default function AddAppToScreenModal({
           <Alert className="border-primary/20 bg-primary/5">
             <AlertCircle className="h-4 w-4 text-primary" />
             <AlertDescription className="text-sm">
-              The app will be configured with default settings. You can customize settings for
-              each screen after deployment.
+              {app.id === "world-clock" ? (
+                <>
+                  World Clock configured with {worldClockSettings?.clocks.length} timezone{worldClockSettings?.clocks.length !== 1 ? "s" : ""}.
+                  You can modify settings for each screen after deployment.
+                </>
+              ) : (
+                <>
+                  The app will be configured with default settings. You can customize settings for
+                  each screen after deployment.
+                </>
+              )}
             </AlertDescription>
           </Alert>
         </div>
@@ -303,6 +359,7 @@ export default function AddAppToScreenModal({
         </div>
       </DialogContent>
     </Dialog>
+    </>
   );
 }
 
