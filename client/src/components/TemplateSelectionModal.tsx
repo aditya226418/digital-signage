@@ -871,7 +871,7 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
                 transition={{ duration: 0.15, ease: "easeOut" }}
               >
                 <Card 
-                  className="cursor-pointer transition-all duration-200 hover:shadow-xl border-0 bg-gradient-to-br from-card to-card/50 overflow-hidden group h-full flex flex-col"
+                  className="cursor-pointer transition-all duration-200 hover:shadow-xl border-0 bg-gradient-to-br from-card to-card/50 overflow-hidden group h-full flex flex-col shadow-md"
                   onClick={() => handleTemplateSelect(template)}
                 >
                   <div className="aspect-video overflow-hidden relative">
@@ -972,7 +972,7 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
                     key={currentImageIndex}
                     src={selectedTemplate?.previewImages[currentImageIndex]}
                     alt={selectedTemplate?.name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover "
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
@@ -1549,18 +1549,18 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-full h-screen max-h-screen overflow-hidden p-0 flex flex-col">
         {/* Only show header for browse, preview, and complete steps */}
-        {currentStep !== "edit" && (
+        {(currentStep !== "edit" && currentStep !== "preview") && (
         <DialogHeader className="px-6 py-4 border-b bg-gradient-to-r from-primary/5 to-transparent flex-shrink-0">
           <div className="flex items-center justify-between">
             <div>
               <DialogTitle className="text-lg font-bold">
                 {currentStep === "browse" && "Choose a Template"}
-                {currentStep === "preview" && "Template Preview"}
+                {/* {currentStep === "preview" && "Template Preview"} */}
                   {currentStep === "complete" && "Template Saved"}
               </DialogTitle>
               <DialogDescription className="text-sm mt-1">
                 {currentStep === "browse" && "Select a template that fits your needs"}
-                {currentStep === "preview" && "Review the template details and features"}
+                {/* {currentStep === "preview" && "Review the template details and features"} */}
                   {currentStep === "complete" && "Your template is ready to publish"}
               </DialogDescription>
             </div>
