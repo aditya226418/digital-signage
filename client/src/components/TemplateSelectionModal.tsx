@@ -1152,7 +1152,7 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
   
           {/* Text Editing Toolbar */}
             <motion.div
-            className="mt-3 flex items-center gap-2 flex-wrap"
+            className="mt-3 flex items-center gap-2 flex-wrap justify-center"
               initial={{ opacity: 0 }}
             animate={{ opacity: selectedElementId ? 1 : 0.5 }}
           >
