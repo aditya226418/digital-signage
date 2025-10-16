@@ -901,26 +901,41 @@ export function MediaTable() {
   // Breadcrumb Navigation Component - Compact version
   const BreadcrumbNav = () => {
     const path = getFolderPath(currentFolderId);
+    const isNested = path.length > 0;
     
     return (
-      <div className="flex items-center gap-1">
+      <div className={`flex items-center gap-2 transition-all duration-200 ${
+        isNested 
+          ? 'bg-blue-50/40 dark:bg-blue-950/20 rounded-md px-2 py-1' 
+          : ''
+      }`}>
         <Button
           variant="ghost"
           size="sm"
           onClick={() => navigateToFolder(null)}
-          className={`gap-2 h-8 ${currentFolderId === null ? 'bg-accent font-medium' : ''}`}
+          className={`gap-2 h-8 transition-all duration-200 ${
+            currentFolderId === null 
+              ? 'bg-white dark:bg-slate-800 font-semibold shadow-sm' 
+              : 'hover:bg-white/50 dark:hover:bg-slate-700/50'
+          }`}
         >
           <Home className="h-4 w-4" />
           Home
         </Button>
-        {path.map((folder) => (
+        {path.map((folder, index) => (
           <div key={folder.id} className="flex items-center">
-            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            <ChevronRight className={`h-4 w-4 transition-colors ${
+              isNested ? 'text-blue-400 dark:text-blue-300' : 'text-muted-foreground'
+            }`} />
             <Button
               variant="ghost"
               size="sm"
               onClick={() => navigateToFolder(folder.id)}
-              className={`h-8 ${currentFolderId === folder.id ? 'bg-accent font-medium' : ''}`}
+              className={`h-8 transition-all duration-200 ${
+                currentFolderId === folder.id 
+                  ? 'bg-white dark:bg-slate-800 font-semibold shadow-sm text-primary' 
+                  : 'text-muted-foreground hover:text-foreground hover:bg-white/50 dark:hover:bg-slate-700/50'
+              } ${index === path.length - 1 ? 'font-medium' : ''}`}
             >
               {folder.name}
             </Button>
