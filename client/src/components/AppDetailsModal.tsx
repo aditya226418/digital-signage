@@ -23,7 +23,29 @@ interface AppDetailsModalProps {
 
 export default function AppDetailsModal({ app, isOpen, onClose }: AppDetailsModalProps) {
   const [isAddToScreenModalOpen, setIsAddToScreenModalOpen] = useState(false);
-  const IconComponent = app.icon;
+
+  const renderIcon = (size: string = "h-8 w-8") => {
+    if (typeof app.icon === 'string') {
+      return (
+        <img
+          src={app.icon}
+          alt={`${app.name} icon`}
+          className={`${size} object-contain`}
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            target.style.display = 'none';
+            const fallback = document.createElement('div');
+            fallback.className = `${size} bg-primary/20 rounded flex items-center justify-center text-primary text-xs font-bold`;
+            fallback.textContent = app.name.charAt(0);
+            target.parentNode?.appendChild(fallback);
+          }}
+        />
+      );
+    } else {
+      const IconComponent = app.icon;
+      return <IconComponent className={size} />;
+    }
+  };
 
   const handleAddToScreen = () => {
     setIsAddToScreenModalOpen(true);
@@ -41,7 +63,7 @@ export default function AppDetailsModal({ app, isOpen, onClose }: AppDetailsModa
           <div className="flex items-start justify-between border-b p-6 pb-4">
             <div className="flex items-start gap-4">
               <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 text-primary">
-                <IconComponent className="h-8 w-8" />
+                {renderIcon("h-8 w-8")}
               </div>
               <div>
                 <h2 className="text-2xl font-semibold">{app.name}</h2>
@@ -71,7 +93,7 @@ export default function AppDetailsModal({ app, isOpen, onClose }: AppDetailsModa
                         <div className="relative aspect-video rounded-lg overflow-hidden bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
                           {/* Placeholder for preview image */}
                           <div className="text-center p-8">
-                            <IconComponent className="h-16 w-16 text-primary/50 mx-auto mb-4" />
+                            {renderIcon("h-16 w-16")}
                             <p className="text-sm text-muted-foreground">
                               Preview Screenshot {index + 1}
                             </p>

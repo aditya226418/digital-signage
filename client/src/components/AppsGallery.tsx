@@ -1,31 +1,13 @@
 import { useState } from "react";
 import {
   Search,
-  Newspaper,
-  FileSpreadsheet,
-  Presentation,
-  TrendingUp,
-  Instagram,
-  Twitter,
-  Music,
-  Youtube,
   Clock,
   Calendar,
   QrCode,
-  BarChart3,
-  Cloud,
-  DollarSign,
-  Bitcoin,
-  Tv,
-  Facebook,
-  Linkedin,
-  TrendingDown,
-  FileText,
-  Trello,
-  CheckSquare,
   MapPin,
   Building2,
-  Clapperboard,
+  Lightbulb,
+  TrendingUp,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -34,12 +16,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import AppDetailsModal from "@/components/AppDetailsModal";
+import FeatureRequestModal from "@/components/FeatureRequestModal";
 import { cn } from "@/lib/utils";
 
 export interface App {
   id: string;
   name: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: string | React.ComponentType<{ className?: string }>;
   description: string;
   fullDescription: string;
   category: string;
@@ -55,7 +38,7 @@ const APPS: App[] = [
   {
     id: "bbc-news",
     name: "BBC News",
-    icon: Newspaper,
+    icon: "https://www.bbc.com/favicon.ico",
     description: "Display live BBC news headlines and breaking stories",
     fullDescription: "Stay informed with the latest BBC news headlines, breaking stories, and live updates displayed directly on your screens. Customizable news categories and automatic refresh intervals ensure your audience always sees the most current information.",
     category: "News & Information",
@@ -67,7 +50,7 @@ const APPS: App[] = [
   {
     id: "cnn-live",
     name: "CNN Live",
-    icon: Tv,
+    icon: "https://www.cnn.com/favicon.ico",
     description: "Real-time CNN news feed with video highlights",
     fullDescription: "Bring CNN's award-winning journalism to your displays with live headlines, breaking news, and video highlights. Features automatic content rotation and customizable display layouts for different screen sizes.",
     category: "News & Information",
@@ -79,7 +62,7 @@ const APPS: App[] = [
   {
     id: "reuters",
     name: "Reuters",
-    icon: FileText,
+    icon: "https://www.reuters.com/favicon.ico",
     description: "Global news and financial market updates from Reuters",
     fullDescription: "Access Reuters' comprehensive global news coverage and real-time financial market data. Perfect for corporate lobbies and trading floors. Includes business news, market analysis, and breaking headlines.",
     category: "News & Information",
@@ -91,7 +74,7 @@ const APPS: App[] = [
   {
     id: "weather-channel",
     name: "Weather Channel",
-    icon: Cloud,
+    icon: "https://weather.com/favicon.ico",
     description: "Live weather forecasts and severe weather alerts",
     fullDescription: "Display accurate weather forecasts, current conditions, and severe weather alerts for any location. Features radar maps, 7-day forecasts, and customizable display options perfect for any venue.",
     category: "News & Information",
@@ -117,7 +100,7 @@ const APPS: App[] = [
   {
     id: "excel-viewer",
     name: "Excel Viewer",
-    icon: FileSpreadsheet,
+    icon: "https://www.microsoft.com/favicon.ico",
     description: "Display Excel spreadsheets and live data dashboards",
     fullDescription: "Showcase Excel spreadsheets, charts, and data dashboards on your digital signage. Features automatic refresh from cloud storage, support for formulas and formatting, and interactive chart displays.",
     category: "Productivity",
@@ -129,7 +112,7 @@ const APPS: App[] = [
   {
     id: "powerpoint-live",
     name: "PowerPoint Live",
-    icon: Presentation,
+    icon: "https://www.microsoft.com/favicon.ico",
     description: "Stream PowerPoint presentations in real-time",
     fullDescription: "Display PowerPoint presentations with automatic slide advancement, transitions, and animations. Perfect for corporate communications, training materials, and event schedules. Supports OneDrive and SharePoint integration.",
     category: "Productivity",
@@ -141,7 +124,7 @@ const APPS: App[] = [
   {
     id: "google-sheets",
     name: "Google Sheets",
-    icon: FileSpreadsheet,
+    icon: "https://www.google.com/favicon.ico",
     description: "Real-time Google Sheets data visualization",
     fullDescription: "Connect your Google Sheets directly to your displays for real-time data visualization. Ideal for KPI dashboards, sales tracking, and team metrics. Automatic updates ensure data is always current.",
     category: "Productivity",
@@ -153,7 +136,7 @@ const APPS: App[] = [
   {
     id: "trello-board",
     name: "Trello Board",
-    icon: Trello,
+    icon: "https://trello.com/favicon.ico",
     description: "Display your Trello boards and task progress",
     fullDescription: "Visualize team progress with live Trello board displays. Show cards, lists, and workflow status to keep everyone informed. Perfect for agile teams and project management offices.",
     category: "Productivity",
@@ -165,7 +148,7 @@ const APPS: App[] = [
   {
     id: "asana-tasks",
     name: "Asana Tasks",
-    icon: CheckSquare,
+    icon: "https://asana.com/favicon.ico",
     description: "Show Asana project timelines and task lists",
     fullDescription: "Keep your team aligned with live Asana project displays. Show upcoming deadlines, task assignments, and project progress. Customizable views for different team needs.",
     category: "Productivity",
@@ -179,7 +162,7 @@ const APPS: App[] = [
   {
     id: "instagram-feed",
     name: "Instagram Feed",
-    icon: Instagram,
+    icon: "https://www.instagram.com/static/images/ico/favicon.ico",
     description: "Display your Instagram posts and stories",
     fullDescription: "Showcase your Instagram content on digital displays. Features automatic feed updates, story highlights, and hashtag filtering. Perfect for retail, events, and brand awareness campaigns.",
     category: "Social Media",
@@ -191,7 +174,7 @@ const APPS: App[] = [
   {
     id: "twitter-wall",
     name: "Twitter Wall",
-    icon: Twitter,
+    icon: "https://twitter.com/favicon.ico",
     description: "Live Twitter feed with hashtag monitoring",
     fullDescription: "Create engaging social media walls with live Twitter feeds. Monitor hashtags, display mentions, and showcase user-generated content at events and in public spaces.",
     category: "Social Media",
@@ -203,7 +186,7 @@ const APPS: App[] = [
   {
     id: "facebook-posts",
     name: "Facebook Posts",
-    icon: Facebook,
+    icon: "https://www.facebook.com/favicon.ico",
     description: "Show your Facebook page posts and updates",
     fullDescription: "Display your Facebook business page content including posts, photos, and videos. Great for building social proof and community engagement in retail and hospitality environments.",
     category: "Social Media",
@@ -215,7 +198,7 @@ const APPS: App[] = [
   {
     id: "linkedin-updates",
     name: "LinkedIn Updates",
-    icon: Linkedin,
+    icon: "https://www.linkedin.com/favicon.ico",
     description: "Corporate LinkedIn feed and company updates",
     fullDescription: "Share your company's LinkedIn presence on office displays. Show company updates, employee highlights, and industry news. Perfect for corporate lobbies and recruitment events.",
     category: "Social Media",
@@ -229,7 +212,7 @@ const APPS: App[] = [
   {
     id: "stock-ticker",
     name: "Stock Ticker",
-    icon: TrendingUp,
+    icon: "https://www.bloomberg.com/favicon.ico",
     description: "Real-time stock market prices and indices",
     fullDescription: "Display live stock prices, market indices, and trading volumes. Customizable watchlists and automatic refresh intervals. Essential for financial institutions and trading floors.",
     category: "Finance",
@@ -241,7 +224,7 @@ const APPS: App[] = [
   {
     id: "crypto-prices",
     name: "Crypto Prices",
-    icon: Bitcoin,
+    icon: "https://coinmarketcap.com/favicon.ico",
     description: "Live cryptocurrency prices and market data",
     fullDescription: "Track cryptocurrency prices in real-time with market cap, volume, and 24h change data. Supports major cryptocurrencies and custom portfolios. Perfect for fintech offices and trading spaces.",
     category: "Finance",
@@ -253,7 +236,7 @@ const APPS: App[] = [
   {
     id: "exchange-rates",
     name: "Exchange Rates",
-    icon: DollarSign,
+    icon: "https://www.xe.com/favicon.ico",
     description: "Currency exchange rates for international business",
     fullDescription: "Display current exchange rates for multiple currencies. Essential for international businesses, travel agencies, and currency exchange locations. Updates every minute.",
     category: "Finance",
@@ -265,7 +248,7 @@ const APPS: App[] = [
   {
     id: "market-news",
     name: "Market News",
-    icon: TrendingDown,
+    icon: "https://www.bloomberg.com/favicon.ico",
     description: "Financial news and market analysis",
     fullDescription: "Stay updated with breaking financial news, market analysis, and economic indicators. Aggregates content from major financial news sources. Ideal for corporate environments.",
     category: "Finance",
@@ -279,7 +262,7 @@ const APPS: App[] = [
   {
     id: "spotify-now-playing",
     name: "Spotify Now Playing",
-    icon: Music,
+    icon: "https://www.spotify.com/favicon.ico",
     description: "Show what's currently playing on Spotify",
     fullDescription: "Display the currently playing track, artist, and album art from your Spotify account. Perfect for cafes, retail stores, and entertainment venues. Creates an engaging atmosphere.",
     category: "Entertainment",
@@ -291,7 +274,7 @@ const APPS: App[] = [
   {
     id: "youtube-playlist",
     name: "YouTube Playlist",
-    icon: Youtube,
+    icon: "https://www.youtube.com/favicon.ico",
     description: "Stream YouTube playlists and videos",
     fullDescription: "Display YouTube videos and playlists on your screens. Automatically plays through your selected content with seamless transitions. Great for waiting areas and public spaces.",
     category: "Entertainment",
@@ -303,7 +286,7 @@ const APPS: App[] = [
   {
     id: "twitch-stream",
     name: "Twitch Stream",
-    icon: Clapperboard,
+    icon: "https://www.twitch.tv/favicon.ico",
     description: "Display live Twitch streams",
     fullDescription: "Show live Twitch streams on your displays. Perfect for gaming lounges, esports venues, and entertainment spaces. Includes chat display and stream information.",
     category: "Entertainment",
@@ -371,7 +354,7 @@ const APPS: App[] = [
   {
     id: "google-analytics",
     name: "Google Analytics Dashboard",
-    icon: BarChart3,
+    icon: "https://analytics.google.com/favicon.ico",
     description: "Real-time website analytics and metrics",
     fullDescription: "Display your Google Analytics data in beautiful, easy-to-read dashboards. Show real-time visitors, traffic sources, and conversion metrics. Motivate teams with live performance data.",
     category: "Analytics",
@@ -383,7 +366,7 @@ const APPS: App[] = [
   {
     id: "sales-dashboard",
     name: "Sales Dashboard",
-    icon: TrendingUp,
+    icon: "https://www.salesforce.com/favicon.ico",
     description: "Live sales metrics and team performance",
     fullDescription: "Visualize sales data with real-time dashboards showing revenue, targets, and team performance. Connects to major CRM systems. Perfect for motivating sales teams and tracking goals.",
     category: "Analytics",
@@ -394,8 +377,116 @@ const APPS: App[] = [
   },
 ];
 
+interface RecentlyUsedApp extends App {
+  lastUsed: Date;
+  usageCount: number;
+}
+
+// Mock Recently Used Apps Data
+const RECENTLY_USED_APPS: RecentlyUsedApp[] = [
+  {
+    id: "bbc-news",
+    name: "BBC News",
+    icon: "https://www.bbc.com/favicon.ico",
+    description: "Display live BBC news headlines and breaking stories",
+    fullDescription: "Stay informed with the latest BBC news headlines, breaking stories, and live updates displayed directly on your screens. Customizable news categories and automatic refresh intervals ensure your audience always sees the most current information.",
+    category: "News & Information",
+    features: ["Live news updates", "Multiple categories", "Breaking news alerts", "Customizable refresh rate", "Multi-language support"],
+    previewImages: ["/app-previews/bbc-1.jpg", "/app-previews/bbc-2.jpg", "/app-previews/bbc-3.jpg"],
+    pricing: "Free",
+    setupTime: "5 minutes",
+    lastUsed: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
+    usageCount: 45,
+  },
+  {
+    id: "excel-viewer",
+    name: "Excel Viewer",
+    icon: "https://www.microsoft.com/favicon.ico",
+    description: "Display Excel spreadsheets and live data dashboards",
+    fullDescription: "Showcase Excel spreadsheets, charts, and data dashboards on your digital signage. Features automatic refresh from cloud storage, support for formulas and formatting, and interactive chart displays.",
+    category: "Productivity",
+    features: ["Live Excel data", "Cloud sync", "Chart display", "Auto-refresh", "Password protection"],
+    previewImages: ["/app-previews/excel-1.jpg", "/app-previews/excel-2.jpg", "/app-previews/excel-3.jpg", "/app-previews/excel-4.jpg"],
+    pricing: "Premium",
+    setupTime: "10 minutes",
+    lastUsed: new Date(Date.now() - 1000 * 60 * 60 * 5), // 5 hours ago
+    usageCount: 32,
+  },
+  {
+    id: "instagram-feed",
+    name: "Instagram Feed",
+    icon: "https://www.instagram.com/favicon.ico",
+    description: "Display your Instagram posts and stories",
+    fullDescription: "Showcase your Instagram content on digital displays. Features automatic feed updates, story highlights, and hashtag filtering. Perfect for retail, events, and brand awareness campaigns.",
+    category: "Social Media",
+    features: ["Auto-refresh feed", "Story highlights", "Hashtag filtering", "Multiple accounts", "Engagement metrics"],
+    previewImages: ["/app-previews/instagram-1.jpg", "/app-previews/instagram-2.jpg", "/app-previews/instagram-3.jpg", "/app-previews/instagram-4.jpg"],
+    pricing: "Free",
+    setupTime: "4 minutes",
+    lastUsed: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
+    usageCount: 28,
+  },
+  {
+    id: "spotify-now-playing",
+    name: "Spotify Now Playing",
+    icon: "https://www.spotify.com/favicon.ico",
+    description: "Show what's currently playing on Spotify",
+    fullDescription: "Display the currently playing track, artist, and album art from your Spotify account. Perfect for cafes, retail stores, and entertainment venues. Creates an engaging atmosphere.",
+    category: "Entertainment",
+    features: ["Current track display", "Album artwork", "Playlist info", "Queue preview", "Playback controls"],
+    previewImages: ["/app-previews/spotify-1.jpg", "/app-previews/spotify-2.jpg", "/app-previews/spotify-3.jpg"],
+    pricing: "Free",
+    setupTime: "3 minutes",
+    lastUsed: new Date(Date.now() - 1000 * 60 * 60 * 48), // 2 days ago
+    usageCount: 21,
+  },
+  {
+    id: "google-analytics",
+    name: "Google Analytics Dashboard",
+    icon: "https://analytics.google.com/favicon.ico",
+    description: "Real-time website analytics and metrics",
+    fullDescription: "Display your Google Analytics data in beautiful, easy-to-read dashboards. Show real-time visitors, traffic sources, and conversion metrics. Motivate teams with live performance data.",
+    category: "Analytics",
+    features: ["Real-time metrics", "Custom dashboards", "Traffic sources", "Conversion tracking", "Historical data"],
+    previewImages: ["/app-previews/ga-1.jpg", "/app-previews/ga-2.jpg", "/app-previews/ga-3.jpg", "/app-previews/ga-4.jpg"],
+    pricing: "Premium",
+    setupTime: "8 minutes",
+    lastUsed: new Date(Date.now() - 1000 * 60 * 60 * 3), // 3 hours ago
+    usageCount: 38,
+  },
+  {
+    id: "stock-ticker",
+    name: "Stock Ticker",
+    icon: "https://www.bloomberg.com/favicon.ico",
+    description: "Real-time stock market prices and indices",
+    fullDescription: "Display live stock prices, market indices, and trading volumes. Customizable watchlists and automatic refresh intervals. Essential for financial institutions and trading floors.",
+    category: "Finance",
+    features: ["Real-time prices", "Custom watchlists", "Market indices", "Volume data", "Change indicators"],
+    previewImages: ["/app-previews/stocks-1.jpg", "/app-previews/stocks-2.jpg", "/app-previews/stocks-3.jpg"],
+    pricing: "Premium",
+    setupTime: "5 minutes",
+    lastUsed: new Date(Date.now() - 1000 * 60 * 60 * 72), // 3 days ago
+    usageCount: 15,
+  },
+  {
+    id: "youtube-playlist",
+    name: "YouTube Playlist",
+    icon: "https://www.youtube.com/favicon.ico",
+    description: "Stream YouTube playlists and videos",
+    fullDescription: "Stream YouTube playlists, channels, or individual videos on your displays. Features autoplay, loop settings, and full-screen video display. Perfect for entertainment and educational content.",
+    category: "Entertainment",
+    features: ["Playlist streaming", "Autoplay", "Full-screen display", "Loop settings", "Audio control"],
+    previewImages: ["/app-previews/youtube-1.jpg", "/app-previews/youtube-2.jpg", "/app-previews/youtube-3.jpg"],
+    pricing: "Free",
+    setupTime: "3 minutes",
+    lastUsed: new Date(Date.now() - 1000 * 60 * 60 * 12), // 12 hours ago
+    usageCount: 52,
+  },
+];
+
 const CATEGORIES = [
   "All",
+  "Recently Used",
   "News & Information",
   "Productivity",
   "Social Media",
@@ -410,6 +501,7 @@ export default function AppsGallery() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedApp, setSelectedApp] = useState<App | null>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [isFeatureRequestOpen, setIsFeatureRequestOpen] = useState(false);
 
   // Filter apps
   const filteredApps = APPS.filter((app) => {
@@ -421,6 +513,16 @@ export default function AppsGallery() {
     return matchesCategory && matchesSearch;
   });
 
+  // Filter recently used apps
+  const recentlyUsedFiltered = RECENTLY_USED_APPS.filter((app) => {
+    const matchesSearch =
+      app.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      app.description.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesSearch;
+  }).sort((a, b) => b.lastUsed.getTime() - a.lastUsed.getTime());
+
+  const displayApps = selectedCategory === "Recently Used" ? recentlyUsedFiltered : filteredApps;
+
   const handleAppClick = (app: App) => {
     setSelectedApp(app);
     setIsDetailsModalOpen(true);
@@ -428,6 +530,21 @@ export default function AppsGallery() {
 
   const handleCloseModal = () => {
     setIsDetailsModalOpen(false);
+  };
+
+  // Helper function to get days ago
+  const getDaysAgo = (date: Date) => {
+    const now = new Date();
+    const diffTime = Math.abs(now.getTime() - date.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) {
+      const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
+      return `${diffHours}h ago`;
+    } else if (diffDays === 1) {
+      return "1d ago";
+    }
+    return `${diffDays}d ago`;
   };
 
   return (
@@ -455,7 +572,7 @@ export default function AppsGallery() {
           </TabsList>
 
           <TabsContent value={selectedCategory} className="mt-6">
-            {filteredApps.length === 0 ? (
+            {displayApps.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-center">
                 <Search className="h-12 w-12 text-muted-foreground mb-3 opacity-50" />
                 <h3 className="text-lg font-semibold mb-2">No apps found</h3>
@@ -466,8 +583,34 @@ export default function AppsGallery() {
             ) : (
               <ScrollArea className="h-[calc(100vh-17rem)]">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pb-4">
-                  {filteredApps.map((app) => {
-                    const IconComponent = app.icon;
+                  {displayApps.map((app) => {
+                    const renderIcon = () => {
+                      if (typeof app.icon === 'string') {
+                        return (
+                          <img
+                            src={app.icon}
+                            alt={`${app.name} icon`}
+                            className="h-6 w-6 object-contain"
+                            onError={(e) => {
+                              // Fallback to a generic icon if the image fails to load
+                              const target = e.target as HTMLImageElement;
+                              target.style.display = 'none';
+                              const fallback = document.createElement('div');
+                              fallback.className = 'h-6 w-6 bg-primary/20 rounded flex items-center justify-center text-primary text-xs font-bold';
+                              fallback.textContent = app.name.charAt(0);
+                              target.parentNode?.appendChild(fallback);
+                            }}
+                          />
+                        );
+                      } else {
+                        const IconComponent = app.icon;
+                        return <IconComponent className="h-6 w-6" />;
+                      }
+                    };
+
+                    const isRecentlyUsed = selectedCategory === "Recently Used";
+                    const recentlyUsedApp = app as RecentlyUsedApp;
+
                     return (
                       <Card
                         key={app.id}
@@ -481,7 +624,7 @@ export default function AppsGallery() {
                           {/* Icon and Badge */}
                           <div className="flex items-start justify-between">
                             <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 text-primary">
-                              <IconComponent className="h-6 w-6" />
+                              {renderIcon()}
                             </div>
                             <Badge variant="secondary" className="text-xs">
                               {app.pricing}
@@ -496,12 +639,19 @@ export default function AppsGallery() {
                             </p>
                           </div>
 
-                          {/* Category Badge */}
+                          {/* Category Badge and Meta */}
                           <div className="flex items-center justify-between pt-2">
                             <Badge variant="outline" className="text-xs">
                               {app.category}
                             </Badge>
-                            <span className="text-xs text-muted-foreground">{app.setupTime}</span>
+                            {isRecentlyUsed ? (
+                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <TrendingUp className="h-3 w-3" />
+                                <span>{getDaysAgo(recentlyUsedApp.lastUsed)}</span>
+                              </div>
+                            ) : (
+                              <span className="text-xs text-muted-foreground">{app.setupTime}</span>
+                            )}
                           </div>
                         </div>
 
@@ -510,6 +660,47 @@ export default function AppsGallery() {
                       </Card>
                     );
                   })}
+
+                  {/* Feature Request Card - As an app card in the grid */}
+                  <Card
+                    className={cn(
+                      "group relative overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-md",
+                      "animate-in fade-in slide-in-from-bottom-4 duration-500",
+                      "border-2 border-dashed border-amber-300 bg-gradient-to-br from-amber-50 to-yellow-50/50"
+                    )}
+                    onClick={() => setIsFeatureRequestOpen(true)}
+                  >
+                    <div className="p-6 space-y-4">
+                      {/* Icon and Badge */}
+                      <div className="flex items-start justify-between">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-amber-100 text-amber-700">
+                          <Lightbulb className="h-6 w-6" />
+                        </div>
+                        <Badge variant="outline" className="text-xs bg-amber-100 text-amber-800 border-amber-300">
+                          Request
+                        </Badge>
+                      </div>
+
+                      {/* App Info */}
+                      <div className="space-y-2">
+                        <h3 className="font-semibold text-base line-clamp-1">Missing an App?</h3>
+                        <p className="text-sm text-muted-foreground line-clamp-2">
+                          Can't find what you need? Request a feature
+                        </p>
+                      </div>
+
+                      {/* Category Badge and Meta */}
+                      <div className="flex items-center justify-between pt-2">
+                        <Badge variant="outline" className="text-xs">
+                          Suggestions
+                        </Badge>
+                        <span className="text-xs text-amber-700 font-medium">Tell us</span>
+                      </div>
+                    </div>
+
+                    {/* Hover overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-amber-200/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none" />
+                  </Card>
                 </div>
               </ScrollArea>
             )}
@@ -517,12 +708,13 @@ export default function AppsGallery() {
         </Tabs>
 
         {/* Results count */}
-        {filteredApps.length > 0 && (
+        {displayApps.length > 0 && (
           <p className="text-sm text-muted-foreground">
-            Showing {filteredApps.length} {filteredApps.length === 1 ? "app" : "apps"}
+            Showing {displayApps.length} {displayApps.length === 1 ? "app" : "apps"}
             {searchQuery && ` for "${searchQuery}"`}
           </p>
         )}
+
       </div>
 
       {/* App Details Modal */}
@@ -533,6 +725,12 @@ export default function AppsGallery() {
           onClose={handleCloseModal}
         />
       )}
+
+      {/* Feature Request Modal */}
+      <FeatureRequestModal
+        isOpen={isFeatureRequestOpen}
+        onClose={() => setIsFeatureRequestOpen(false)}
+      />
     </>
   );
 }
