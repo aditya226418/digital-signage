@@ -43,6 +43,7 @@ interface DataTableViewProps<T> {
   filterOptions?: FilterOption[];
   actions?: ReactNode;
   itemsPerPage?: number;
+  showHeader?: boolean;
 }
 
 export default function DataTableView<T extends Record<string, any>>({
@@ -54,6 +55,7 @@ export default function DataTableView<T extends Record<string, any>>({
   filterOptions = [],
   actions,
   itemsPerPage = 10,
+  showHeader = true,
 }: DataTableViewProps<T>) {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -116,7 +118,7 @@ export default function DataTableView<T extends Record<string, any>>({
 
   return (
     <Card className="border-border/40 shadow-sm transition-all duration-300 hover:shadow-md">
-      {false &&<CardHeader className="border-b border-border/40 bg-gradient-to-r from-primary/5 to-transparent">
+      {showHeader && <CardHeader className="border-b border-border/40 bg-gradient-to-r from-primary/5 to-transparent">
         {title && (
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-4">
             <div>

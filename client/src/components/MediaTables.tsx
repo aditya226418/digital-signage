@@ -1057,6 +1057,7 @@ export function MediaTable() {
           />
         ) : (
           <DataTableView
+            showHeader={false}
             data={displayData}
             columns={columns}
             searchPlaceholder=""
