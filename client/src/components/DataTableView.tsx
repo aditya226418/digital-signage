@@ -116,7 +116,7 @@ export default function DataTableView<T extends Record<string, any>>({
 
   return (
     <Card className="border-border/40 shadow-sm transition-all duration-300 hover:shadow-md">
-      <CardHeader className="border-b border-border/40 bg-gradient-to-r from-primary/5 to-transparent">
+      {false &&<CardHeader className="border-b border-border/40 bg-gradient-to-r from-primary/5 to-transparent">
         {title && (
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-4">
             <div>
@@ -218,7 +218,7 @@ export default function DataTableView<T extends Record<string, any>>({
             </div>
           )}
         </div>
-      </CardHeader>
+      </CardHeader>}
 
       <CardContent className="p-0">
         <div className="overflow-x-auto">
