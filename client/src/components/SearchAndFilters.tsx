@@ -38,24 +38,26 @@ export default function SearchAndFilters({
     <div className="flex flex-col sm:flex-row gap-3">
       {/* Search Input */}
       <div className="relative flex-1">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-        <Input
-          type="text"
-          placeholder={searchPlaceholder}
-          value={searchQuery}
-          onChange={(e) => onSearchChange(e.target.value)}
-          className="pl-10 pr-10"
-        />
-        {searchQuery && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute right-1 top-1/2 transform -translate-y-1/2 h-7 w-7"
-            onClick={() => onSearchChange("")}
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        )}
+        <div className="relative flex items-center">
+          <Search className="absolute left-3 text-muted-foreground h-4 w-4 pointer-events-none" />
+          <Input
+            type="text"
+            placeholder={searchPlaceholder}
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
+            className="pl-10 pr-10"
+          />
+          {searchQuery && (
+            <button
+              className="absolute right-2 flex items-center justify-center hover:bg-accent rounded p-1"
+              onClick={() => onSearchChange("")}
+              type="button"
+              aria-label="Clear search"
+            >
+              <X className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Filters Dropdown */}
