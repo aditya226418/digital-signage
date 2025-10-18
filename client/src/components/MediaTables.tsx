@@ -1034,6 +1034,8 @@ export function MediaTable() {
       <div className="space-y-4">
         {/* Top Bar: Search + Actions (CTAs) */}
         <div className="flex items-center gap-3">
+        <AddMediaDropdown />
+        <OrganizeDropdown />
           <div className="flex-1">
             <SearchAndFilters
               searchQuery={searchQuery}
@@ -1044,8 +1046,7 @@ export function MediaTable() {
               onToggleFilter={toggleFilter}
             />
           </div>
-          <OrganizeDropdown />
-          <AddMediaDropdown />
+         
         </div>
 
         {/* Bulk Action Bar */}
