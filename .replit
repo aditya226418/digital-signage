@@ -23,7 +23,7 @@ localPort = 46065
 externalPort = 3001
 
 [env]
-PORT = "5000"
+PORT = "1337"
 
 [workflows]
 runButton = "Project"
