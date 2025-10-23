@@ -1,4 +1,4 @@
-import { MoreVertical, Download, Trash2, Edit, Upload, Layout, Image, FileType, ChevronDown, FolderOpen, Palette, Camera, Link, Store, Play, FileText, Music, Video, Folder, ChevronRight, Home, FolderPlus, ArrowRight } from "lucide-react";
+import { MoreVertical, Download, Trash2, Edit, Upload, Layout, Image, FileType, ChevronDown, FolderOpen, Palette, Camera, Link, Store, Play, FileText, Music, Video, Folder, ChevronRight, Home, FolderPlus, ArrowRight, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,6 +12,7 @@ import {
 import DataTableView from "./DataTableView";
 import { useState } from "react";
 import TemplateSelectionModal from "./TemplateSelectionModal";
+import AddMediaModal from "./AddMediaModal";
 import CreateFolderDialog from "./CreateFolderDialog";
 import FolderPickerModal from "./FolderPickerModal";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -529,6 +530,7 @@ export function MediaTable() {
   const [currentFolderId, setCurrentFolderId] = useState<string | null>(null);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
+  const [isAddMediaModalOpen, setIsAddMediaModalOpen] = useState(false);
   const [isCreateFolderOpen, setIsCreateFolderOpen] = useState(false);
   const [isFolderPickerOpen, setIsFolderPickerOpen] = useState(false);
   const [isOrganizeMode, setIsOrganizeMode] = useState(false);
@@ -1035,6 +1037,14 @@ export function MediaTable() {
         {/* Top Bar: Search + Actions (CTAs) */}
         <div className="flex items-center gap-3">
         <AddMediaDropdown />
+        <Button 
+          variant="outline" 
+          className="gap-2"
+          onClick={() => setIsAddMediaModalOpen(true)}
+        >
+          <Plus className="h-4 w-4" />
+          Add Media (New)
+        </Button>
         <OrganizeDropdown />
           <div className="flex-1">
             <SearchAndFilters
@@ -1087,6 +1097,11 @@ export function MediaTable() {
       <TemplateSelectionModal
         open={isTemplateModalOpen}
         onOpenChange={setIsTemplateModalOpen}
+      />
+      <AddMediaModal
+        open={isAddMediaModalOpen}
+        onOpenChange={setIsAddMediaModalOpen}
+        setIsTemplateModalOpen={setIsTemplateModalOpen}
       />
       <CreateFolderDialog
         open={isCreateFolderOpen}
