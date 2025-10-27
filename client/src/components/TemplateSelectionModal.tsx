@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { DndContext, DragOverlay, useDraggable, useDroppable, DragEndEvent, DragStartEvent } from '@dnd-kit/core';
 import { 
   Search, 
   ArrowLeft, 
@@ -31,7 +32,26 @@ import {
   Save,
   Calendar,
   Download,
-  Share2
+  Share2,
+  Square,
+  Circle,
+  Triangle,
+  Tag,
+  Palette,
+  Package,
+  Grid3x3,
+  Menu,
+  ChevronRight as ChevronRightIcon,
+  Lock,
+  Unlock,
+  ArrowUp,
+  ArrowDown,
+  Video,
+  QrCode,
+  Minus,
+  Quote,
+  Hexagon,
+  MoveRight
 } from "lucide-react";
 import {
   Dialog,
@@ -41,6 +61,12 @@ import {
   DialogDescription,
   DialogClose,
 } from "@/components/ui/dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -99,6 +125,303 @@ interface TemplateSelectionModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
+
+type ElementCategory = "content" | "design" | "resources";
+
+interface ElementType {
+  id: string;
+  name: string;
+  icon: React.ComponentType<{ className?: string }>;
+  category: ElementCategory;
+  defaultProps: Partial<SlideElement>;
+}
+
+interface StockAsset {
+  id: string;
+  name: string;
+  thumbnail: string;
+  category: "stock-image" | "pickcel-stock" | "pickcel-app";
+}
+
+// Element catalog for the sidebar
+const ELEMENT_CATALOG: ElementType[] = [
+  // Content Elements - Text
+  {
+    id: "headline",
+    name: "Headline",
+    icon: Type,
+    category: "content",
+    defaultProps: {
+      type: "text",
+      content: "Your Headline Here",
+      position: { x: 100, y: 100 },
+      size: { width: 700, height: 80 },
+      style: { fontSize: 48, fontFamily: "Inter", color: "#1a1a1a", bold: true, align: "center" }
+    }
+  },
+  {
+    id: "subtitle",
+    name: "Subtitle",
+    icon: Type,
+    category: "content",
+    defaultProps: {
+      type: "text",
+      content: "Your subtitle text",
+      position: { x: 100, y: 200 },
+      size: { width: 700, height: 50 },
+      style: { fontSize: 24, fontFamily: "Inter", color: "#666666", align: "center" }
+    }
+  },
+  {
+    id: "body-text",
+    name: "Body Text",
+    icon: Type,
+    category: "content",
+    defaultProps: {
+      type: "text",
+      content: "Add your body text here",
+      position: { x: 100, y: 250 },
+      size: { width: 700, height: 100 },
+      style: { fontSize: 16, fontFamily: "Inter", color: "#333333", align: "left" }
+    }
+  },
+  // Shapes
+  {
+    id: "rectangle",
+    name: "Rectangle",
+    icon: Square,
+    category: "content",
+    defaultProps: {
+      type: "shape",
+      content: "rectangle",
+      position: { x: 200, y: 200 },
+      size: { width: 300, height: 200 },
+      style: { color: "#3b82f6" }
+    }
+  },
+  {
+    id: "circle",
+    name: "Circle",
+    icon: Circle,
+    category: "content",
+    defaultProps: {
+      type: "shape",
+      content: "circle",
+      position: { x: 250, y: 200 },
+      size: { width: 200, height: 200 },
+      style: { color: "#10b981" }
+    }
+  },
+  // Media
+  {
+    id: "image",
+    name: "Image",
+    icon: ImageIcon,
+    category: "content",
+    defaultProps: {
+      type: "image",
+      content: "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=400&h=300&fit=crop",
+      position: { x: 200, y: 150 },
+      size: { width: 400, height: 300 }
+    }
+  },
+  {
+    id: "label",
+    name: "Label",
+    icon: Tag,
+    category: "content",
+    defaultProps: {
+      type: "text",
+      content: "SALE",
+      position: { x: 300, y: 100 },
+      size: { width: 150, height: 60 },
+      style: { fontSize: 28, fontFamily: "Inter", color: "#ffffff", bold: true, align: "center" }
+    }
+  },
+  // Additional Text Elements
+  {
+    id: "quote",
+    name: "Quote",
+    icon: Quote,
+    category: "content",
+    defaultProps: {
+      type: "text",
+      content: '"Inspiring quote text"',
+      position: { x: 150, y: 200 },
+      size: { width: 600, height: 100 },
+      style: { fontSize: 24, fontFamily: "Georgia", color: "#555555", italic: true, align: "center" }
+    }
+  },
+  {
+    id: "ticker",
+    name: "Ticker",
+    icon: MoveRight,
+    category: "content",
+    defaultProps: {
+      type: "text",
+      content: "Breaking News • Latest Updates",
+      position: { x: 0, y: 500 },
+      size: { width: 960, height: 40 },
+      style: { fontSize: 18, fontFamily: "Inter", color: "#ffffff", bold: true, align: "center" }
+    }
+  },
+  // Additional Shapes
+  {
+    id: "triangle",
+    name: "Triangle",
+    icon: Triangle,
+    category: "content",
+    defaultProps: {
+      type: "shape",
+      content: "triangle",
+      position: { x: 250, y: 200 },
+      size: { width: 200, height: 200 },
+      style: { color: "#f59e0b" }
+    }
+  },
+  {
+    id: "line",
+    name: "Line",
+    icon: Minus,
+    category: "content",
+    defaultProps: {
+      type: "shape",
+      content: "line",
+      position: { x: 100, y: 300 },
+      size: { width: 700, height: 4 },
+      style: { color: "#9ca3af" }
+    }
+  },
+  {
+    id: "star-shape",
+    name: "Star",
+    icon: Star,
+    category: "content",
+    defaultProps: {
+      type: "shape",
+      content: "star",
+      position: { x: 300, y: 200 },
+      size: { width: 150, height: 150 },
+      style: { color: "#fbbf24" }
+    }
+  },
+  // Additional Media
+  {
+    id: "video",
+    name: "Video",
+    icon: Video,
+    category: "content",
+    defaultProps: {
+      type: "image",
+      content: "video_placeholder",
+      position: { x: 150, y: 100 },
+      size: { width: 640, height: 360 }
+    }
+  },
+  {
+    id: "qrcode",
+    name: "QR Code",
+    icon: QrCode,
+    category: "content",
+    defaultProps: {
+      type: "shape",
+      content: "qrcode",
+      position: { x: 350, y: 200 },
+      size: { width: 200, height: 200 },
+      style: { color: "#000000" }
+    }
+  },
+  // Design Resources
+  {
+    id: "gradient-bg",
+    name: "Gradient",
+    icon: Palette,
+    category: "design",
+    defaultProps: {
+      type: "shape",
+      content: "rectangle",
+      position: { x: 100, y: 100 },
+      size: { width: 760, height: 340 },
+      style: { color: "#667eea" }
+    }
+  }
+];
+
+// Mock stock assets - Expanded
+const STOCK_ASSETS: StockAsset[] = [
+  {
+    id: "stock-1",
+    name: "Modern Office",
+    thumbnail: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=200&h=150&fit=crop",
+    category: "stock-image"
+  },
+  {
+    id: "stock-2",
+    name: "Technology",
+    thumbnail: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=200&h=150&fit=crop",
+    category: "stock-image"
+  },
+  {
+    id: "stock-3",
+    name: "Retail Store",
+    thumbnail: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=200&h=150&fit=crop",
+    category: "stock-image"
+  },
+  {
+    id: "stock-4",
+    name: "Restaurant",
+    thumbnail: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=200&h=150&fit=crop",
+    category: "stock-image"
+  },
+  {
+    id: "stock-5",
+    name: "Business Meeting",
+    thumbnail: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=200&h=150&fit=crop",
+    category: "stock-image"
+  },
+  {
+    id: "stock-6",
+    name: "Coffee Shop",
+    thumbnail: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=200&h=150&fit=crop",
+    category: "stock-image"
+  },
+  {
+    id: "stock-7",
+    name: "City Skyline",
+    thumbnail: "https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=200&h=150&fit=crop",
+    category: "stock-image"
+  },
+  {
+    id: "stock-8",
+    name: "Product Display",
+    thumbnail: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=200&h=150&fit=crop",
+    category: "stock-image"
+  },
+  {
+    id: "stock-9",
+    name: "Food & Dining",
+    thumbnail: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=200&h=150&fit=crop",
+    category: "stock-image"
+  },
+  {
+    id: "stock-10",
+    name: "Workspace",
+    thumbnail: "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=200&h=150&fit=crop",
+    category: "stock-image"
+  },
+  {
+    id: "stock-11",
+    name: "Fashion Store",
+    thumbnail: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=200&h=150&fit=crop",
+    category: "stock-image"
+  },
+  {
+    id: "stock-12",
+    name: "Hotel Lobby",
+    thumbnail: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=200&h=150&fit=crop",
+    category: "stock-image"
+  }
+];
 
 // Helper function to create mock slides with diverse images
 const createMockSlides = (count: number, images: string[]): Slide[] => {
@@ -720,6 +1043,94 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
   const [zoomLevel, setZoomLevel] = useState(100);
   const [slides, setSlides] = useState<Slide[]>([]);
+  
+  // Left sidebar states
+  const [leftSidebarCollapsed, setLeftSidebarCollapsed] = useState(false);
+  const [activeSidebarCategory, setActiveSidebarCategory] = useState<ElementCategory>("content");
+  const [sidebarSearchQuery, setSidebarSearchQuery] = useState("");
+  
+  // Drag and drop states
+  const [activeElement, setActiveElement] = useState<ElementType | null>(null);
+
+  // Drag and drop handlers
+  const handleDragStart = (event: DragStartEvent) => {
+    const element = event.active.data.current?.element as ElementType;
+    setActiveElement(element);
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    
+    if (over?.id === 'canvas' && activeElement) {
+      // Create a new element instance with unique ID
+      const newElement: SlideElement = {
+        ...activeElement.defaultProps,
+        id: `element-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      } as SlideElement;
+      
+      // Add element to current slide
+      setSlides(prevSlides => {
+        const updatedSlides = [...prevSlides];
+        if (updatedSlides[currentSlideIndex]) {
+          updatedSlides[currentSlideIndex] = {
+            ...updatedSlides[currentSlideIndex],
+            elements: [...updatedSlides[currentSlideIndex].elements, newElement]
+          };
+        }
+        return updatedSlides;
+      });
+      
+      // Auto-select the new element
+      setSelectedElementId(newElement.id);
+    }
+    
+    setActiveElement(null);
+  };
+
+  // Element manipulation handlers
+  const duplicateElement = () => {
+    if (!selectedElementId) return;
+    
+    const currentSlide = slides[currentSlideIndex];
+    const elementToDuplicate = currentSlide?.elements.find(el => el.id === selectedElementId);
+    
+    if (elementToDuplicate) {
+      const newElement: SlideElement = {
+        ...elementToDuplicate,
+        id: `element-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        position: {
+          x: elementToDuplicate.position.x + 20,
+          y: elementToDuplicate.position.y + 20
+        }
+      };
+      
+      setSlides(prevSlides => {
+        const updatedSlides = [...prevSlides];
+        updatedSlides[currentSlideIndex] = {
+          ...updatedSlides[currentSlideIndex],
+          elements: [...updatedSlides[currentSlideIndex].elements, newElement]
+        };
+        return updatedSlides;
+      });
+      
+      setSelectedElementId(newElement.id);
+    }
+  };
+
+  const deleteElement = () => {
+    if (!selectedElementId) return;
+    
+    setSlides(prevSlides => {
+      const updatedSlides = [...prevSlides];
+      updatedSlides[currentSlideIndex] = {
+        ...updatedSlides[currentSlideIndex],
+        elements: updatedSlides[currentSlideIndex].elements.filter(el => el.id !== selectedElementId)
+      };
+      return updatedSlides;
+    });
+    
+    setSelectedElementId(null);
+  };
 
   // Animation variants - simplified and faster
   const containerVariants = {
@@ -820,6 +1231,85 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
         prev === 0 ? selectedTemplate.previewImages.length - 1 : prev - 1
       );
     }
+  };
+
+  // Draggable Element Card Component
+  const DraggableElementCard = ({ element }: { element: ElementType }) => {
+    const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+      id: element.id,
+      data: { type: 'element', element }
+    });
+
+    const style = transform ? {
+      transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+    } : undefined;
+
+    return (
+      <motion.div
+        ref={setNodeRef}
+        style={style}
+        {...listeners}
+        {...attributes}
+        className={`p-3 border rounded-lg cursor-grab active:cursor-grabbing bg-card hover:bg-accent/50 hover:shadow-md transition-all ${
+          isDragging ? 'opacity-50' : ''
+        }`}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+      >
+        <div className="flex flex-col items-center gap-2">
+          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+            <element.icon className="h-5 w-5 text-primary" />
+          </div>
+          <span className="text-xs font-medium text-center">{element.name}</span>
+        </div>
+      </motion.div>
+    );
+  };
+
+  // Draggable Stock Asset Card Component
+  const DraggableStockAsset = ({ asset }: { asset: StockAsset }) => {
+    const elementType: ElementType = {
+      id: asset.id,
+      name: asset.name,
+      icon: ImageIcon,
+      category: "resources",
+      defaultProps: {
+        type: "image",
+        content: asset.thumbnail,
+        position: { x: 200, y: 150 },
+        size: { width: 400, height: 300 }
+      }
+    };
+
+    const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+      id: asset.id,
+      data: { type: 'element', element: elementType }
+    });
+
+    const style = transform ? {
+      transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+    } : undefined;
+
+    return (
+      <motion.div
+        ref={setNodeRef}
+        style={style}
+        {...listeners}
+        {...attributes}
+        className={`cursor-grab active:cursor-grabbing rounded-lg overflow-hidden border hover:border-primary transition-all ${
+          isDragging ? 'opacity-50' : ''
+        }`}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+      >
+        <div className="aspect-video relative">
+          <img src={asset.thumbnail} alt={asset.name} className="w-full h-full object-cover" />
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2">
+            <span className="text-xs font-medium text-white">{asset.name}</span>
+          </div>
+        </div>
+      </motion.div>
+    );
   };
 
   const renderBrowseStep = () => (
@@ -1090,11 +1580,14 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
   );
 
 
-  // NEW: PowerPoint-style Edit Step
+  // NEW: PowerPoint-style Edit Step with Left Sidebar & DnD
   const renderEditStep = () => {
     const currentSlide = slides[currentSlideIndex];
+    const selectedElement = currentSlide?.elements.find(el => el.id === selectedElementId);
+    const elementType = selectedElement?.type;
   
     return (
+      <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <motion.div
         className="h-full flex flex-col overflow-hidden"
         variants={pageVariants}
@@ -1150,12 +1643,14 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
                   </div>
                 </div>
   
-          {/* Text Editing Toolbar */}
+          {/* Contextual Editing Toolbar */}
             <motion.div
             className="mt-3 flex items-center gap-2 flex-wrap justify-center"
               initial={{ opacity: 0 }}
-            animate={{ opacity: selectedElementId ? 1 : 0.5 }}
+            animate={{ opacity: selectedElementId ? 1 : 0.3 }}
           >
+              {selectedElementId && elementType === "text" && (
+                <>
             <Select defaultValue="inter">
               <SelectTrigger className="w-[140px] h-8">
                 <SelectValue placeholder="Font" />
@@ -1207,42 +1702,446 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
             <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
               <AlignJustify className="h-4 w-4" />
             </Button>
+                </>
+              )}
 
-            <Separator orientation="vertical" className="h-6" />
+              {selectedElementId && (elementType === "shape" || elementType === "image") && (
+                <>
+                  <Button variant="ghost" size="sm" className="h-8 px-3 gap-2">
+                    <Palette className="h-4 w-4" />
+                    Fill Color
+                  </Button>
+                  <Button variant="ghost" size="sm" className="h-8 px-3 gap-2">
+                    <Square className="h-4 w-4" />
+                    Border
+                  </Button>
+                  <Separator orientation="vertical" className="h-6" />
+                  <Button variant="ghost" size="sm" className="h-8 px-3 gap-2">
+                    <ArrowUp className="h-4 w-4" />
+                    Front
+                  </Button>
+                  <Button variant="ghost" size="sm" className="h-8 px-3 gap-2">
+                    <ArrowDown className="h-4 w-4" />
+                    Back
+                  </Button>
+                </>
+              )}
 
-            <Button variant="ghost" size="sm" className="h-8 px-3 gap-2">
-              <Type className="h-4 w-4" />
-              Add Text
-            </Button>
-            <Button variant="ghost" size="sm" className="h-8 px-3 gap-2">
-              <ImageIcon className="h-4 w-4" />
-              Add Image
-            </Button>
+              {!selectedElementId && (
+                <span className="text-sm text-muted-foreground">
+                  Select an element or drag from the sidebar to get started
+                </span>
+              )}
+
+              {selectedElementId && (
+                <>
+                  <Separator orientation="vertical" className="h-6" />
+                  <Button variant="ghost" size="sm" className="h-8 px-3 gap-2" onClick={duplicateElement}>
+                    <Copy className="h-4 w-4" />
+                    Duplicate
+                  </Button>
+                  <Button variant="ghost" size="sm" className="h-8 px-3 gap-2" onClick={deleteElement}>
+                    <Trash2 className="h-4 w-4" />
+                    Delete
+                  </Button>
+                </>
+              )}
             </motion.div>
         </div>
 
         {/* Main Editor Area */}
         <div className="flex-1 flex overflow-hidden">
+          {/* Left Sidebar */}
+          <div className={`border-r bg-card flex flex-col transition-all duration-300 overflow-hidden ${
+            leftSidebarCollapsed ? 'w-16' : 'w-72'
+          }`}>
+            {leftSidebarCollapsed ? (
+              // Icon-only mode
+              <TooltipProvider>
+                <div className="flex flex-col items-center py-4 gap-2">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="w-10 h-10 p-0"
+                        onClick={() => setLeftSidebarCollapsed(false)}
+                      >
+                        <ChevronRightIcon className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">
+                      <p>Expand sidebar</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  
+                  <Separator className="w-8" />
+                  
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant={activeSidebarCategory === "content" ? "default" : "ghost"}
+                        size="sm"
+                        className="w-10 h-10 p-0"
+                        onClick={() => {
+                          setActiveSidebarCategory("content");
+                          setLeftSidebarCollapsed(false);
+                        }}
+                      >
+                        <Layers className="h-5 w-5" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">
+                      <p>Content Elements</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant={activeSidebarCategory === "design" ? "default" : "ghost"}
+                        size="sm"
+                        className="w-10 h-10 p-0"
+                        onClick={() => {
+                          setActiveSidebarCategory("design");
+                          setLeftSidebarCollapsed(false);
+                        }}
+                      >
+                        <Palette className="h-5 w-5" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">
+                      <p>Design Resources</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant={activeSidebarCategory === "resources" ? "default" : "ghost"}
+                        size="sm"
+                        className="w-10 h-10 p-0"
+                        onClick={() => {
+                          setActiveSidebarCategory("resources");
+                          setLeftSidebarCollapsed(false);
+                        }}
+                      >
+                        <Package className="h-5 w-5" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">
+                      <p>Stock Assets</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+              </TooltipProvider>
+            ) : (
+              // Expanded mode
+              <>
+                <div className="p-3 border-b flex items-center justify-between flex-shrink-0">
+                  <h4 className="font-semibold text-sm">Add Elements</h4>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0"
+                    onClick={() => setLeftSidebarCollapsed(true)}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                <Tabs value={activeSidebarCategory} onValueChange={(v) => setActiveSidebarCategory(v as ElementCategory)} className="flex-1 flex flex-col overflow-hidden">
+                  <TabsList className="grid w-full grid-cols-3 mx-3 mt-2">
+                    <TabsTrigger value="content" className="text-xs">
+                      <Layers className="h-3 w-3 mr-1" />
+                      Content
+                    </TabsTrigger>
+                    <TabsTrigger value="design" className="text-xs">
+                      <Palette className="h-3 w-3 mr-1" />
+                      Design
+                    </TabsTrigger>
+                    <TabsTrigger value="resources" className="text-xs">
+                      <Package className="h-3 w-3 mr-1" />
+                      Assets
+                    </TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="content" className="flex-1 overflow-hidden mt-0">
+                    {/* Search Bar */}
+                    <div className="p-3 border-b">
+                      <div className="relative">
+                        <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          placeholder="Search elements..."
+                          className="pl-8 h-9"
+                          value={sidebarSearchQuery}
+                          onChange={(e) => setSidebarSearchQuery(e.target.value)}
+                        />
+                      </div>
+                    </div>
+
+                    <ScrollArea className="h-full">
+                      <div className="p-3 space-y-4">
+                        {/* Text Elements Section */}
+                        {ELEMENT_CATALOG.filter(el => 
+                          el.category === "content" && 
+                          (el.id.includes('headline') || el.id.includes('subtitle') || el.id.includes('body') || el.id.includes('quote') || el.id.includes('ticker') || el.id.includes('label')) &&
+                          el.name.toLowerCase().includes(sidebarSearchQuery.toLowerCase())
+                        ).length > 0 && (
+                          <div>
+                            <div className="flex items-center gap-2 mb-2">
+                              <Type className="h-3.5 w-3.5 text-muted-foreground" />
+                              <span className="text-xs font-semibold text-muted-foreground">TEXT</span>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                              {ELEMENT_CATALOG.filter(el => 
+                                el.category === "content" && 
+                                (el.id.includes('headline') || el.id.includes('subtitle') || el.id.includes('body') || el.id.includes('quote') || el.id.includes('ticker') || el.id.includes('label')) &&
+                                el.name.toLowerCase().includes(sidebarSearchQuery.toLowerCase())
+                              ).map(element => (
+                                <DraggableElementCard key={element.id} element={element} />
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Shapes Section */}
+                        {ELEMENT_CATALOG.filter(el => 
+                          el.category === "content" && 
+                          (el.id.includes('rectangle') || el.id.includes('circle') || el.id.includes('triangle') || el.id.includes('line') || el.id.includes('star') || el.id === 'qrcode') &&
+                          el.name.toLowerCase().includes(sidebarSearchQuery.toLowerCase())
+                        ).length > 0 && (
+                          <div>
+                            <div className="flex items-center gap-2 mb-2">
+                              <Square className="h-3.5 w-3.5 text-muted-foreground" />
+                              <span className="text-xs font-semibold text-muted-foreground">SHAPES</span>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                              {ELEMENT_CATALOG.filter(el => 
+                                el.category === "content" && 
+                                (el.id.includes('rectangle') || el.id.includes('circle') || el.id.includes('triangle') || el.id.includes('line') || el.id.includes('star') || el.id === 'qrcode') &&
+                                el.name.toLowerCase().includes(sidebarSearchQuery.toLowerCase())
+                              ).map(element => (
+                                <DraggableElementCard key={element.id} element={element} />
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Media Section */}
+                        {ELEMENT_CATALOG.filter(el => 
+                          el.category === "content" && 
+                          (el.id.includes('image') || el.id.includes('video')) &&
+                          el.name.toLowerCase().includes(sidebarSearchQuery.toLowerCase())
+                        ).length > 0 && (
+                          <div>
+                            <div className="flex items-center gap-2 mb-2">
+                              <ImageIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                              <span className="text-xs font-semibold text-muted-foreground">MEDIA</span>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                              {ELEMENT_CATALOG.filter(el => 
+                                el.category === "content" && 
+                                (el.id.includes('image') || el.id.includes('video')) &&
+                                el.name.toLowerCase().includes(sidebarSearchQuery.toLowerCase())
+                              ).map(element => (
+                                <DraggableElementCard key={element.id} element={element} />
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </ScrollArea>
+                  </TabsContent>
+
+                  <TabsContent value="design" className="flex-1 overflow-hidden mt-2">
+                    <ScrollArea className="h-full">
+                      <div className="p-3 space-y-2">
+                        <div className="grid grid-cols-2 gap-2">
+                          {ELEMENT_CATALOG.filter(el => el.category === "design").map(element => (
+                            <DraggableElementCard key={element.id} element={element} />
+                          ))}
+                        </div>
+                      </div>
+                    </ScrollArea>
+                  </TabsContent>
+
+                  <TabsContent value="resources" className="flex-1 overflow-hidden mt-2">
+                    <ScrollArea className="h-full">
+                      <div className="p-3 space-y-3">
+                        <div>
+                          <h5 className="text-xs font-semibold mb-2">Stock Images</h5>
+                          <div className="grid grid-cols-2 gap-2">
+                            {STOCK_ASSETS.map(asset => (
+                              <DraggableStockAsset key={asset.id} asset={asset} />
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </ScrollArea>
+                  </TabsContent>
+                </Tabs>
+              </>
+            )}
+          </div>
+
           {/* Canvas Area */}
-          <div className="flex-1 bg-muted/20 overflow-auto">
-            <div className="flex items-center justify-center min-h-full p-6">
-            <motion.div
-                className="bg-white shadow-2xl rounded-lg overflow-hidden"
-                style={{
-                  width: `${960 * (zoomLevel / 100)}px`,
-                  aspectRatio: "16/9",
-                }}
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.3 }}
-              >
-                {/* Slide Canvas */}
-                <div className="relative w-full h-full bg-white">
-                  <img
-                    src={currentSlide?.thumbnail}
-                    alt={`Slide ${currentSlideIndex + 1}`}
-                    className="absolute inset-0 w-full h-full object-cover opacity-30"
-                  />
+          <CanvasArea 
+            currentSlide={currentSlide} 
+            zoomLevel={zoomLevel} 
+            selectedElementId={selectedElementId} 
+            setSelectedElementId={setSelectedElementId}
+            currentSlideIndex={currentSlideIndex}
+          />
+
+          {/* Right Sidebar - Slides */}
+          <div className="w-48 border-l bg-card flex flex-col overflow-hidden">
+            <div className="p-3 border-b flex-shrink-0">
+              <h4 className="font-semibold text-sm">Slides</h4>
+              <p className="text-xs text-muted-foreground mt-1">
+                {slides.length} total
+              </p>
+            </div>
+
+            <ScrollArea className="flex-1">
+              <div className="p-2 space-y-2">
+                {slides.map((slide, index) => (
+                  <motion.div
+                    key={slide.id}
+                    className={`relative cursor-pointer rounded-lg overflow-hidden border-2 transition-all ${
+                      index === currentSlideIndex
+                        ? "border-primary ring-2 ring-primary/20"
+                        : "border-transparent hover:border-muted-foreground/30"
+                    }`}
+                    onClick={() => setCurrentSlideIndex(index)}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <div className="aspect-video bg-muted relative">
+                      <img
+                        src={slide.thumbnail}
+                        alt={`Slide ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute top-1 left-1 bg-black/70 text-white text-xs px-2 py-0.5 rounded">
+                        {index + 1}
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </ScrollArea>
+
+            <div className="p-2 border-t space-y-2 flex-shrink-0">
+              <Button variant="outline" size="sm" className="w-full gap-2">
+                <Plus className="h-4 w-4" />
+                Add Slide
+              </Button>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" className="flex-1 gap-2">
+                  <Copy className="h-4 w-4" />
+                </Button>
+                <Button variant="outline" size="sm" className="flex-1 gap-2">
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Properties Panel */}
+        <div className="border-t bg-muted/30 px-4 py-2 flex-shrink-0">
+          <div className="flex items-center justify-between text-sm">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4 text-muted-foreground" />
+                <span className="text-muted-foreground">Duration:</span>
+                <Select defaultValue="8">
+                  <SelectTrigger className="w-[100px] h-7">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="5">5 seconds</SelectItem>
+                    <SelectItem value="8">8 seconds</SelectItem>
+                    <SelectItem value="10">10 seconds</SelectItem>
+                    <SelectItem value="15">15 seconds</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <Separator orientation="vertical" className="h-6" />
+              
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-muted-foreground" />
+                <span className="text-muted-foreground">Transition:</span>
+                <Select defaultValue="fade">
+                  <SelectTrigger className="w-[120px] h-7">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">None</SelectItem>
+                    <SelectItem value="fade">Fade</SelectItem>
+                    <SelectItem value="slide">Slide</SelectItem>
+                    <SelectItem value="zoom">Zoom</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="text-muted-foreground">
+              Slide {currentSlideIndex + 1} of {slides.length}
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Drag Overlay */}
+      <DragOverlay>
+        {activeElement && (
+          <div className="bg-card border-2 border-primary rounded-lg p-3 shadow-xl opacity-90">
+            <div className="flex items-center gap-2">
+              <activeElement.icon className="h-5 w-5 text-primary" />
+              <span className="font-medium text-sm">{activeElement.name}</span>
+            </div>
+          </div>
+        )}
+      </DragOverlay>
+    </DndContext>
+    );
+  };
+
+  // Canvas Area Component with Drop Zone
+  const CanvasArea = ({ currentSlide, zoomLevel, selectedElementId, setSelectedElementId, currentSlideIndex }: { 
+    currentSlide: Slide | undefined, 
+    zoomLevel: number, 
+    selectedElementId: string | null, 
+    setSelectedElementId: (id: string | null) => void,
+    currentSlideIndex: number
+  }) => {
+    const { setNodeRef, isOver } = useDroppable({ id: 'canvas' });
+
+    return (
+      <div className="flex-1 bg-muted/20 overflow-auto" ref={setNodeRef}>
+        <div className="flex items-center justify-center min-h-full p-6">
+          <div
+            className={`bg-white shadow-2xl rounded-lg overflow-hidden transition-all ${
+              isOver ? 'ring-4 ring-primary/30 scale-[1.02]' : ''
+            }`}
+            style={{
+              width: `${960 * (zoomLevel / 100)}px`,
+              aspectRatio: "16/9",
+            }}
+            // initial={{ scale: 0.9, opacity: 0 }}
+            // animate={{ scale: 1, opacity: 1 }}
+            // transition={{ duration: 0.3 }}
+          >
+            {/* Slide Canvas */}
+            <div className="relative w-full h-full bg-white">
+              <img
+                src={currentSlide?.thumbnail}
+                alt={`Slide ${currentSlideIndex + 1}`}
+                className="absolute inset-0 w-full h-full object-cover opacity-30"
+              />
                   
                   {/* Mock Editable Elements */}
                   {currentSlide?.elements.map((element) => (
@@ -1285,120 +2184,26 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
                           />
                           <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                             <ImageIcon className="h-8 w-8 text-primary" />
-                    </div>
-                      </div>
+                          </div>
+                        </div>
                       )}
-            </motion.div>
+                      {element.type === "shape" && (
+                        <div
+                          className="w-full h-full border-2 border-dashed border-transparent group-hover:border-primary/50 transition-all"
+                          style={{
+                            backgroundColor: element.style?.color || "#3b82f6",
+                            borderRadius: element.content === "circle" ? "50%" : "0"
+                          }}
+                        />
+                      )}
+                    </motion.div>
                   ))}
                 </div>
-          </motion.div>
-            </div>
               </div>
-  
-          {/* Right Sidebar - Slides */}
-          <div className="w-64 border-l bg-card flex flex-col overflow-hidden">
-            <div className="p-3 border-b flex-shrink-0">
-              <h4 className="font-semibold text-sm">Slides</h4>
-              <p className="text-xs text-muted-foreground mt-1">
-                {slides.length} total
-              </p>
-            </div>
-
-            <ScrollArea className="flex-1">
-              <div className="p-3 space-y-2">
-                {slides.map((slide, index) => (
-            <motion.div
-                    key={slide.id}
-                    className={`relative cursor-pointer rounded-lg overflow-hidden border-2 transition-all ${
-                      index === currentSlideIndex
-                        ? "border-primary ring-2 ring-primary/20"
-                        : "border-transparent hover:border-muted-foreground/30"
-                    }`}
-                    onClick={() => setCurrentSlideIndex(index)}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <div className="aspect-video bg-muted relative">
-                      <img
-                        src={slide.thumbnail}
-                        alt={`Slide ${index + 1}`}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute top-1 left-1 bg-black/70 text-white text-xs px-2 py-0.5 rounded">
-                        {index + 1}
-                </div>
-                </div>
-                  </motion.div>
-                ))}
-                </div>
-            </ScrollArea>
-
-            <div className="p-3 border-t space-y-2 flex-shrink-0">
-              <Button variant="outline" size="sm" className="w-full gap-2">
-                <Plus className="h-4 w-4" />
-                Add Slide
-              </Button>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" className="flex-1 gap-2">
-                  <Copy className="h-4 w-4" />
-                  Duplicate
-                </Button>
-                <Button variant="outline" size="sm" className="flex-1 gap-2">
-                  <Trash2 className="h-4 w-4" />
-                  Delete
-                </Button>
-                </div>
-                      </div>
-                  </div>
-                </div>
-
-        {/* Bottom Properties Panel */}
-        <div className="border-t bg-muted/30 px-4 py-2 flex-shrink-0">
-          <div className="flex items-center justify-between text-sm">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4 text-muted-foreground" />
-                <span className="text-muted-foreground">Duration:</span>
-                <Select defaultValue="8">
-                  <SelectTrigger className="w-[100px] h-7">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="5">5 seconds</SelectItem>
-                    <SelectItem value="8">8 seconds</SelectItem>
-                    <SelectItem value="10">10 seconds</SelectItem>
-                    <SelectItem value="15">15 seconds</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <Separator orientation="vertical" className="h-6" />
-              
-              <div className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-muted-foreground" />
-                <span className="text-muted-foreground">Transition:</span>
-                <Select defaultValue="fade">
-                  <SelectTrigger className="w-[120px] h-7">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">None</SelectItem>
-                    <SelectItem value="fade">Fade</SelectItem>
-                    <SelectItem value="slide">Slide</SelectItem>
-                    <SelectItem value="zoom">Zoom</SelectItem>
-                  </SelectContent>
-                </Select>
-                </div>
-              </div>
-
-            <div className="text-muted-foreground">
-              Slide {currentSlideIndex + 1} of {slides.length}
             </div>
           </div>
-        </div>
-      </motion.div>
-    );
-  };
+        );
+      };
   
   const renderCompleteStep = () => {
     const currentDate = new Date().toLocaleDateString('en-US', { 
