@@ -1,0 +1,200 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MenuBlock Schema",
+  "description": "Canonical schema for MenuBlock component data structure",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the menu block"
+    },
+    "type": {
+      "type": "string",
+      "const": "menuBlock"
+    },
+    "meta": {
+      "type": "object",
+      "properties": {
+        "preset": {
+          "type": "string",
+          "enum": ["classic", "modern", "minimal", "chalkboard", "bold"]
+        },
+        "theme": {
+          "type": "string",
+          "enum": ["light", "dark"]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "layout": {
+      "type": "object",
+      "properties": {
+        "width": {
+          "type": "number",
+          "default": 1920
+        },
+        "height": {
+          "type": "number",
+          "default": 1080
+        },
+        "columns": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 3,
+          "default": 2
+        },
+        "itemsPerColumn": {
+          "type": ["number", "null"],
+          "default": null
+        },
+        "padding": {
+          "type": "number",
+          "default": 24
+        },
+        "gap": {
+          "type": "number",
+          "default": 12
+        }
+      }
+    },
+    "styles": {
+      "type": "object",
+      "properties": {
+        "preset": {
+          "type": "string",
+          "enum": ["classic", "modern", "minimal", "chalkboard", "bold"]
+        },
+        "background": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["color", "image", "gradient", "video"]
+            },
+            "value": {
+              "type": "string"
+            }
+          }
+        },
+        "font": {
+          "type": "object",
+          "properties": {
+            "family": {
+              "type": "string",
+              "default": "Work Sans"
+            },
+            "headlineSize": {
+              "type": "number",
+              "default": 56
+            },
+            "bodySize": {
+              "type": "number",
+              "default": 28
+            },
+            "weight": {
+              "type": "string",
+              "default": "600"
+            }
+          }
+        },
+        "accentColor": {
+          "type": "string",
+          "default": "#E53935"
+        },
+        "priceAlign": {
+          "type": "string",
+          "enum": ["left", "right", "center"],
+          "default": "right"
+        },
+        "currency": {
+          "type": "string",
+          "default": "₹"
+        },
+        "icons": {
+          "type": "object",
+          "properties": {
+            "veg": {
+              "type": "string",
+              "default": "leaf.svg"
+            },
+            "nonveg": {
+              "type": "string",
+              "default": "chili.svg"
+            }
+          }
+        }
+      }
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "tag": {
+            "type": "string",
+            "enum": ["veg", "nonveg", "contains-nuts"]
+          },
+          "icon": {
+            "type": "string"
+          },
+          "spicy": {
+            "type": "boolean",
+            "default": false
+          },
+          "image": {
+            "type": "string"
+          }
+        },
+        "required": ["id", "name", "price"]
+      }
+    },
+    "settings": {
+      "type": "object",
+      "properties": {
+        "showDescriptions": {
+          "type": "boolean",
+          "default": true
+        },
+        "showDivider": {
+          "type": "boolean",
+          "default": true
+        },
+        "priceDecimals": {
+          "type": "number",
+          "enum": [0, 1, 2],
+          "default": 0
+        },
+        "currencyPosition": {
+          "type": "string",
+          "enum": ["before", "after"],
+          "default": "before"
+        },
+        "showIcons": {
+          "type": "boolean",
+          "default": true
+        },
+        "imageForItem": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    }
+  },
+  "required": ["id", "type", "items"]
+}
+

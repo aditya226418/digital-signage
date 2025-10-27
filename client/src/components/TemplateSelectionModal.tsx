@@ -88,6 +88,10 @@ import {
   X,
   Upload
 } from "lucide-react";
+// @ts-ignore
+import { createMenuBlockElement, MenuBlock as MenuBlockCanvas } from "@/components/MenuBlock/MenuBlock";
+// @ts-ignore
+import { MenuBlockSidebar } from "@/components/MenuBlock/MenuBlockSidebar";
 import {
   Dialog,
   DialogContent,
@@ -121,7 +125,7 @@ import {
 
 interface SlideElement {
   id: string;
-  type: "text" | "image" | "shape" | "video" | "widget" | "template";
+  type: "text" | "image" | "shape" | "video" | "widget" | "template" | "menuBlock";
   content: string;
   position: { x: number; y: number };
   size: { width: number; height: number };
@@ -209,6 +213,15 @@ interface StockAsset {
 // Comprehensive Element Catalog organized by 5 categories
 const ELEMENT_CATALOG: ElementType[] = [
   // ========== TEMPLATES ==========
+  {
+    id: "menu-block",
+    name: "Menu Block",
+    icon: Menu,
+    category: "templates",
+    description: "Customizable restaurant menu with items, pricing, and presets",
+    thumbnail: "https://images.pexels.com/photos/6267/menu-restaurant-vintage-table.jpg?w=160&h=100&fit=crop",
+    defaultProps: createMenuBlockElement()
+  },
   {
     id: "template-restaurant",
     name: "Restaurant Menu",
@@ -587,20 +600,6 @@ const ELEMENT_CATALOG: ElementType[] = [
       position: { x: 700, y: 30 },
       size: { width: 230, height: 40 },
       style: { fontSize: 16, fontFamily: "Inter", color: "#666666", align: "right" }
-    }
-  },
-  {
-    id: "menu-block",
-    name: "Menu Block",
-    icon: FileText,
-    category: "texts",
-    description: "Item with price layout",
-    defaultProps: {
-      type: "text",
-      content: "Veg Thali ₹199",
-      position: { x: 100, y: 200 },
-      size: { width: 350, height: 60 },
-      style: { fontSize: 24, fontFamily: "Inter", color: "#1a1a1a", bold: true, align: "left" }
     }
   },
 
@@ -1713,6 +1712,10 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
   const [effectsPanelOpen, setEffectsPanelOpen] = useState(false);
   const [aiPanelOpen, setAiPanelOpen] = useState(false);
   
+  // MenuBlock panel state
+  const [menuBlockPanelOpen, setMenuBlockPanelOpen] = useState(false);
+  const [menuBlockData, setMenuBlockData] = useState<any>(null);
+  
   // Drag and drop states
   const [activeElement, setActiveElement] = useState<ElementType | null>(null);
 
@@ -1726,6 +1729,53 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
     const { active, over } = event;
     
     if (over?.id === 'canvas' && activeElement) {
+      // Handle MenuBlock specifically
+      if (activeElement.id === 'menu-block') {
+        const elementId = `element-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        
+        // Get full menuBlock data from defaultProps
+        const fullMenuData = {
+          ...activeElement.defaultProps,
+          id: elementId,
+        };
+        
+        // Create SlideElement for the slide
+        const menuBlockElement = {
+          ...fullMenuData,
+          type: 'menuBlock' as const,
+        } as SlideElement;
+        
+        // Add MenuBlock to current slide
+        setSlides(prevSlides => {
+          const updatedSlides = [...prevSlides];
+          if (updatedSlides[currentSlideIndex]) {
+            updatedSlides[currentSlideIndex] = {
+              ...updatedSlides[currentSlideIndex],
+              elements: [...updatedSlides[currentSlideIndex].elements, menuBlockElement]
+            };
+          }
+          return updatedSlides;
+        });
+        
+        // Auto-select and open MenuBlock sidebar with full data
+        setSelectedElementId(elementId);
+        setMenuBlockData(fullMenuData);
+        setMenuBlockPanelOpen(true);
+        
+        // Close other panels
+        setEffectsPanelOpen(false);
+        setAiPanelOpen(false);
+        
+        // Track recently used
+        setRecentlyUsed(prev => {
+          const updated = [activeElement.id, ...prev.filter(id => id !== activeElement.id)];
+          return updated.slice(0, 6);
+        });
+        
+        setActiveElement(null);
+        return;
+      }
+      
       // Create a new element instance with unique ID
       const newElement: SlideElement = {
         ...activeElement.defaultProps,
@@ -1765,6 +1815,22 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
         ? prev.filter(id => id !== elementId)
         : [...prev, elementId]
     );
+  };
+
+  // MenuBlock update handler
+  const handleMenuBlockUpdate = (newData: any) => {
+    setMenuBlockData(newData);
+    
+    // Update in slides array
+    setSlides(prevSlides => {
+      const updatedSlides = [...prevSlides];
+      if (updatedSlides[currentSlideIndex]) {
+        updatedSlides[currentSlideIndex].elements = updatedSlides[currentSlideIndex].elements.map(el =>
+          el.id === selectedElementId ? { ...el, ...newData } : el
+        );
+      }
+      return updatedSlides;
+    });
   };
 
   // Element manipulation handlers
@@ -2548,6 +2614,29 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
                     {/* TEMPLATES */}
                     {activeSidebarCategory === "templates" && (
                       <>
+                        {/* Menu Builder */}
+                        <div>
+                          <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                            <Menu className="h-4 w-4" />
+                            Menu Builder
+                          </h4>
+                          <div className="relative group">
+                            <div className="flex flex-nowrap gap-2 overflow-x-auto scrollbar-hide pb-2" style={{ scrollSnapType: 'x mandatory' }}>
+                              {ELEMENT_CATALOG.filter(el => 
+                                el.id === 'menu-block' &&
+                                (sidebarSearchQuery === "" || el.name.toLowerCase().includes(sidebarSearchQuery.toLowerCase()))
+                              ).map(element => (
+                                <div key={element.id} className="flex-shrink-0" style={{ scrollSnapAlign: 'start', width: '110px' }}>
+                                  <DraggableElementCard element={element} showLarge={false} />
+                                </div>
+                              ))}
+                              {/* Spacer to show partial next item */}
+                              <div className="flex-shrink-0 w-4" />
+                            </div>
+                            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-card to-transparent pointer-events-none" />
+                          </div>
+                        </div>
+
                         {/* Restaurant & Food */}
                         <div>
                           <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
@@ -3659,11 +3748,32 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
             )}
           </AnimatePresence>
 
+          {/* MenuBlock Panel (appears when MenuBlock is selected) */}
+          <AnimatePresence>
+            {menuBlockPanelOpen && selectedElementId && menuBlockData && (
+              <motion.div
+                initial={{ width: 0, opacity: 0 }}
+                animate={{ width: 320, opacity: 1 }}
+                exit={{ width: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="border-r bg-card flex flex-col overflow-hidden flex-shrink-0"
+              >
+                <MenuBlockSidebar 
+                  menuData={menuBlockData}
+                  onUpdate={handleMenuBlockUpdate}
+                  onClose={() => {
+                    setMenuBlockPanelOpen(false);
+                  }}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* Canvas Area and Editing Bar Container */}
           <div className="flex-1 flex flex-col overflow-hidden">
-            {/* Horizontal Contextual Editing Bar */}
+            {/* Horizontal Contextual Editing Bar - Hide for MenuBlock */}
             <AnimatePresence>
-              {selectedElementId && selectedElement && (
+              {selectedElementId && selectedElement && selectedElement.type !== 'menuBlock' && (
                 <motion.div
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
@@ -3674,7 +3784,7 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
                   <div className="px-4 py-3">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-sm font-semibold text-muted-foreground mr-1">
-                        {elementType === "text" ? "Text" : elementType === "image" ? "Image" : elementType === "shape" ? "Shape" : elementType === "video" ? "Video" : "Widget"}
+                        {elementType === "text" ? "Text" : elementType === "image" ? "Image" : elementType === "shape" ? "Shape" : elementType === "video" ? "Video" : elementType === "menuBlock" ? "Menu Block" : "Widget"}
                       </span>
 
                       <Separator orientation="vertical" className="h-6" />
@@ -4218,7 +4328,42 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
               />
                   
                   {/* Mock Editable Elements */}
-                  {currentSlide?.elements.map((element) => (
+                  {currentSlide?.elements.map((element) => {
+                    // Special handling for MenuBlock
+                    if (element.type === 'menuBlock') {
+                      return (
+                        <div
+                          key={element.id}
+                          className={`absolute w-full h-full ${
+                            selectedElementId === element.id ? "ring-2 ring-primary" : ""
+                          }`}
+                          onClick={() => {
+                            setSelectedElementId(element.id);
+                            setMenuBlockData(element);
+                            setMenuBlockPanelOpen(true);
+                            setEffectsPanelOpen(false);
+                            setAiPanelOpen(false);
+                          }}
+                        >
+                          <MenuBlockCanvas 
+                            menuData={element}
+                            zoomLevel={zoomLevel}
+                            isSelected={selectedElementId === element.id}
+                            onSelect={() => {
+                              setSelectedElementId(element.id);
+                              setMenuBlockData(element);
+                              setMenuBlockPanelOpen(true);
+                              setEffectsPanelOpen(false);
+                              setAiPanelOpen(false);
+                            }}
+                            onUpdate={handleMenuBlockUpdate}
+                          />
+                        </div>
+                      );
+                    }
+                    
+                    // Regular elements
+                    return (
                   <motion.div
                       key={element.id}
                       className={`absolute cursor-pointer group ${
@@ -4332,7 +4477,8 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
                         </div>
                       )}
                     </motion.div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </div>
