@@ -80,7 +80,10 @@ import {
   MessageSquarePlus,
   Tv,
   BarChart3,
-  MapPin
+  MapPin,
+  Dumbbell,
+  Hotel,
+  GraduationCap
 } from "lucide-react";
 import {
   Dialog,
@@ -241,6 +244,258 @@ const ELEMENT_CATALOG: ElementType[] = [
     defaultProps: {
       type: "template",
       content: "corporate-template",
+      position: { x: 0, y: 0 },
+      size: { width: 960, height: 540 }
+    }
+  },
+  {
+    id: "template-restaurant-2",
+    name: "Breakfast Special",
+    icon: Coffee,
+    category: "templates",
+    description: "Morning menu highlights",
+    thumbnail: "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?w=160&h=100&fit=crop",
+    defaultProps: {
+      type: "template",
+      content: "restaurant-template",
+      position: { x: 0, y: 0 },
+      size: { width: 960, height: 540 }
+    }
+  },
+  {
+    id: "template-restaurant-3",
+    name: "Happy Hour",
+    icon: Coffee,
+    category: "templates",
+    description: "Drinks and appetizers promo",
+    thumbnail: "https://images.pexels.com/photos/1089930/pexels-photo-1089930.jpeg?w=160&h=100&fit=crop",
+    defaultProps: {
+      type: "template",
+      content: "restaurant-template",
+      position: { x: 0, y: 0 },
+      size: { width: 960, height: 540 }
+    }
+  },
+  {
+    id: "template-retail-2",
+    name: "Flash Sale",
+    icon: Megaphone,
+    category: "templates",
+    description: "Limited time offer",
+    thumbnail: "https://images.pexels.com/photos/1040430/pexels-photo-1040430.jpeg?w=160&h=100&fit=crop",
+    defaultProps: {
+      type: "template",
+      content: "retail-template",
+      position: { x: 0, y: 0 },
+      size: { width: 960, height: 540 }
+    }
+  },
+  {
+    id: "template-retail-3",
+    name: "New Arrivals",
+    icon: Megaphone,
+    category: "templates",
+    description: "Latest products showcase",
+    thumbnail: "https://images.pexels.com/photos/1488463/pexels-photo-1488463.jpeg?w=160&h=100&fit=crop",
+    defaultProps: {
+      type: "template",
+      content: "retail-template",
+      position: { x: 0, y: 0 },
+      size: { width: 960, height: 540 }
+    }
+  },
+  {
+    id: "template-corporate-2",
+    name: "Team Meeting",
+    icon: Building2,
+    category: "templates",
+    description: "Conference room display",
+    thumbnail: "https://images.pexels.com/photos/1181406/pexels-photo-1181406.jpeg?w=160&h=100&fit=crop",
+    defaultProps: {
+      type: "template",
+      content: "corporate-template",
+      position: { x: 0, y: 0 },
+      size: { width: 960, height: 540 }
+    }
+  },
+  {
+    id: "template-corporate-3",
+    name: "Employee Spotlight",
+    icon: Building2,
+    category: "templates",
+    description: "Recognition board",
+    thumbnail: "https://images.pexels.com/photos/3184325/pexels-photo-3184325.jpeg?w=160&h=100&fit=crop",
+    defaultProps: {
+      type: "template",
+      content: "corporate-template",
+      position: { x: 0, y: 0 },
+      size: { width: 960, height: 540 }
+    }
+  },
+  {
+    id: "template-healthcare-1",
+    name: "Health Tips",
+    icon: Heart,
+    category: "templates",
+    description: "Wellness information",
+    thumbnail: "https://images.pexels.com/photos/40568/medical-appointment-doctor-healthcare-40568.jpeg?w=160&h=100&fit=crop",
+    defaultProps: {
+      type: "template",
+      content: "healthcare-template",
+      position: { x: 0, y: 0 },
+      size: { width: 960, height: 540 }
+    }
+  },
+  {
+    id: "template-healthcare-2",
+    name: "Appointment Reminder",
+    icon: Heart,
+    category: "templates",
+    description: "Patient scheduling",
+    thumbnail: "https://images.pexels.com/photos/48603/pexels-photo-48603.jpeg?w=160&h=100&fit=crop",
+    defaultProps: {
+      type: "template",
+      content: "healthcare-template",
+      position: { x: 0, y: 0 },
+      size: { width: 960, height: 540 }
+    }
+  },
+  {
+    id: "template-healthcare-3",
+    name: "Safety Guidelines",
+    icon: Heart,
+    category: "templates",
+    description: "Health protocols",
+    thumbnail: "https://images.pexels.com/photos/4386466/pexels-photo-4386466.jpeg?w=160&h=100&fit=crop",
+    defaultProps: {
+      type: "template",
+      content: "healthcare-template",
+      position: { x: 0, y: 0 },
+      size: { width: 960, height: 540 }
+    }
+  },
+  {
+    id: "template-fitness-1",
+    name: "Class Schedule",
+    icon: Dumbbell,
+    category: "templates",
+    description: "Gym timetable",
+    thumbnail: "https://images.pexels.com/photos/841130/pexels-photo-841130.jpeg?w=160&h=100&fit=crop",
+    defaultProps: {
+      type: "template",
+      content: "fitness-template",
+      position: { x: 0, y: 0 },
+      size: { width: 960, height: 540 }
+    }
+  },
+  {
+    id: "template-fitness-2",
+    name: "Workout Tips",
+    icon: Dumbbell,
+    category: "templates",
+    description: "Exercise motivation",
+    thumbnail: "https://images.pexels.com/photos/1954524/pexels-photo-1954524.jpeg?w=160&h=100&fit=crop",
+    defaultProps: {
+      type: "template",
+      content: "fitness-template",
+      position: { x: 0, y: 0 },
+      size: { width: 960, height: 540 }
+    }
+  },
+  {
+    id: "template-fitness-3",
+    name: "Membership Deals",
+    icon: Dumbbell,
+    category: "templates",
+    description: "Gym promotions",
+    thumbnail: "https://images.pexels.com/photos/416778/pexels-photo-416778.jpeg?w=160&h=100&fit=crop",
+    defaultProps: {
+      type: "template",
+      content: "fitness-template",
+      position: { x: 0, y: 0 },
+      size: { width: 960, height: 540 }
+    }
+  },
+  {
+    id: "template-hotel-1",
+    name: "Welcome Guest",
+    icon: Hotel,
+    category: "templates",
+    description: "Lobby display",
+    thumbnail: "https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?w=160&h=100&fit=crop",
+    defaultProps: {
+      type: "template",
+      content: "hotel-template",
+      position: { x: 0, y: 0 },
+      size: { width: 960, height: 540 }
+    }
+  },
+  {
+    id: "template-hotel-2",
+    name: "Amenities Guide",
+    icon: Hotel,
+    category: "templates",
+    description: "Hotel services",
+    thumbnail: "https://images.pexels.com/photos/189296/pexels-photo-189296.jpeg?w=160&h=100&fit=crop",
+    defaultProps: {
+      type: "template",
+      content: "hotel-template",
+      position: { x: 0, y: 0 },
+      size: { width: 960, height: 540 }
+    }
+  },
+  {
+    id: "template-hotel-3",
+    name: "Event Calendar",
+    icon: Hotel,
+    category: "templates",
+    description: "Upcoming events",
+    thumbnail: "https://images.pexels.com/photos/1058277/pexels-photo-1058277.jpeg?w=160&h=100&fit=crop",
+    defaultProps: {
+      type: "template",
+      content: "hotel-template",
+      position: { x: 0, y: 0 },
+      size: { width: 960, height: 540 }
+    }
+  },
+  {
+    id: "template-education-1",
+    name: "Class Announcements",
+    icon: GraduationCap,
+    category: "templates",
+    description: "School notices",
+    thumbnail: "https://images.pexels.com/photos/256417/pexels-photo-256417.jpeg?w=160&h=100&fit=crop",
+    defaultProps: {
+      type: "template",
+      content: "education-template",
+      position: { x: 0, y: 0 },
+      size: { width: 960, height: 540 }
+    }
+  },
+  {
+    id: "template-education-2",
+    name: "Campus Events",
+    icon: GraduationCap,
+    category: "templates",
+    description: "Student activities",
+    thumbnail: "https://images.pexels.com/photos/267885/pexels-photo-267885.jpeg?w=160&h=100&fit=crop",
+    defaultProps: {
+      type: "template",
+      content: "education-template",
+      position: { x: 0, y: 0 },
+      size: { width: 960, height: 540 }
+    }
+  },
+  {
+    id: "template-education-3",
+    name: "Study Tips",
+    icon: GraduationCap,
+    category: "templates",
+    description: "Academic resources",
+    thumbnail: "https://images.pexels.com/photos/301920/pexels-photo-301920.jpeg?w=160&h=100&fit=crop",
+    defaultProps: {
+      type: "template",
+      content: "education-template",
       position: { x: 0, y: 0 },
       size: { width: 960, height: 540 }
     }
@@ -2292,14 +2547,36 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
                             <Coffee className="h-4 w-4" />
                             Restaurant & Food
                           </h4>
-                          <div className="space-y-3">
-                            {ELEMENT_CATALOG.filter(el => 
-                              el.category === "templates" && 
-                              el.id === "template-restaurant" &&
-                              (sidebarSearchQuery === "" || el.name.toLowerCase().includes(sidebarSearchQuery.toLowerCase()))
-                            ).map(element => (
-                              <DraggableElementCard key={element.id} element={element} showLarge={true} />
-                            ))}
+                          <div className="relative group">
+                            <div className="flex flex-nowrap gap-2 overflow-x-auto scrollbar-hide pb-2" style={{ scrollSnapType: 'x mandatory' }}>
+                              {ELEMENT_CATALOG.filter(el => 
+                                el.category === "templates" && 
+                                el.id.includes("restaurant") &&
+                                (sidebarSearchQuery === "" || el.name.toLowerCase().includes(sidebarSearchQuery.toLowerCase()))
+                              ).map(element => (
+                                <div key={element.id} className="flex-shrink-0" style={{ scrollSnapAlign: 'start', width: '110px' }}>
+                                  <div 
+                                    className="cursor-pointer hover:opacity-80 transition-opacity"
+                                    onClick={() => handleDragEnd({ active: { id: element.id, data: { current: element } }, over: { id: 'canvas' } } as any)}
+                                  >
+                                    <div className="relative rounded-lg overflow-hidden border bg-muted aspect-video mb-1.5">
+                                      {element.thumbnail && (
+                                        <img src={element.thumbnail} alt={element.name} className="w-full h-full object-cover" />
+                                      )}
+                                      {!element.thumbnail && (
+                                        <div className="w-full h-full flex items-center justify-center">
+                                          {element.icon && <element.icon className="h-6 w-6 text-muted-foreground" />}
+                                        </div>
+                                      )}
+                                    </div>
+                                    <p className="text-xs font-medium line-clamp-1 text-center">{element.name}</p>
+                                  </div>
+                                </div>
+                              ))}
+                              {/* Spacer to show partial next item */}
+                              <div className="flex-shrink-0 w-4" />
+                            </div>
+                            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-card to-transparent pointer-events-none" />
                           </div>
                         </div>
 
@@ -2309,14 +2586,36 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
                             <Megaphone className="h-4 w-4" />
                             Retail & Shopping
                           </h4>
-                          <div className="space-y-3">
-                            {ELEMENT_CATALOG.filter(el => 
-                              el.category === "templates" && 
-                              el.id === "template-retail" &&
-                              (sidebarSearchQuery === "" || el.name.toLowerCase().includes(sidebarSearchQuery.toLowerCase()))
-                            ).map(element => (
-                              <DraggableElementCard key={element.id} element={element} showLarge={true} />
-                            ))}
+                          <div className="relative group">
+                            <div className="flex flex-nowrap gap-2 overflow-x-auto scrollbar-hide pb-2" style={{ scrollSnapType: 'x mandatory' }}>
+                              {ELEMENT_CATALOG.filter(el => 
+                                el.category === "templates" && 
+                                el.id.includes("retail") &&
+                                (sidebarSearchQuery === "" || el.name.toLowerCase().includes(sidebarSearchQuery.toLowerCase()))
+                              ).map(element => (
+                                <div key={element.id} className="flex-shrink-0" style={{ scrollSnapAlign: 'start', width: '110px' }}>
+                                  <div 
+                                    className="cursor-pointer hover:opacity-80 transition-opacity"
+                                    onClick={() => handleDragEnd({ active: { id: element.id, data: { current: element } }, over: { id: 'canvas' } } as any)}
+                                  >
+                                    <div className="relative rounded-lg overflow-hidden border bg-muted aspect-video mb-1.5">
+                                      {element.thumbnail && (
+                                        <img src={element.thumbnail} alt={element.name} className="w-full h-full object-cover" />
+                                      )}
+                                      {!element.thumbnail && (
+                                        <div className="w-full h-full flex items-center justify-center">
+                                          {element.icon && <element.icon className="h-6 w-6 text-muted-foreground" />}
+                                        </div>
+                                      )}
+                                    </div>
+                                    <p className="text-xs font-medium line-clamp-1 text-center">{element.name}</p>
+                                  </div>
+                                </div>
+                              ))}
+                              {/* Spacer to show partial next item */}
+                              <div className="flex-shrink-0 w-4" />
+                            </div>
+                            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-card to-transparent pointer-events-none" />
                           </div>
                         </div>
 
@@ -2326,14 +2625,192 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
                             <Building2 className="h-4 w-4" />
                             Corporate & Office
                           </h4>
-                          <div className="space-y-3">
-                            {ELEMENT_CATALOG.filter(el => 
-                              el.category === "templates" && 
-                              el.id === "template-corporate" &&
-                              (sidebarSearchQuery === "" || el.name.toLowerCase().includes(sidebarSearchQuery.toLowerCase()))
-                            ).map(element => (
-                              <DraggableElementCard key={element.id} element={element} showLarge={true} />
-                            ))}
+                          <div className="relative group">
+                            <div className="flex flex-nowrap gap-2 overflow-x-auto scrollbar-hide pb-2" style={{ scrollSnapType: 'x mandatory' }}>
+                              {ELEMENT_CATALOG.filter(el => 
+                                el.category === "templates" && 
+                                el.id.includes("corporate") &&
+                                (sidebarSearchQuery === "" || el.name.toLowerCase().includes(sidebarSearchQuery.toLowerCase()))
+                              ).map(element => (
+                                <div key={element.id} className="flex-shrink-0" style={{ scrollSnapAlign: 'start', width: '110px' }}>
+                                  <div 
+                                    className="cursor-pointer hover:opacity-80 transition-opacity"
+                                    onClick={() => handleDragEnd({ active: { id: element.id, data: { current: element } }, over: { id: 'canvas' } } as any)}
+                                  >
+                                    <div className="relative rounded-lg overflow-hidden border bg-muted aspect-video mb-1.5">
+                                      {element.thumbnail && (
+                                        <img src={element.thumbnail} alt={element.name} className="w-full h-full object-cover" />
+                                      )}
+                                      {!element.thumbnail && (
+                                        <div className="w-full h-full flex items-center justify-center">
+                                          {element.icon && <element.icon className="h-6 w-6 text-muted-foreground" />}
+                                        </div>
+                                      )}
+                                    </div>
+                                    <p className="text-xs font-medium line-clamp-1 text-center">{element.name}</p>
+                                  </div>
+                                </div>
+                              ))}
+                              {/* Spacer to show partial next item */}
+                              <div className="flex-shrink-0 w-4" />
+                            </div>
+                            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-card to-transparent pointer-events-none" />
+                          </div>
+                        </div>
+
+                        {/* Healthcare & Medical */}
+                        <div>
+                          <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                            <Heart className="h-4 w-4" />
+                            Healthcare & Medical
+                          </h4>
+                          <div className="relative group">
+                            <div className="flex flex-nowrap gap-2 overflow-x-auto scrollbar-hide pb-2" style={{ scrollSnapType: 'x mandatory' }}>
+                              {ELEMENT_CATALOG.filter(el => 
+                                el.category === "templates" && 
+                                el.id.includes("healthcare") &&
+                                (sidebarSearchQuery === "" || el.name.toLowerCase().includes(sidebarSearchQuery.toLowerCase()))
+                              ).map(element => (
+                                <div key={element.id} className="flex-shrink-0" style={{ scrollSnapAlign: 'start', width: '110px' }}>
+                                  <div 
+                                    className="cursor-pointer hover:opacity-80 transition-opacity"
+                                    onClick={() => handleDragEnd({ active: { id: element.id, data: { current: element } }, over: { id: 'canvas' } } as any)}
+                                  >
+                                    <div className="relative rounded-lg overflow-hidden border bg-muted aspect-video mb-1.5">
+                                      {element.thumbnail && (
+                                        <img src={element.thumbnail} alt={element.name} className="w-full h-full object-cover" />
+                                      )}
+                                      {!element.thumbnail && (
+                                        <div className="w-full h-full flex items-center justify-center">
+                                          {element.icon && <element.icon className="h-6 w-6 text-muted-foreground" />}
+                                        </div>
+                                      )}
+                                    </div>
+                                    <p className="text-xs font-medium line-clamp-1 text-center">{element.name}</p>
+                                  </div>
+                                </div>
+                              ))}
+                              {/* Spacer to show partial next item */}
+                              <div className="flex-shrink-0 w-4" />
+                            </div>
+                            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-card to-transparent pointer-events-none" />
+                          </div>
+                        </div>
+
+                        {/* Fitness & Gym */}
+                        <div>
+                          <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                            <Dumbbell className="h-4 w-4" />
+                            Fitness & Gym
+                          </h4>
+                          <div className="relative group">
+                            <div className="flex flex-nowrap gap-2 overflow-x-auto scrollbar-hide pb-2" style={{ scrollSnapType: 'x mandatory' }}>
+                              {ELEMENT_CATALOG.filter(el => 
+                                el.category === "templates" && 
+                                el.id.includes("fitness") &&
+                                (sidebarSearchQuery === "" || el.name.toLowerCase().includes(sidebarSearchQuery.toLowerCase()))
+                              ).map(element => (
+                                <div key={element.id} className="flex-shrink-0" style={{ scrollSnapAlign: 'start', width: '110px' }}>
+                                  <div 
+                                    className="cursor-pointer hover:opacity-80 transition-opacity"
+                                    onClick={() => handleDragEnd({ active: { id: element.id, data: { current: element } }, over: { id: 'canvas' } } as any)}
+                                  >
+                                    <div className="relative rounded-lg overflow-hidden border bg-muted aspect-video mb-1.5">
+                                      {element.thumbnail && (
+                                        <img src={element.thumbnail} alt={element.name} className="w-full h-full object-cover" />
+                                      )}
+                                      {!element.thumbnail && (
+                                        <div className="w-full h-full flex items-center justify-center">
+                                          {element.icon && <element.icon className="h-6 w-6 text-muted-foreground" />}
+                                        </div>
+                                      )}
+                                    </div>
+                                    <p className="text-xs font-medium line-clamp-1 text-center">{element.name}</p>
+                                  </div>
+                                </div>
+                              ))}
+                              {/* Spacer to show partial next item */}
+                              <div className="flex-shrink-0 w-4" />
+                            </div>
+                            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-card to-transparent pointer-events-none" />
+                          </div>
+                        </div>
+
+                        {/* Hospitality & Hotel */}
+                        <div>
+                          <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                            <Hotel className="h-4 w-4" />
+                            Hospitality & Hotel
+                          </h4>
+                          <div className="relative group">
+                            <div className="flex flex-nowrap gap-2 overflow-x-auto scrollbar-hide pb-2" style={{ scrollSnapType: 'x mandatory' }}>
+                              {ELEMENT_CATALOG.filter(el => 
+                                el.category === "templates" && 
+                                el.id.includes("hotel") &&
+                                (sidebarSearchQuery === "" || el.name.toLowerCase().includes(sidebarSearchQuery.toLowerCase()))
+                              ).map(element => (
+                                <div key={element.id} className="flex-shrink-0" style={{ scrollSnapAlign: 'start', width: '110px' }}>
+                                  <div 
+                                    className="cursor-pointer hover:opacity-80 transition-opacity"
+                                    onClick={() => handleDragEnd({ active: { id: element.id, data: { current: element } }, over: { id: 'canvas' } } as any)}
+                                  >
+                                    <div className="relative rounded-lg overflow-hidden border bg-muted aspect-video mb-1.5">
+                                      {element.thumbnail && (
+                                        <img src={element.thumbnail} alt={element.name} className="w-full h-full object-cover" />
+                                      )}
+                                      {!element.thumbnail && (
+                                        <div className="w-full h-full flex items-center justify-center">
+                                          {element.icon && <element.icon className="h-6 w-6 text-muted-foreground" />}
+                                        </div>
+                                      )}
+                                    </div>
+                                    <p className="text-xs font-medium line-clamp-1 text-center">{element.name}</p>
+                                  </div>
+                                </div>
+                              ))}
+                              {/* Spacer to show partial next item */}
+                              <div className="flex-shrink-0 w-4" />
+                            </div>
+                            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-card to-transparent pointer-events-none" />
+                          </div>
+                        </div>
+
+                        {/* Education & School */}
+                        <div>
+                          <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                            <GraduationCap className="h-4 w-4" />
+                            Education & School
+                          </h4>
+                          <div className="relative group">
+                            <div className="flex flex-nowrap gap-2 overflow-x-auto scrollbar-hide pb-2" style={{ scrollSnapType: 'x mandatory' }}>
+                              {ELEMENT_CATALOG.filter(el => 
+                                el.category === "templates" && 
+                                el.id.includes("education") &&
+                                (sidebarSearchQuery === "" || el.name.toLowerCase().includes(sidebarSearchQuery.toLowerCase()))
+                              ).map(element => (
+                                <div key={element.id} className="flex-shrink-0" style={{ scrollSnapAlign: 'start', width: '110px' }}>
+                                  <div 
+                                    className="cursor-pointer hover:opacity-80 transition-opacity"
+                                    onClick={() => handleDragEnd({ active: { id: element.id, data: { current: element } }, over: { id: 'canvas' } } as any)}
+                                  >
+                                    <div className="relative rounded-lg overflow-hidden border bg-muted aspect-video mb-1.5">
+                                      {element.thumbnail && (
+                                        <img src={element.thumbnail} alt={element.name} className="w-full h-full object-cover" />
+                                      )}
+                                      {!element.thumbnail && (
+                                        <div className="w-full h-full flex items-center justify-center">
+                                          {element.icon && <element.icon className="h-6 w-6 text-muted-foreground" />}
+                                        </div>
+                                      )}
+                                    </div>
+                                    <p className="text-xs font-medium line-clamp-1 text-center">{element.name}</p>
+                                  </div>
+                                </div>
+                              ))}
+                              {/* Spacer to show partial next item */}
+                              <div className="flex-shrink-0 w-4" />
+                            </div>
+                            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-card to-transparent pointer-events-none" />
                           </div>
                         </div>
 
@@ -2553,57 +3030,57 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
                         <>
                           <Select defaultValue={selectedElement?.style?.fontFamily || "inter"}>
                             <SelectTrigger className="w-[130px] h-8">
-                              <SelectValue placeholder="Font" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="inter">Inter</SelectItem>
-                              <SelectItem value="roboto">Roboto</SelectItem>
-                              <SelectItem value="arial">Arial</SelectItem>
-                              <SelectItem value="georgia">Georgia</SelectItem>
+                <SelectValue placeholder="Font" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="inter">Inter</SelectItem>
+                <SelectItem value="roboto">Roboto</SelectItem>
+                <SelectItem value="arial">Arial</SelectItem>
+                <SelectItem value="georgia">Georgia</SelectItem>
                               <SelectItem value="playfair">Playfair</SelectItem>
-                            </SelectContent>
-                          </Select>
+              </SelectContent>
+            </Select>
 
                           <Select defaultValue={selectedElement?.style?.fontSize?.toString() || "24"}>
                             <SelectTrigger className="w-[75px] h-8">
-                              <SelectValue placeholder="Size" />
-                            </SelectTrigger>
-                            <SelectContent>
+                <SelectValue placeholder="Size" />
+              </SelectTrigger>
+              <SelectContent>
                               {[12, 14, 16, 18, 20, 24, 28, 32, 40, 48, 56, 64].map(size => (
                                 <SelectItem key={size} value={size.toString()}>{size}px</SelectItem>
                               ))}
-                            </SelectContent>
-                          </Select>
+              </SelectContent>
+            </Select>
 
-                          <Separator orientation="vertical" className="h-6" />
+            <Separator orientation="vertical" className="h-6" />
 
                           <div className="flex gap-1">
                             <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="Bold">
-                              <Bold className="h-4 w-4" />
-                            </Button>
+              <Bold className="h-4 w-4" />
+                    </Button>
                             <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="Italic">
-                              <Italic className="h-4 w-4" />
-                            </Button>
+              <Italic className="h-4 w-4" />
+            </Button>
                             <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="Underline">
-                              <Underline className="h-4 w-4" />
-                            </Button>
+              <Underline className="h-4 w-4" />
+            </Button>
                           </div>
 
-                          <Separator orientation="vertical" className="h-6" />
+            <Separator orientation="vertical" className="h-6" />
 
                           <div className="flex gap-1">
                             <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="Align Left">
-                              <AlignLeft className="h-4 w-4" />
-                            </Button>
+              <AlignLeft className="h-4 w-4" />
+            </Button>
                             <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="Align Center">
-                              <AlignCenter className="h-4 w-4" />
-                            </Button>
+              <AlignCenter className="h-4 w-4" />
+            </Button>
                             <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="Align Right">
-                              <AlignRight className="h-4 w-4" />
-                            </Button>
+              <AlignRight className="h-4 w-4" />
+            </Button>
                           </div>
 
-                          <Separator orientation="vertical" className="h-6" />
+            <Separator orientation="vertical" className="h-6" />
 
                           <div className="flex items-center gap-2">
                             <span className="text-xs text-muted-foreground">Color</span>
@@ -2647,7 +3124,7 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
                           <Button variant="ghost" size="sm" className="h-8 px-2 gap-1" title="Bring to Front">
                             <ArrowUp className="h-4 w-4" />
                             <span className="text-xs">Front</span>
-                          </Button>
+            </Button>
                           <Button variant="ghost" size="sm" className="h-8 px-2 gap-1" title="Send to Back">
                             <ArrowDown className="h-4 w-4" />
                             <span className="text-xs">Back</span>
@@ -2658,10 +3135,10 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
                       {/* IMAGE/VIDEO CONTROLS */}
                       {(elementType === "image" || elementType === "video") && (
                         <>
-                          <Button variant="ghost" size="sm" className="h-8 px-3 gap-2">
-                            <ImageIcon className="h-4 w-4" />
+            <Button variant="ghost" size="sm" className="h-8 px-3 gap-2">
+              <ImageIcon className="h-4 w-4" />
                             Replace
-                          </Button>
+            </Button>
                           <Button variant="ghost" size="sm" className="h-8 px-3 gap-2">
                             <Square className="h-4 w-4" />
                             Crop
@@ -2672,7 +3149,7 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
                           <div className="flex items-center gap-2">
                             <span className="text-xs text-muted-foreground">Brightness</span>
                             <Input type="number" className="w-16 h-8" defaultValue={100} min={0} max={200} />
-                          </div>
+        </div>
 
                           <div className="flex items-center gap-2">
                             <span className="text-xs text-muted-foreground">Contrast</span>
@@ -2716,7 +3193,7 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
                           <div className="flex items-center gap-2">
                             <span className="text-xs text-muted-foreground">Refresh (sec)</span>
                             <Input type="number" className="w-20 h-8" defaultValue={60} min={10} max={3600} />
-                          </div>
+                      </div>
                         </>
                       )}
 
@@ -2735,8 +3212,8 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
                         Delete
                       </Button>
                     </div>
-                  </div>
-                </motion.div>
+                      </div>
+            </motion.div>
               )}
             </AnimatePresence>
 
@@ -2748,7 +3225,7 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
             setSelectedElementId={setSelectedElementId}
             currentSlideIndex={currentSlideIndex}
           />
-          </div>
+              </div>
   
           {/* Right Sidebar - Slides */}
           <div className="w-48 border-l bg-card flex flex-col overflow-hidden">
