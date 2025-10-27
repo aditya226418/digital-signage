@@ -518,6 +518,308 @@ export const MENU_PRESETS = {
       padding: 26,
       gap: 12
     }
+  },
+
+  // NEW PRESET: Italian/Pizza
+  italian: {
+    name: 'Italian',
+    description: 'Authentic Italian restaurant with flag colors',
+    thumbnail: 'https://images.pexels.com/photos/1566837/pexels-photo-1566837.jpeg?w=120&h=80&fit=crop',
+    styles: {
+      preset: 'italian',
+      background: {
+        type: 'image',
+        value: 'https://images.pexels.com/photos/1566837/pexels-photo-1566837.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
+        overlay: 'rgba(255, 250, 240, 0.85)' // Soft cream overlay
+      },
+      font: {
+        family: 'Playfair Display',
+        headlineSize: 23,
+        bodySize: 12,
+        weight: '600',
+        headlineColor: '#8B0000',
+        bodyColor: '#5C4033',
+        priceColor: '#228B22'
+      },
+      accentColor: '#008C45',
+      priceAlign: 'right',
+      currency: '€',
+      divider: {
+        show: true,
+        style: 'solid',
+        thickness: 2,
+        color: '#CD212A',
+        indent: 0
+      }
+    },
+    layout: {
+      padding: 28,
+      gap: 14
+    }
+  },
+
+  // NEW PRESET: Japanese/Sushi
+  japanese: {
+    name: 'Japanese',
+    description: 'Zen-inspired minimalist sushi bar',
+    thumbnail: 'https://images.pexels.com/photos/357756/pexels-photo-357756.jpeg?w=120&h=80&fit=crop',
+    styles: {
+      preset: 'japanese',
+      background: {
+        type: 'image',
+        value: 'https://images.pexels.com/photos/357756/pexels-photo-357756.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
+        overlay: 'rgba(0, 0, 0, 0.60)' // Dark overlay for contrast
+      },
+      font: {
+        family: 'Inter',
+        headlineSize: 21,
+        bodySize: 11,
+        weight: '500',
+        headlineColor: '#FFFFFF',
+        bodyColor: '#E0E0E0',
+        priceColor: '#FF6B6B'
+      },
+      accentColor: '#DC143C',
+      priceAlign: 'right',
+      currency: '¥',
+      divider: {
+        show: true,
+        style: 'solid',
+        thickness: 1,
+        color: 'rgba(220, 20, 60, 0.4)',
+        indent: 0
+      }
+    },
+    layout: {
+      padding: 32,
+      gap: 16
+    }
+  },
+
+  // NEW PRESET: BBQ/Steakhouse
+  bbq: {
+    name: 'BBQ',
+    description: 'Smokey barbecue and steakhouse',
+    thumbnail: 'https://images.pexels.com/photos/1171084/pexels-photo-1171084.jpeg?w=120&h=80&fit=crop',
+    styles: {
+      preset: 'bbq',
+      background: {
+        type: 'image',
+        value: 'https://images.pexels.com/photos/1171084/pexels-photo-1171084.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
+        overlay: 'rgba(40, 20, 0, 0.70)' // Dark smokey overlay
+      },
+      font: {
+        family: 'Bebas Neue',
+        headlineSize: 28,
+        bodySize: 14,
+        weight: '400',
+        headlineColor: '#FFD700',
+        bodyColor: '#FFA500',
+        priceColor: '#FF8C00'
+      },
+      accentColor: '#FF4500',
+      priceAlign: 'left',
+      currency: '$',
+      divider: {
+        show: false,
+        style: 'solid',
+        thickness: 0,
+        color: '#FFFFFF',
+        indent: 0
+      }
+    },
+    layout: {
+      padding: 22,
+      gap: 10
+    }
+  },
+
+  // NEW PRESET: Dessert/Bakery
+  dessert: {
+    name: 'Dessert',
+    description: 'Sweet bakery and dessert cafe',
+    thumbnail: 'https://images.pexels.com/photos/1126359/pexels-photo-1126359.jpeg?w=120&h=80&fit=crop',
+    styles: {
+      preset: 'dessert',
+      background: {
+        type: 'image',
+        value: 'https://images.pexels.com/photos/1126359/pexels-photo-1126359.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
+        overlay: 'rgba(255, 240, 245, 0.85)' // Soft pink overlay
+      },
+      font: {
+        family: 'Pacifico',
+        headlineSize: 24,
+        bodySize: 13,
+        weight: '400',
+        headlineColor: '#FF1493',
+        bodyColor: '#DB7093',
+        priceColor: '#FF69B4'
+      },
+      accentColor: '#FF69B4',
+      priceAlign: 'right',
+      currency: '$',
+      divider: {
+        show: true,
+        style: 'dotted',
+        thickness: 2,
+        color: 'rgba(255, 105, 180, 0.4)',
+        indent: 10
+      }
+    },
+    layout: {
+      padding: 24,
+      gap: 12
+    }
+  },
+
+  // NEW PRESET: Breakfast/Brunch
+  breakfast: {
+    name: 'Breakfast',
+    description: 'Bright morning brunch menu',
+    thumbnail: 'https://images.pexels.com/photos/1410236/pexels-photo-1410236.jpeg?w=120&h=80&fit=crop',
+    styles: {
+      preset: 'breakfast',
+      background: {
+        type: 'image',
+        value: 'https://images.pexels.com/photos/1410236/pexels-photo-1410236.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
+        overlay: 'rgba(255, 253, 208, 0.75)' // Sunny yellow overlay
+      },
+      font: {
+        family: 'Poppins',
+        headlineSize: 22,
+        bodySize: 12,
+        weight: '600',
+        headlineColor: '#FF8C00',
+        bodyColor: '#8B4513',
+        priceColor: '#FF6347'
+      },
+      accentColor: '#FFA500',
+      priceAlign: 'left',
+      currency: '$',
+      divider: {
+        show: true,
+        style: 'solid',
+        thickness: 1,
+        color: 'rgba(255, 140, 0, 0.3)',
+        indent: 0
+      }
+    },
+    layout: {
+      padding: 26,
+      gap: 12
+    }
+  },
+
+  // NEW PRESET: Mediterranean
+  mediterranean: {
+    name: 'Mediterranean',
+    description: 'Fresh Greek and Mediterranean cuisine',
+    thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjgwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMjAiIGhlaWdodD0iODAiIGZpbGw9IiMwMDdGRkYiLz48L3N2Zz4=',
+    styles: {
+      preset: 'mediterranean',
+      background: {
+        type: 'gradient',
+        value: 'linear-gradient(135deg, #0077BE 0%, #00B4D8 50%, #FFFFFF 100%)'
+      },
+      font: {
+        family: 'Raleway',
+        headlineSize: 23,
+        bodySize: 12,
+        weight: '600',
+        headlineColor: '#003D5B',
+        bodyColor: '#005F73',
+        priceColor: '#E07A5F'
+      },
+      accentColor: '#E07A5F',
+      priceAlign: 'right',
+      currency: '€',
+      divider: {
+        show: true,
+        style: 'solid',
+        thickness: 1,
+        color: 'rgba(0, 125, 190, 0.3)',
+        indent: 0
+      }
+    },
+    layout: {
+      padding: 28,
+      gap: 14
+    }
+  },
+
+  // NEW PRESET: Vegan/Organic
+  vegan: {
+    name: 'Vegan',
+    description: 'Plant-based organic menu',
+    thumbnail: 'https://images.pexels.com/photos/1640774/pexels-photo-1640774.jpeg?w=120&h=80&fit=crop',
+    styles: {
+      preset: 'vegan',
+      background: {
+        type: 'image',
+        value: 'https://images.pexels.com/photos/1640774/pexels-photo-1640774.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
+        overlay: 'rgba(240, 255, 240, 0.82)' // Light green overlay
+      },
+      font: {
+        family: 'Poppins',
+        headlineSize: 21,
+        bodySize: 11,
+        weight: '500',
+        headlineColor: '#2D5016',
+        bodyColor: '#4A7C59',
+        priceColor: '#6B8E23'
+      },
+      accentColor: '#7CB342',
+      priceAlign: 'right',
+      currency: '₹',
+      divider: {
+        show: true,
+        style: 'solid',
+        thickness: 2,
+        color: 'rgba(124, 179, 66, 0.3)',
+        indent: 0
+      }
+    },
+    layout: {
+      padding: 26,
+      gap: 12
+    }
+  },
+
+  // NEW PRESET: Bar/Nightclub
+  bar: {
+    name: 'Bar',
+    description: 'Modern cocktail bar and nightclub',
+    thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjgwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMjAiIGhlaWdodD0iODAiIGZpbGw9IiMxMDAxMjAiLz48L3N2Zz4=',
+    styles: {
+      preset: 'bar',
+      background: {
+        type: 'gradient',
+        value: 'linear-gradient(135deg, #100120 0%, #2E0854 50%, #6B0F9C 100%)'
+      },
+      font: {
+        family: 'Montserrat',
+        headlineSize: 25,
+        bodySize: 13,
+        weight: '700',
+        headlineColor: '#00FFFF',
+        bodyColor: '#FF00FF',
+        priceColor: '#FFD700'
+      },
+      accentColor: '#FF00FF',
+      priceAlign: 'right',
+      currency: '$',
+      divider: {
+        show: true,
+        style: 'solid',
+        thickness: 2,
+        color: 'rgba(255, 0, 255, 0.3)',
+        indent: 0
+      }
+    },
+    layout: {
+      padding: 24,
+      gap: 12
+    }
   }
 };
 

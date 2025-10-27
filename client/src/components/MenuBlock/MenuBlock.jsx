@@ -361,11 +361,24 @@ export const MenuBlockCanvas = ({ menuData, zoomLevel = 100, isSelected = false,
       }}
       onClick={() => onSelect && onSelect(menuData.id)}
     >
+      {/* Overlay layer for image backgrounds to ensure text readability */}
+      {styles.background.overlay && (
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundColor: styles.background.overlay,
+            zIndex: 1,
+          }}
+        />
+      )}
+      
+      {/* Content layer */}
       <div 
-        className="grid gap-8"
+        className="grid gap-8 relative"
         style={{
           gridTemplateColumns: `repeat(${layout.columns}, 1fr)`,
           gap: `${layout.gap * 2}px`,
+          zIndex: 2,
         }}
       >
         {columns.map((columnItems, columnIndex) => (
@@ -384,7 +397,7 @@ export const MenuBlockCanvas = ({ menuData, zoomLevel = 100, isSelected = false,
 
       {/* Selection indicator */}
       {isSelected && (
-        <div className="absolute top-2 right-2 bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+        <div className="absolute top-2 right-2 bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1" style={{ zIndex: 3 }}>
           <Settings className="h-3 w-3" />
           Selected
         </div>
