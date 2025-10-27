@@ -51,7 +51,36 @@ import {
   Minus,
   Quote,
   Hexagon,
-  MoveRight
+  MoveRight,
+  FileText,
+  Megaphone,
+  Coffee,
+  Building2,
+  Cloud,
+  Newspaper,
+  Timer,
+  Settings,
+  Droplet,
+  Zap,
+  Play,
+  Waves,
+  Award,
+  GripVertical,
+  Undo,
+  Redo,
+  AlignHorizontalDistributeCenter,
+  Group,
+  Ungroup,
+  Globe,
+  Sheet,
+  Instagram,
+  Youtube,
+  Rss,
+  CalendarDays,
+  MessageSquarePlus,
+  Tv,
+  BarChart3,
+  MapPin
 } from "lucide-react";
 import {
   Dialog,
@@ -86,11 +115,12 @@ import {
 
 interface SlideElement {
   id: string;
-  type: "text" | "image" | "shape";
+  type: "text" | "image" | "shape" | "video" | "widget" | "template";
   content: string;
   position: { x: number; y: number };
   size: { width: number; height: number };
   style?: {
+    // Text styles
     fontSize?: number;
     fontFamily?: string;
     color?: string;
@@ -98,7 +128,31 @@ interface SlideElement {
     italic?: boolean;
     underline?: boolean;
     align?: "left" | "center" | "right" | "justify";
+    lineHeight?: number;
+    letterSpacing?: number;
+    backgroundColor?: string;
+    // Shape styles
+    fillColor?: string;
+    strokeColor?: string;
+    strokeWidth?: number;
+    cornerRadius?: number;
+    opacity?: number;
+    // Image styles
+    filter?: string;
+    brightness?: number;
+    contrast?: number;
+    borderRadius?: number;
   };
+  // Widget-specific data
+  widgetType?: "clock" | "weather" | "news" | "countdown" | "google-sheets" | "website" | "instagram" | "youtube" | "rss" | "calendar" | "qrcode" | "analytics" | "camera" | "maps";
+  widgetConfig?: {
+    theme?: "light" | "dark";
+    format?: string;
+    dataSource?: string;
+  };
+  // Lock/layer
+  locked?: boolean;
+  zIndex?: number;
 }
 
 interface Slide {
@@ -126,7 +180,8 @@ interface TemplateSelectionModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-type ElementCategory = "content" | "design" | "resources";
+type ElementCategory = "templates" | "texts" | "labels" | "media" | "shapes" | "widgets";
+type FilterType = "all" | "text" | "images" | "videos" | "widgets" | "shapes" | "templates";
 
 interface ElementType {
   id: string;
@@ -134,6 +189,8 @@ interface ElementType {
   icon: React.ComponentType<{ className?: string }>;
   category: ElementCategory;
   defaultProps: Partial<SlideElement>;
+  description?: string;
+  thumbnail?: string;
 }
 
 interface StockAsset {
@@ -143,206 +200,548 @@ interface StockAsset {
   category: "stock-image" | "pickcel-stock" | "pickcel-app";
 }
 
-// Element catalog for the sidebar
+// Comprehensive Element Catalog organized by 5 categories
 const ELEMENT_CATALOG: ElementType[] = [
-  // Content Elements - Text
+  // ========== TEMPLATES ==========
+  {
+    id: "template-restaurant",
+    name: "Restaurant Menu",
+    icon: Coffee,
+    category: "templates",
+    description: "Digital menu board with pricing",
+    thumbnail: "https://images.pexels.com/photos/6267/menu-restaurant-vintage-table.jpg?w=160&h=100&fit=crop",
+    defaultProps: {
+      type: "template",
+      content: "restaurant-template",
+      position: { x: 0, y: 0 },
+      size: { width: 960, height: 540 }
+    }
+  },
+  {
+    id: "template-retail",
+    name: "Retail Promo",
+    icon: Megaphone,
+    category: "templates",
+    description: "Sale and promotional display",
+    thumbnail: "https://images.pexels.com/photos/1797161/pexels-photo-1797161.jpeg?w=160&h=100&fit=crop",
+    defaultProps: {
+      type: "template",
+      content: "retail-template",
+      position: { x: 0, y: 0 },
+      size: { width: 960, height: 540 }
+    }
+  },
+  {
+    id: "template-corporate",
+    name: "Corporate Announcement",
+    icon: Building2,
+    category: "templates",
+    description: "Office information display",
+    thumbnail: "https://images.pexels.com/photos/380769/pexels-photo-380769.jpeg?w=160&h=100&fit=crop",
+    defaultProps: {
+      type: "template",
+      content: "corporate-template",
+      position: { x: 0, y: 0 },
+      size: { width: 960, height: 540 }
+    }
+  },
+
+  // ========== TEXTS ==========
   {
     id: "headline",
     name: "Headline",
     icon: Type,
-    category: "content",
+    category: "texts",
+    description: "Large heading text",
     defaultProps: {
       type: "text",
-      content: "Your Headline Here",
+      content: "Grand Buffet Today",
       position: { x: 100, y: 100 },
-      size: { width: 700, height: 80 },
-      style: { fontSize: 48, fontFamily: "Inter", color: "#1a1a1a", bold: true, align: "center" }
+      size: { width: 760, height: 80 },
+      style: { fontSize: 56, fontFamily: "Inter", color: "#1a1a1a", bold: true, align: "center" }
     }
   },
   {
     id: "subtitle",
     name: "Subtitle",
     icon: Type,
-    category: "content",
+    category: "texts",
+    description: "Secondary heading",
     defaultProps: {
       type: "text",
-      content: "Your subtitle text",
+      content: "Breakfast 7-10 AM",
       position: { x: 100, y: 200 },
-      size: { width: 700, height: 50 },
-      style: { fontSize: 24, fontFamily: "Inter", color: "#666666", align: "center" }
+      size: { width: 760, height: 50 },
+      style: { fontSize: 28, fontFamily: "Inter", color: "#666666", align: "center" }
     }
   },
   {
     id: "body-text",
     name: "Body Text",
-    icon: Type,
-    category: "content",
+    icon: FileText,
+    category: "texts",
+    description: "Paragraph text",
     defaultProps: {
       type: "text",
-      content: "Add your body text here",
-      position: { x: 100, y: 250 },
-      size: { width: 700, height: 100 },
-      style: { fontSize: 16, fontFamily: "Inter", color: "#333333", align: "left" }
+      content: "Add your body text here with details and information",
+      position: { x: 100, y: 280 },
+      size: { width: 760, height: 100 },
+      style: { fontSize: 18, fontFamily: "Inter", color: "#333333", align: "left", lineHeight: 1.6 }
     }
   },
-  // Shapes
-  {
-    id: "rectangle",
-    name: "Rectangle",
-    icon: Square,
-    category: "content",
-    defaultProps: {
-      type: "shape",
-      content: "rectangle",
-      position: { x: 200, y: 200 },
-      size: { width: 300, height: 200 },
-      style: { color: "#3b82f6" }
-    }
-  },
-  {
-    id: "circle",
-    name: "Circle",
-    icon: Circle,
-    category: "content",
-    defaultProps: {
-      type: "shape",
-      content: "circle",
-      position: { x: 250, y: 200 },
-      size: { width: 200, height: 200 },
-      style: { color: "#10b981" }
-    }
-  },
-  // Media
-  {
-    id: "image",
-    name: "Image",
-    icon: ImageIcon,
-    category: "content",
-    defaultProps: {
-      type: "image",
-      content: "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=400&h=300&fit=crop",
-      position: { x: 200, y: 150 },
-      size: { width: 400, height: 300 }
-    }
-  },
-  {
-    id: "label",
-    name: "Label",
-    icon: Tag,
-    category: "content",
-    defaultProps: {
-      type: "text",
-      content: "SALE",
-      position: { x: 300, y: 100 },
-      size: { width: 150, height: 60 },
-      style: { fontSize: 28, fontFamily: "Inter", color: "#ffffff", bold: true, align: "center" }
-    }
-  },
-  // Additional Text Elements
   {
     id: "quote",
-    name: "Quote",
+    name: "Quote Block",
     icon: Quote,
-    category: "content",
+    category: "texts",
+    description: "Stylized quotation",
     defaultProps: {
       type: "text",
-      content: '"Inspiring quote text"',
+      content: '"Quality is not an act, it is a habit"',
       position: { x: 150, y: 200 },
-      size: { width: 600, height: 100 },
-      style: { fontSize: 24, fontFamily: "Georgia", color: "#555555", italic: true, align: "center" }
+      size: { width: 660, height: 100 },
+      style: { fontSize: 26, fontFamily: "Georgia", color: "#555555", italic: true, align: "center" }
     }
   },
   {
     id: "ticker",
-    name: "Ticker",
+    name: "Scrolling Ticker",
     icon: MoveRight,
-    category: "content",
+    category: "texts",
+    description: "Moving text banner",
     defaultProps: {
       type: "text",
-      content: "Breaking News • Latest Updates",
-      position: { x: 0, y: 500 },
-      size: { width: 960, height: 40 },
-      style: { fontSize: 18, fontFamily: "Inter", color: "#ffffff", bold: true, align: "center" }
+      content: "Breaking News • Latest Updates • Special Offers",
+      position: { x: 0, y: 490 },
+      size: { width: 960, height: 50 },
+      style: { fontSize: 20, fontFamily: "Inter", color: "#ffffff", bold: true, align: "center", backgroundColor: "#dc2626" }
     }
   },
-  // Additional Shapes
   {
-    id: "triangle",
-    name: "Triangle",
-    icon: Triangle,
-    category: "content",
+    id: "datetime",
+    name: "Date & Time",
+    icon: Clock,
+    category: "texts",
+    description: "Current date/time display",
     defaultProps: {
-      type: "shape",
-      content: "triangle",
-      position: { x: 250, y: 200 },
-      size: { width: 200, height: 200 },
-      style: { color: "#f59e0b" }
+      type: "text",
+      content: "Monday, Oct 27 • 12:34 PM",
+      position: { x: 700, y: 30 },
+      size: { width: 230, height: 40 },
+      style: { fontSize: 16, fontFamily: "Inter", color: "#666666", align: "right" }
     }
   },
   {
-    id: "line",
-    name: "Line",
-    icon: Minus,
-    category: "content",
+    id: "menu-block",
+    name: "Menu Block",
+    icon: FileText,
+    category: "texts",
+    description: "Item with price layout",
     defaultProps: {
-      type: "shape",
-      content: "line",
-      position: { x: 100, y: 300 },
-      size: { width: 700, height: 4 },
-      style: { color: "#9ca3af" }
+      type: "text",
+      content: "Veg Thali ₹199",
+      position: { x: 100, y: 200 },
+      size: { width: 350, height: 60 },
+      style: { fontSize: 24, fontFamily: "Inter", color: "#1a1a1a", bold: true, align: "left" }
     }
   },
+
+  // ========== LABELS ==========
   {
-    id: "star-shape",
-    name: "Star",
-    icon: Star,
-    category: "content",
+    id: "promo-label",
+    name: "Promo Label",
+    icon: Tag,
+    category: "labels",
+    description: "Sale tag badge",
     defaultProps: {
-      type: "shape",
-      content: "star",
-      position: { x: 300, y: 200 },
-      size: { width: 150, height: 150 },
-      style: { color: "#fbbf24" }
+      type: "text",
+      content: "50% OFF",
+      position: { x: 750, y: 50 },
+      size: { width: 150, height: 70 },
+      style: { fontSize: 32, fontFamily: "Inter", color: "#ffffff", bold: true, align: "center", backgroundColor: "#dc2626", cornerRadius: 8 }
     }
   },
-  // Additional Media
+
+  // ========== MEDIA ==========
   {
-    id: "video",
-    name: "Video",
-    icon: Video,
-    category: "content",
+    id: "image-placeholder",
+    name: "Image",
+    icon: ImageIcon,
+    category: "media",
+    description: "Sample Image 1",
     defaultProps: {
       type: "image",
+      content: "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=400&h=300&fit=crop",
+      position: { x: 280, y: 120 },
+      size: { width: 400, height: 300 }
+    }
+  },
+  {
+    id: "video-placeholder",
+    name: "Video",
+    icon: Video,
+    category: "media",
+    description: "Video content",
+    defaultProps: {
+      type: "video",
       content: "video_placeholder",
-      position: { x: 150, y: 100 },
+      position: { x: 160, y: 90 },
       size: { width: 640, height: 360 }
+    }
+  },
+  {
+    id: "logo-placeholder",
+    name: "Logo",
+    icon: Award,
+    category: "media",
+    description: "Brand logo",
+    defaultProps: {
+      type: "image",
+      content: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=200&h=200&fit=crop",
+      position: { x: 50, y: 30 },
+      size: { width: 120, height: 120 }
     }
   },
   {
     id: "qrcode",
     name: "QR Code",
     icon: QrCode,
-    category: "content",
+    category: "media",
+    description: "Scannable QR code",
     defaultProps: {
       type: "shape",
       content: "qrcode",
-      position: { x: 350, y: 200 },
-      size: { width: 200, height: 200 },
+      position: { x: 730, y: 320 },
+      size: { width: 180, height: 180 },
       style: { color: "#000000" }
     }
   },
-  // Design Resources
+
+  // ========== SHAPES & DESIGN ==========
   {
-    id: "gradient-bg",
-    name: "Gradient",
-    icon: Palette,
-    category: "design",
+    id: "rectangle",
+    name: "Rectangle",
+    icon: Square,
+    category: "shapes",
+    description: "Basic rectangle",
     defaultProps: {
       type: "shape",
       content: "rectangle",
+      position: { x: 200, y: 200 },
+      size: { width: 300, height: 200 },
+      style: { fillColor: "#3b82f6", opacity: 1 }
+    }
+  },
+  {
+    id: "circle",
+    name: "Circle",
+    icon: Circle,
+    category: "shapes",
+    description: "Basic circle",
+    defaultProps: {
+      type: "shape",
+      content: "circle",
+      position: { x: 250, y: 200 },
+      size: { width: 200, height: 200 },
+      style: { fillColor: "#10b981", opacity: 1 }
+    }
+  },
+  {
+    id: "triangle",
+    name: "Triangle",
+    icon: Triangle,
+    category: "shapes",
+    description: "Triangle shape",
+    defaultProps: {
+      type: "shape",
+      content: "triangle",
+      position: { x: 250, y: 200 },
+      size: { width: 200, height: 200 },
+      style: { fillColor: "#f59e0b", opacity: 1 }
+    }
+  },
+  {
+    id: "line",
+    name: "Line / Divider",
+    icon: Minus,
+    category: "shapes",
+    description: "Horizontal line",
+    defaultProps: {
+      type: "shape",
+      content: "line",
+      position: { x: 100, y: 270 },
+      size: { width: 760, height: 4 },
+      style: { fillColor: "#9ca3af", opacity: 1 }
+    }
+  },
+  {
+    id: "star",
+    name: "Badge / Star",
+    icon: Star,
+    category: "shapes",
+    description: "Star badge",
+    defaultProps: {
+      type: "shape",
+      content: "star",
+      position: { x: 300, y: 200 },
+      size: { width: 150, height: 150 },
+      style: { fillColor: "#fbbf24", opacity: 1 }
+    }
+  },
+  {
+    id: "hexagon",
+    name: "Hexagon",
+    icon: Hexagon,
+    category: "shapes",
+    description: "Hexagon shape",
+    defaultProps: {
+      type: "shape",
+      content: "hexagon",
+      position: { x: 300, y: 200 },
+      size: { width: 180, height: 180 },
+      style: { fillColor: "#a855f7", opacity: 1 }
+    }
+  },
+  {
+    id: "wave",
+    name: "Wave Pattern",
+    icon: Waves,
+    category: "shapes",
+    description: "Decorative wave",
+    defaultProps: {
+      type: "shape",
+      content: "wave",
+      position: { x: 0, y: 400 },
+      size: { width: 960, height: 140 },
+      style: { fillColor: "#06b6d4", opacity: 0.3 }
+    }
+  },
+  {
+    id: "gradient",
+    name: "Gradient Fill",
+    icon: Droplet,
+    category: "shapes",
+    description: "Gradient background",
+    defaultProps: {
+      type: "shape",
+      content: "gradient",
+      position: { x: 50, y: 50 },
+      size: { width: 860, height: 440 },
+      style: { fillColor: "#667eea", opacity: 0.9 }
+    }
+  },
+
+  // ========== WIDGETS & APPS ==========
+  {
+    id: "clock-widget",
+    name: "Clock",
+    icon: Clock,
+    category: "widgets",
+    description: "12:34 PM Analog",
+    defaultProps: {
+      type: "widget",
+      content: "clock",
+      position: { x: 700, y: 50 },
+      size: { width: 200, height: 120 },
+      widgetType: "clock",
+      widgetConfig: { format: "12h", theme: "light" }
+    }
+  },
+  {
+    id: "weather-widget",
+    name: "Weather",
+    icon: Cloud,
+    category: "widgets",
+    description: "Bengaluru, 27°C",
+    defaultProps: {
+      type: "widget",
+      content: "weather",
+      position: { x: 700, y: 200 },
+      size: { width: 200, height: 150 },
+      widgetType: "weather",
+      widgetConfig: { theme: "light" }
+    }
+  },
+  {
+    id: "news-ticker",
+    name: "News Ticker",
+    icon: Newspaper,
+    category: "widgets",
+    description: "Live news feed",
+    defaultProps: {
+      type: "widget",
+      content: "news",
+      position: { x: 0, y: 480 },
+      size: { width: 960, height: 60 },
+      widgetType: "news",
+      widgetConfig: { theme: "dark" }
+    }
+  },
+  {
+    id: "countdown",
+    name: "Countdown Timer",
+    icon: Timer,
+    category: "widgets",
+    description: "Event countdown",
+    defaultProps: {
+      type: "widget",
+      content: "countdown",
+      position: { x: 300, y: 200 },
+      size: { width: 360, height: 140 },
+      widgetType: "countdown",
+      widgetConfig: { theme: "light" }
+    }
+  },
+
+  // ========== INTEGRATIONS (Sub-category of Widgets) ==========
+  {
+    id: "google-sheets",
+    name: "Google Sheets",
+    icon: Sheet,
+    category: "widgets",
+    description: "Live spreadsheet data",
+    defaultProps: {
+      type: "widget",
+      content: "google-sheets",
+      position: { x: 100, y: 100 },
+      size: { width: 560, height: 320 },
+      widgetType: "google-sheets",
+      widgetConfig: { theme: "light", dataSource: "" }
+    }
+  },
+  {
+    id: "website-display",
+    name: "Website Display",
+    icon: Globe,
+    category: "widgets",
+    description: "Embed any webpage",
+    defaultProps: {
+      type: "widget",
+      content: "website",
+      position: { x: 100, y: 100 },
+      size: { width: 760, height: 440 },
+      widgetType: "website",
+      widgetConfig: { theme: "light", dataSource: "" }
+    }
+  },
+  {
+    id: "instagram-feed",
+    name: "Instagram Feed",
+    icon: Instagram,
+    category: "widgets",
+    description: "Live Instagram posts",
+    defaultProps: {
+      type: "widget",
+      content: "instagram",
+      position: { x: 100, y: 100 },
+      size: { width: 400, height: 500 },
+      widgetType: "instagram",
+      widgetConfig: { theme: "light", dataSource: "" }
+    }
+  },
+  {
+    id: "youtube-video",
+    name: "YouTube Player",
+    icon: Youtube,
+    category: "widgets",
+    description: "Embed YouTube videos",
+    defaultProps: {
+      type: "widget",
+      content: "youtube",
+      position: { x: 160, y: 90 },
+      size: { width: 640, height: 360 },
+      widgetType: "youtube",
+      widgetConfig: { theme: "light", dataSource: "" }
+    }
+  },
+  {
+    id: "rss-feed",
+    name: "RSS Feed",
+    icon: Rss,
+    category: "widgets",
+    description: "Display RSS content",
+    defaultProps: {
+      type: "widget",
+      content: "rss",
       position: { x: 100, y: 100 },
       size: { width: 760, height: 340 },
-      style: { color: "#667eea" }
+      widgetType: "rss",
+      widgetConfig: { theme: "light", dataSource: "" }
+    }
+  },
+  {
+    id: "calendar-widget",
+    name: "Calendar",
+    icon: CalendarDays,
+    category: "widgets",
+    description: "Google/Outlook calendar",
+    defaultProps: {
+      type: "widget",
+      content: "calendar",
+      position: { x: 100, y: 100 },
+      size: { width: 460, height: 380 },
+      widgetType: "calendar",
+      widgetConfig: { theme: "light", dataSource: "" }
+    }
+  },
+  {
+    id: "qr-code-widget",
+    name: "QR Code",
+    icon: QrCode,
+    category: "widgets",
+    description: "Dynamic QR code",
+    defaultProps: {
+      type: "widget",
+      content: "qrcode",
+      position: { x: 700, y: 150 },
+      size: { width: 200, height: 200 },
+      widgetType: "qrcode",
+      widgetConfig: { theme: "light", dataSource: "" }
+    }
+  },
+  {
+    id: "analytics-dashboard",
+    name: "Analytics",
+    icon: BarChart3,
+    category: "widgets",
+    description: "Data visualization",
+    defaultProps: {
+      type: "widget",
+      content: "analytics",
+      position: { x: 100, y: 100 },
+      size: { width: 760, height: 340 },
+      widgetType: "analytics",
+      widgetConfig: { theme: "light", dataSource: "" }
+    }
+  },
+  {
+    id: "live-camera",
+    name: "Live Camera",
+    icon: Tv,
+    category: "widgets",
+    description: "IP camera feed",
+    defaultProps: {
+      type: "widget",
+      content: "camera",
+      position: { x: 160, y: 90 },
+      size: { width: 640, height: 360 },
+      widgetType: "camera",
+      widgetConfig: { theme: "light", dataSource: "" }
+    }
+  },
+  {
+    id: "google-maps",
+    name: "Google Maps",
+    icon: MapPin,
+    category: "widgets",
+    description: "Interactive map",
+    defaultProps: {
+      type: "widget",
+      content: "maps",
+      position: { x: 100, y: 100 },
+      size: { width: 760, height: 440 },
+      widgetType: "maps",
+      widgetConfig: { theme: "light", dataSource: "" }
     }
   }
 ];
@@ -1045,9 +1444,12 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
   const [slides, setSlides] = useState<Slide[]>([]);
   
   // Left sidebar states
-  const [leftSidebarCollapsed, setLeftSidebarCollapsed] = useState(false);
-  const [activeSidebarCategory, setActiveSidebarCategory] = useState<ElementCategory>("content");
+  const [rightPanelOpen, setRightPanelOpen] = useState(false);
+  const [activeSidebarCategory, setActiveSidebarCategory] = useState<ElementCategory | null>(null);
   const [sidebarSearchQuery, setSidebarSearchQuery] = useState("");
+  const [activeFilter, setActiveFilter] = useState<FilterType>("all");
+  const [favoriteElements, setFavoriteElements] = useState<string[]>([]);
+  const [recentlyUsed, setRecentlyUsed] = useState<string[]>([]);
   
   // Drag and drop states
   const [activeElement, setActiveElement] = useState<ElementType | null>(null);
@@ -1082,9 +1484,25 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
       
       // Auto-select the new element
       setSelectedElementId(newElement.id);
+      
+      // Track recently used (keep last 6 unique items)
+      setRecentlyUsed(prev => {
+        const updated = [activeElement.id, ...prev.filter(id => id !== activeElement.id)];
+        return updated.slice(0, 6);
+      });
     }
     
     setActiveElement(null);
+  };
+
+  // Toggle favorite
+  const toggleFavorite = (elementId: string, e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    setFavoriteElements(prev => 
+      prev.includes(elementId)
+        ? prev.filter(id => id !== elementId)
+        : [...prev, elementId]
+    );
   };
 
   // Element manipulation handlers
@@ -1209,7 +1627,7 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
     onOpenChange(false);
   };
 
-  const toggleFavorite = (templateId: string) => {
+  const toggleFavoriteTemplate = (templateId: string) => {
     setFavoriteTemplates(prev => 
       prev.includes(templateId) 
         ? prev.filter(id => id !== templateId)
@@ -1233,8 +1651,8 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
     }
   };
 
-  // Draggable Element Card Component
-  const DraggableElementCard = ({ element }: { element: ElementType }) => {
+  // Enhanced Draggable Element Card Component
+  const DraggableElementCard = ({ element, showLarge = false }: { element: ElementType; showLarge?: boolean }) => {
     const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
       id: element.id,
       data: { type: 'element', element }
@@ -1244,25 +1662,109 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
       transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
     } : undefined;
 
+    const isFavorite = favoriteElements.includes(element.id);
+    const isTemplate = element.category === "templates";
+
+    // For templates, show larger cards with thumbnails
+    if (isTemplate && showLarge) {
+      return (
+        <TooltipProvider key={element.id}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <motion.div
+                ref={setNodeRef}
+                style={style}
+                {...listeners}
+                {...attributes}
+                className={`relative group cursor-grab active:cursor-grabbing rounded-lg overflow-hidden border-2 hover:border-primary hover:shadow-lg transition-all ${
+                  isDragging ? 'opacity-50' : 'border-transparent'
+                }`}
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <div className="aspect-video bg-muted relative">
+                  {element.thumbnail && (
+                    <img src={element.thumbnail} alt={element.name} className="w-full h-full object-cover" />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                  <div className="absolute bottom-2 left-2 right-2">
+                    <p className="text-white text-xs font-semibold">{element.name}</p>
+                  </div>
+                  {/* Favorite Star */}
+                  <button
+                    onClick={(e) => toggleFavorite(element.id, e)}
+                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 hover:bg-black/70 rounded-full p-1"
+                  >
+                    <Star className={`h-3 w-3 ${isFavorite ? 'fill-yellow-400 text-yellow-400' : 'text-white'}`} />
+                  </button>
+                  {/* Drag Handle Indicator */}
+                  <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-60 transition-opacity">
+                    <GripVertical className="h-4 w-4 text-white" />
+                  </div>
+                </div>
+              </motion.div>
+            </TooltipTrigger>
+            <TooltipContent side="right" className="max-w-[200px]">
+              <p className="font-semibold text-sm">{element.name}</p>
+              {element.description && (
+                <p className="text-xs text-muted-foreground mt-1">{element.description}</p>
+              )}
+              <p className="text-xs text-muted-foreground mt-1">Drag to canvas to add</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    }
+
+    // Regular element cards
     return (
-      <motion.div
-        ref={setNodeRef}
-        style={style}
-        {...listeners}
-        {...attributes}
-        className={`p-3 border rounded-lg cursor-grab active:cursor-grabbing bg-card hover:bg-accent/50 hover:shadow-md transition-all ${
-          isDragging ? 'opacity-50' : ''
-        }`}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-      >
-        <div className="flex flex-col items-center gap-2">
-          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-            <element.icon className="h-5 w-5 text-primary" />
-          </div>
-          <span className="text-xs font-medium text-center">{element.name}</span>
-        </div>
-      </motion.div>
+      <TooltipProvider key={element.id}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <motion.div
+              ref={setNodeRef}
+              style={style}
+              {...listeners}
+              {...attributes}
+              className={`relative group p-4 border rounded-xl cursor-grab active:cursor-grabbing bg-white hover:shadow-lg transition-all ${
+                isDragging ? 'opacity-50' : 'shadow-sm'
+              }`}
+              whileHover={{ scale: 1.03, y: -2 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              {/* Favorite Star */}
+              <button
+                onClick={(e) => toggleFavorite(element.id, e)}
+                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+              >
+                <Star className={`h-3.5 w-3.5 ${isFavorite ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground hover:text-yellow-400'}`} />
+              </button>
+
+              <div className="flex flex-col items-center gap-3">
+                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center group-hover:from-primary/20 group-hover:to-primary/10 transition-all">
+                  <element.icon className="h-7 w-7 text-primary" />
+                </div>
+                <div className="text-center w-full">
+                  <p className="text-xs font-semibold line-clamp-2 leading-snug">{element.name}</p>
+                  {element.category === "widgets" && (
+                    <Badge variant="secondary" className="mt-1.5 text-[10px] h-4">
+                      <Settings className="h-2.5 w-2.5 mr-1" />
+                      Widget
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          </TooltipTrigger>
+          <TooltipContent side="right" className="max-w-[200px]">
+            <p className="font-semibold text-sm">{element.name}</p>
+            {element.description && (
+              <p className="text-xs text-muted-foreground mt-1">{element.description}</p>
+            )}
+            <p className="text-xs text-muted-foreground mt-1">Drag to canvas or click to add</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     );
   };
 
@@ -1272,7 +1774,7 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
       id: asset.id,
       name: asset.name,
       icon: ImageIcon,
-      category: "resources",
+      category: "media",
       defaultProps: {
         type: "image",
         content: asset.thumbnail,
@@ -1296,16 +1798,18 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
         style={style}
         {...listeners}
         {...attributes}
-        className={`cursor-grab active:cursor-grabbing rounded-lg overflow-hidden border hover:border-primary transition-all ${
-          isDragging ? 'opacity-50' : ''
+        className={`cursor-grab active:cursor-grabbing rounded-xl overflow-hidden border hover:shadow-lg transition-all ${
+          isDragging ? 'opacity-50' : 'shadow-sm'
         }`}
-        whileHover={{ scale: 1.02 }}
+        whileHover={{ scale: 1.03, y: -2 }}
         whileTap={{ scale: 0.98 }}
       >
-        <div className="aspect-video relative">
+        <div className="aspect-square relative bg-muted">
           <img src={asset.thumbnail} alt={asset.name} className="w-full h-full object-cover" />
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2">
-            <span className="text-xs font-medium text-white">{asset.name}</span>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity">
+            <div className="absolute bottom-2 left-2 right-2">
+              <p className="text-[10px] font-medium text-white line-clamp-1">{asset.name}</p>
+            </div>
           </div>
         </div>
       </motion.div>
@@ -1378,7 +1882,7 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
                         className="h-8 w-8 p-0 rounded-full"
                         onClick={(e) => {
                           e.stopPropagation();
-                          toggleFavorite(template.id);
+                          toggleFavoriteTemplate(template.id);
                         }}
                       >
                         <Heart 
@@ -1605,6 +2109,52 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
           </Button>
               <Separator orientation="vertical" className="h-6" />
               <h3 className="font-semibold text-lg">{selectedTemplate?.name}</h3>
+              <Separator orientation="vertical" className="h-6" />
+              
+              {/* Global Actions */}
+              <TooltipProvider>
+                <div className="flex items-center gap-1">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="Undo">
+                        <Undo className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Undo (Ctrl+Z)</TooltipContent>
+                  </Tooltip>
+                  
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="Redo">
+                        <Redo className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Redo (Ctrl+Y)</TooltipContent>
+                  </Tooltip>
+
+                  <Separator orientation="vertical" className="h-6 mx-1" />
+
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="ghost" size="sm" className="h-8 px-2 gap-1" title="Align">
+                        <AlignHorizontalDistributeCenter className="h-4 w-4" />
+                        <span className="text-xs">Align</span>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Align & Distribute</TooltipContent>
+                  </Tooltip>
+                  
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="ghost" size="sm" className="h-8 px-2 gap-1" title="Group">
+                        <Group className="h-4 w-4" />
+                        <span className="text-xs">Group</span>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Group (Ctrl+G)</TooltipContent>
+                  </Tooltip>
+                </div>
+              </TooltipProvider>
           </div>
 
             <div className="flex items-center gap-2 mr-7">
@@ -1641,351 +2191,556 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
                 Save & Exit
               </Button>
                   </div>
+                  </div>
                 </div>
   
-          {/* Contextual Editing Toolbar */}
-            <motion.div
-            className="mt-3 flex items-center gap-2 flex-wrap justify-center"
-              initial={{ opacity: 0 }}
-            animate={{ opacity: selectedElementId ? 1 : 0.3 }}
-          >
-              {selectedElementId && elementType === "text" && (
-                <>
-            <Select defaultValue="inter">
-              <SelectTrigger className="w-[140px] h-8">
-                <SelectValue placeholder="Font" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="inter">Inter</SelectItem>
-                <SelectItem value="roboto">Roboto</SelectItem>
-                <SelectItem value="arial">Arial</SelectItem>
-                <SelectItem value="georgia">Georgia</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select defaultValue="24">
-              <SelectTrigger className="w-[80px] h-8">
-                <SelectValue placeholder="Size" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="16">16px</SelectItem>
-                <SelectItem value="24">24px</SelectItem>
-                <SelectItem value="32">32px</SelectItem>
-                <SelectItem value="48">48px</SelectItem>
-                <SelectItem value="64">64px</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Separator orientation="vertical" className="h-6" />
-
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <Bold className="h-4 w-4" />
-                    </Button>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <Italic className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <Underline className="h-4 w-4" />
-            </Button>
-
-            <Separator orientation="vertical" className="h-6" />
-
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <AlignLeft className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <AlignCenter className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <AlignRight className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <AlignJustify className="h-4 w-4" />
-            </Button>
-                </>
-              )}
-
-              {selectedElementId && (elementType === "shape" || elementType === "image") && (
-                <>
-                  <Button variant="ghost" size="sm" className="h-8 px-3 gap-2">
-                    <Palette className="h-4 w-4" />
-                    Fill Color
-                  </Button>
-                  <Button variant="ghost" size="sm" className="h-8 px-3 gap-2">
-                    <Square className="h-4 w-4" />
-                    Border
-                  </Button>
-                  <Separator orientation="vertical" className="h-6" />
-                  <Button variant="ghost" size="sm" className="h-8 px-3 gap-2">
-                    <ArrowUp className="h-4 w-4" />
-                    Front
-                  </Button>
-                  <Button variant="ghost" size="sm" className="h-8 px-3 gap-2">
-                    <ArrowDown className="h-4 w-4" />
-                    Back
-                  </Button>
-                </>
-              )}
-
-              {!selectedElementId && (
-                <span className="text-sm text-muted-foreground">
-                  Select an element or drag from the sidebar to get started
-                </span>
-              )}
-
-              {selectedElementId && (
-                <>
-                  <Separator orientation="vertical" className="h-6" />
-                  <Button variant="ghost" size="sm" className="h-8 px-3 gap-2" onClick={duplicateElement}>
-                    <Copy className="h-4 w-4" />
-                    Duplicate
-                  </Button>
-                  <Button variant="ghost" size="sm" className="h-8 px-3 gap-2" onClick={deleteElement}>
-                    <Trash2 className="h-4 w-4" />
-                    Delete
-                  </Button>
-                </>
-              )}
-            </motion.div>
-        </div>
-
         {/* Main Editor Area */}
         <div className="flex-1 flex overflow-hidden">
-          {/* Left Sidebar */}
-          <div className={`border-r bg-card flex flex-col transition-all duration-300 overflow-hidden ${
-            leftSidebarCollapsed ? 'w-16' : 'w-72'
-          }`}>
-            {leftSidebarCollapsed ? (
-              // Icon-only mode
-              <TooltipProvider>
-                <div className="flex flex-col items-center py-4 gap-2">
-                  <Tooltip>
+          {/* Narrow Left Sidebar (Always Visible) */}
+          <div className="w-20 border-r bg-card flex flex-col py-4 gap-2 flex-shrink-0">
+            <TooltipProvider>
+              <div className="flex flex-col gap-1 px-2">
+                {[
+                  { id: "templates", label: "Templates", icon: FileText },
+                  { id: "texts", label: "Texts", icon: Type },
+                  { id: "labels", label: "Labels", icon: Tag },
+                  { id: "media", label: "Images", icon: ImageIcon },
+                  { id: "shapes", label: "Shapes", icon: Circle },
+                  { id: "widgets", label: "Widgets", icon: Package },
+                ].map((category) => (
+                  <Tooltip key={category.id}>
                     <TooltipTrigger asChild>
                       <Button
-                        variant="ghost"
-                        size="sm"
-                        className="w-10 h-10 p-0"
-                        onClick={() => setLeftSidebarCollapsed(false)}
-                      >
-                        <ChevronRightIcon className="h-4 w-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="right">
-                      <p>Expand sidebar</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  
-                  <Separator className="w-8" />
-                  
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant={activeSidebarCategory === "content" ? "default" : "ghost"}
-                        size="sm"
-                        className="w-10 h-10 p-0"
+                        variant={activeSidebarCategory === category.id ? "default" : "ghost"}
+                        className="w-full h-auto flex flex-col items-center gap-1.5 py-3 px-2"
                         onClick={() => {
-                          setActiveSidebarCategory("content");
-                          setLeftSidebarCollapsed(false);
+                          if (activeSidebarCategory === category.id) {
+                            setActiveSidebarCategory(null);
+                            setRightPanelOpen(false);
+                          } else {
+                            setActiveSidebarCategory(category.id as ElementCategory);
+                            setRightPanelOpen(true);
+                          }
                         }}
                       >
-                        <Layers className="h-5 w-5" />
+                        <category.icon className="h-5 w-5" />
+                        <span className="text-[10px] font-medium leading-tight text-center">
+                          {category.label}
+                        </span>
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent side="right">
-                      <p>Content Elements</p>
+                      <p>{category.label}</p>
                     </TooltipContent>
                   </Tooltip>
-                  
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant={activeSidebarCategory === "design" ? "default" : "ghost"}
-                        size="sm"
-                        className="w-10 h-10 p-0"
-                        onClick={() => {
-                          setActiveSidebarCategory("design");
-                          setLeftSidebarCollapsed(false);
-                        }}
-                      >
-                        <Palette className="h-5 w-5" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="right">
-                      <p>Design Resources</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant={activeSidebarCategory === "resources" ? "default" : "ghost"}
-                        size="sm"
-                        className="w-10 h-10 p-0"
-                        onClick={() => {
-                          setActiveSidebarCategory("resources");
-                          setLeftSidebarCollapsed(false);
-                        }}
-                      >
-                        <Package className="h-5 w-5" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="right">
-                      <p>Stock Assets</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-              </TooltipProvider>
-            ) : (
-              // Expanded mode
-              <>
-                <div className="p-3 border-b flex items-center justify-between flex-shrink-0">
-                  <h4 className="font-semibold text-sm">Add Elements</h4>
+                ))}
+              </div>
+            </TooltipProvider>
+          </div>
+
+          {/* Sliding Right Panel */}
+          <AnimatePresence>
+            {rightPanelOpen && activeSidebarCategory && (
+            <motion.div
+                initial={{ width: 0, opacity: 0 }}
+                animate={{ width: 320, opacity: 1 }}
+                exit={{ width: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="border-r bg-card flex flex-col overflow-hidden flex-shrink-0"
+              >
+                {/* Panel Header */}
+                <div className="p-4 border-b flex items-center justify-between flex-shrink-0">
+                  <h3 className="font-semibold text-base capitalize">
+                    {activeSidebarCategory}
+                  </h3>
                   <Button
                     variant="ghost"
                     size="sm"
                     className="h-8 w-8 p-0"
-                    onClick={() => setLeftSidebarCollapsed(true)}
+                    onClick={() => {
+                      setRightPanelOpen(false);
+                      setActiveSidebarCategory(null);
+                    }}
                   >
                     <ChevronLeft className="h-4 w-4" />
                   </Button>
                 </div>
 
-                <Tabs value={activeSidebarCategory} onValueChange={(v) => setActiveSidebarCategory(v as ElementCategory)} className="flex-1 flex flex-col overflow-hidden">
-                  <TabsList className="grid w-full grid-cols-3 mx-3 mt-2">
-                    <TabsTrigger value="content" className="text-xs">
-                      <Layers className="h-3 w-3 mr-1" />
-                      Content
-                    </TabsTrigger>
-                    <TabsTrigger value="design" className="text-xs">
-                      <Palette className="h-3 w-3 mr-1" />
-                      Design
-                    </TabsTrigger>
-                    <TabsTrigger value="resources" className="text-xs">
-                      <Package className="h-3 w-3 mr-1" />
-                      Assets
-                    </TabsTrigger>
-                  </TabsList>
+                {/* Search Bar */}
+                <div className="px-4 py-3 border-b">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search..."
+                      className="pl-9 h-10"
+                      value={sidebarSearchQuery}
+                      onChange={(e) => setSidebarSearchQuery(e.target.value)}
+                    />
+                  </div>
+                </div>
 
-                  <TabsContent value="content" className="flex-1 overflow-hidden mt-0">
-                    {/* Search Bar */}
-                    <div className="p-3 border-b">
-                      <div className="relative">
-                        <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          placeholder="Search elements..."
-                          className="pl-8 h-9"
-                          value={sidebarSearchQuery}
-                          onChange={(e) => setSidebarSearchQuery(e.target.value)}
-                        />
-                      </div>
-                    </div>
+                {/* Content based on active category */}
+                <ScrollArea className="flex-1">
+                  <div className="p-4 space-y-6">
 
-                    <ScrollArea className="h-full">
-                      <div className="p-3 space-y-4">
-                        {/* Text Elements Section */}
-                        {ELEMENT_CATALOG.filter(el => 
-                          el.category === "content" && 
-                          (el.id.includes('headline') || el.id.includes('subtitle') || el.id.includes('body') || el.id.includes('quote') || el.id.includes('ticker') || el.id.includes('label')) &&
-                          el.name.toLowerCase().includes(sidebarSearchQuery.toLowerCase())
-                        ).length > 0 && (
-                          <div>
-                            <div className="flex items-center gap-2 mb-2">
-                              <Type className="h-3.5 w-3.5 text-muted-foreground" />
-                              <span className="text-xs font-semibold text-muted-foreground">TEXT</span>
-                            </div>
-                            <div className="grid grid-cols-2 gap-2">
-                              {ELEMENT_CATALOG.filter(el => 
-                                el.category === "content" && 
-                                (el.id.includes('headline') || el.id.includes('subtitle') || el.id.includes('body') || el.id.includes('quote') || el.id.includes('ticker') || el.id.includes('label')) &&
-                                el.name.toLowerCase().includes(sidebarSearchQuery.toLowerCase())
-                              ).map(element => (
-                                <DraggableElementCard key={element.id} element={element} />
-                              ))}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Shapes Section */}
-                        {ELEMENT_CATALOG.filter(el => 
-                          el.category === "content" && 
-                          (el.id.includes('rectangle') || el.id.includes('circle') || el.id.includes('triangle') || el.id.includes('line') || el.id.includes('star') || el.id === 'qrcode') &&
-                          el.name.toLowerCase().includes(sidebarSearchQuery.toLowerCase())
-                        ).length > 0 && (
-                          <div>
-                            <div className="flex items-center gap-2 mb-2">
-                              <Square className="h-3.5 w-3.5 text-muted-foreground" />
-                              <span className="text-xs font-semibold text-muted-foreground">SHAPES</span>
-                            </div>
-                            <div className="grid grid-cols-2 gap-2">
-                              {ELEMENT_CATALOG.filter(el => 
-                                el.category === "content" && 
-                                (el.id.includes('rectangle') || el.id.includes('circle') || el.id.includes('triangle') || el.id.includes('line') || el.id.includes('star') || el.id === 'qrcode') &&
-                                el.name.toLowerCase().includes(sidebarSearchQuery.toLowerCase())
-                              ).map(element => (
-                                <DraggableElementCard key={element.id} element={element} />
-                              ))}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Media Section */}
-                        {ELEMENT_CATALOG.filter(el => 
-                          el.category === "content" && 
-                          (el.id.includes('image') || el.id.includes('video')) &&
-                          el.name.toLowerCase().includes(sidebarSearchQuery.toLowerCase())
-                        ).length > 0 && (
-                          <div>
-                            <div className="flex items-center gap-2 mb-2">
-                              <ImageIcon className="h-3.5 w-3.5 text-muted-foreground" />
-                              <span className="text-xs font-semibold text-muted-foreground">MEDIA</span>
-                            </div>
-                            <div className="grid grid-cols-2 gap-2">
-                              {ELEMENT_CATALOG.filter(el => 
-                                el.category === "content" && 
-                                (el.id.includes('image') || el.id.includes('video')) &&
-                                el.name.toLowerCase().includes(sidebarSearchQuery.toLowerCase())
-                              ).map(element => (
-                                <DraggableElementCard key={element.id} element={element} />
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </ScrollArea>
-                  </TabsContent>
-
-                  <TabsContent value="design" className="flex-1 overflow-hidden mt-2">
-                    <ScrollArea className="h-full">
-                      <div className="p-3 space-y-2">
-                        <div className="grid grid-cols-2 gap-2">
-                          {ELEMENT_CATALOG.filter(el => el.category === "design").map(element => (
-                            <DraggableElementCard key={element.id} element={element} />
-                          ))}
-                        </div>
-                      </div>
-                    </ScrollArea>
-                  </TabsContent>
-
-                  <TabsContent value="resources" className="flex-1 overflow-hidden mt-2">
-                    <ScrollArea className="h-full">
-                      <div className="p-3 space-y-3">
+                    {/* TEMPLATES */}
+                    {activeSidebarCategory === "templates" && (
+                      <>
+                        {/* Restaurant & Food */}
                         <div>
-                          <h5 className="text-xs font-semibold mb-2">Stock Images</h5>
-                          <div className="grid grid-cols-2 gap-2">
+                          <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                            <Coffee className="h-4 w-4" />
+                            Restaurant & Food
+                          </h4>
+                          <div className="space-y-3">
+                            {ELEMENT_CATALOG.filter(el => 
+                              el.category === "templates" && 
+                              el.id === "template-restaurant" &&
+                              (sidebarSearchQuery === "" || el.name.toLowerCase().includes(sidebarSearchQuery.toLowerCase()))
+                            ).map(element => (
+                              <DraggableElementCard key={element.id} element={element} showLarge={true} />
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Retail & Shopping */}
+                        <div>
+                          <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                            <Megaphone className="h-4 w-4" />
+                            Retail & Shopping
+                          </h4>
+                          <div className="space-y-3">
+                            {ELEMENT_CATALOG.filter(el => 
+                              el.category === "templates" && 
+                              el.id === "template-retail" &&
+                              (sidebarSearchQuery === "" || el.name.toLowerCase().includes(sidebarSearchQuery.toLowerCase()))
+                            ).map(element => (
+                              <DraggableElementCard key={element.id} element={element} showLarge={true} />
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Corporate & Office */}
+                        <div>
+                          <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                            <Building2 className="h-4 w-4" />
+                            Corporate & Office
+                          </h4>
+                          <div className="space-y-3">
+                            {ELEMENT_CATALOG.filter(el => 
+                              el.category === "templates" && 
+                              el.id === "template-corporate" &&
+                              (sidebarSearchQuery === "" || el.name.toLowerCase().includes(sidebarSearchQuery.toLowerCase()))
+                            ).map(element => (
+                              <DraggableElementCard key={element.id} element={element} showLarge={true} />
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* All Templates (if search is active or showing all) */}
+                        {sidebarSearchQuery && (
+                          <div>
+                            <h4 className="text-sm font-semibold mb-3">All Matching Templates</h4>
+                            <div className="space-y-3">
+                              {ELEMENT_CATALOG.filter(el => 
+                                el.category === "templates" &&
+                                el.name.toLowerCase().includes(sidebarSearchQuery.toLowerCase())
+                              ).map(element => (
+                                <DraggableElementCard key={element.id} element={element} showLarge={true} />
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    )}
+
+                    {/* TEXTS */}
+                    {activeSidebarCategory === "texts" && (
+                      <>
+                        {/* Text Elements Section */}
+                        <div>
+                          <h4 className="text-sm font-semibold mb-3">Text Elements</h4>
+                          <div className="grid grid-cols-2 gap-3">
+                            {ELEMENT_CATALOG.filter(el => 
+                              el.category === "texts" &&
+                              (sidebarSearchQuery === "" || el.name.toLowerCase().includes(sidebarSearchQuery.toLowerCase()))
+                            ).map(element => (
+                              <DraggableElementCard key={element.id} element={element} />
+                            ))}
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    {/* LABELS */}
+                    {activeSidebarCategory === "labels" && (
+                      <>
+                        {/* Label Elements Section */}
+                        <div>
+                          <h4 className="text-sm font-semibold mb-3">Label Elements</h4>
+                          <div className="grid grid-cols-2 gap-3">
+                            {ELEMENT_CATALOG.filter(el => 
+                              el.category === "labels" &&
+                              (sidebarSearchQuery === "" || el.name.toLowerCase().includes(sidebarSearchQuery.toLowerCase()))
+                            ).map(element => (
+                              <DraggableElementCard key={element.id} element={element} />
+                            ))}
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    {/* IMAGES/MEDIA */}
+                    {activeSidebarCategory === "media" && (
+                      <>
+                        {/* Uploads Section */}
+                        <div>
+                          <h4 className="text-sm font-semibold mb-3">Uploads</h4>
+                          <div className="border-2 border-dashed rounded-lg p-8 text-center bg-muted/30">
+                            <ImageIcon className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                            <p className="text-sm text-muted-foreground">No uploads yet</p>
+                          </div>
+                        </div>
+
+                        {/* Media Elements */}
+                        <div>
+                          <h4 className="text-sm font-semibold mb-3">Media</h4>
+                          <div className="grid grid-cols-2 gap-3">
+                            {ELEMENT_CATALOG.filter(el => 
+                              el.category === "media" &&
+                              (sidebarSearchQuery === "" || el.name.toLowerCase().includes(sidebarSearchQuery.toLowerCase()))
+                            ).map(element => (
+                              <DraggableElementCard key={element.id} element={element} />
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Stock Images */}
+                        <div>
+                          <div className="flex items-center justify-between mb-3">
+                            <h4 className="text-sm font-semibold">Images</h4>
+                            <span className="text-xs text-muted-foreground">({STOCK_ASSETS.length})</span>
+                          </div>
+                          <div className="grid grid-cols-2 gap-3">
                             {STOCK_ASSETS.map(asset => (
                               <DraggableStockAsset key={asset.id} asset={asset} />
                             ))}
                           </div>
                         </div>
-                      </div>
-                    </ScrollArea>
-                  </TabsContent>
-                </Tabs>
-              </>
-            )}
-          </div>
+                      </>
+                    )}
 
-          {/* Canvas Area */}
+                    {/* SHAPES */}
+                    {activeSidebarCategory === "shapes" && (
+                      <>
+                        <div>
+                          <h4 className="text-sm font-semibold mb-3">Shapes</h4>
+                          <div className="grid grid-cols-3 gap-3">
+                            {ELEMENT_CATALOG.filter(el => 
+                              el.category === "shapes" &&
+                              (sidebarSearchQuery === "" || el.name.toLowerCase().includes(sidebarSearchQuery.toLowerCase()))
+                            ).map(element => (
+                              <DraggableElementCard key={element.id} element={element} />
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Color Swatches */}
+                        <div>
+                          <h4 className="text-sm font-semibold mb-3">Colors</h4>
+                          <div className="grid grid-cols-6 gap-2">
+                            {["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899", "#06b6d4", "#84cc16"].map((color, i) => (
+                              <div
+                                key={i}
+                                className="aspect-square rounded-lg border-2 border-transparent hover:border-primary cursor-pointer transition-all hover:scale-110"
+                                style={{ backgroundColor: color }}
+                                title={color}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    {/* WIDGETS */}
+                    {activeSidebarCategory === "widgets" && (
+                      <>
+                        {/* Core Widgets */}
+                        <div>
+                          <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                            <Clock className="h-4 w-4" />
+                            Core Widgets
+                          </h4>
+                          <div className="grid grid-cols-2 gap-3">
+                            {ELEMENT_CATALOG.filter(el => 
+                              el.category === "widgets" &&
+                              ["clock-widget", "weather-widget", "news-ticker", "countdown"].includes(el.id) &&
+                              (sidebarSearchQuery === "" || el.name.toLowerCase().includes(sidebarSearchQuery.toLowerCase()))
+                            ).map(element => (
+                              <DraggableElementCard key={element.id} element={element} />
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Integrations */}
+                        <div>
+                          <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                            <Zap className="h-4 w-4" />
+                            Integrations
+                          </h4>
+                          <div className="grid grid-cols-2 gap-3">
+                            {ELEMENT_CATALOG.filter(el => 
+                              el.category === "widgets" &&
+                              ["google-sheets", "website-display", "instagram-feed", "youtube-video", "rss-feed", "calendar-widget", "qr-code-widget", "analytics-dashboard", "live-camera", "google-maps"].includes(el.id) &&
+                              (sidebarSearchQuery === "" || el.name.toLowerCase().includes(sidebarSearchQuery.toLowerCase()))
+                            ).map(element => (
+                              <DraggableElementCard key={element.id} element={element} />
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Request an App */}
+                        <div className="border-2 border-dashed rounded-lg p-4 hover:border-primary transition-colors cursor-pointer bg-muted/20">
+                          <div className="flex flex-col items-center gap-2 text-center">
+                            <MessageSquarePlus className="h-8 w-8 text-primary" />
+                            <div>
+                              <h5 className="font-semibold text-sm">Request an App</h5>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                Need a specific integration? Let us know!
+                              </p>
+                            </div>
+                            <Button variant="outline" size="sm" className="mt-2 w-full">
+                              Submit Request
+                            </Button>
+                          </div>
+                        </div>
+
+                        <div className="bg-muted/50 rounded-lg p-4 text-center">
+                          <Settings className="h-6 w-6 mx-auto mb-2 text-muted-foreground" />
+                          <p className="text-xs text-muted-foreground">
+                            Widgets update automatically with live data
+                          </p>
+                        </div>
+                      </>
+                    )}
+
+                  </div>
+                </ScrollArea>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Canvas Area and Editing Bar Container */}
+          <div className="flex-1 flex flex-col overflow-hidden">
+            {/* Horizontal Contextual Editing Bar */}
+            <AnimatePresence>
+              {selectedElementId && selectedElement && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="border-b bg-card overflow-hidden flex-shrink-0"
+                >
+                  <div className="px-4 py-3">
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <span className="text-sm font-semibold text-muted-foreground">
+                        {elementType === "text" ? "Text" : elementType === "image" ? "Image" : elementType === "shape" ? "Shape" : elementType === "video" ? "Video" : "Widget"}:
+                      </span>
+
+                      {/* TEXT CONTROLS */}
+                      {elementType === "text" && (
+                        <>
+                          <Select defaultValue={selectedElement?.style?.fontFamily || "inter"}>
+                            <SelectTrigger className="w-[130px] h-8">
+                              <SelectValue placeholder="Font" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="inter">Inter</SelectItem>
+                              <SelectItem value="roboto">Roboto</SelectItem>
+                              <SelectItem value="arial">Arial</SelectItem>
+                              <SelectItem value="georgia">Georgia</SelectItem>
+                              <SelectItem value="playfair">Playfair</SelectItem>
+                            </SelectContent>
+                          </Select>
+
+                          <Select defaultValue={selectedElement?.style?.fontSize?.toString() || "24"}>
+                            <SelectTrigger className="w-[75px] h-8">
+                              <SelectValue placeholder="Size" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {[12, 14, 16, 18, 20, 24, 28, 32, 40, 48, 56, 64].map(size => (
+                                <SelectItem key={size} value={size.toString()}>{size}px</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+
+                          <Separator orientation="vertical" className="h-6" />
+
+                          <div className="flex gap-1">
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="Bold">
+                              <Bold className="h-4 w-4" />
+                            </Button>
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="Italic">
+                              <Italic className="h-4 w-4" />
+                            </Button>
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="Underline">
+                              <Underline className="h-4 w-4" />
+                            </Button>
+                          </div>
+
+                          <Separator orientation="vertical" className="h-6" />
+
+                          <div className="flex gap-1">
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="Align Left">
+                              <AlignLeft className="h-4 w-4" />
+                            </Button>
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="Align Center">
+                              <AlignCenter className="h-4 w-4" />
+                            </Button>
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="Align Right">
+                              <AlignRight className="h-4 w-4" />
+                            </Button>
+                          </div>
+
+                          <Separator orientation="vertical" className="h-6" />
+
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-muted-foreground">Color</span>
+                            <input type="color" className="w-10 h-8 rounded border cursor-pointer" defaultValue={selectedElement?.style?.color || "#000000"} />
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-muted-foreground">BG</span>
+                            <input type="color" className="w-10 h-8 rounded border cursor-pointer" defaultValue={selectedElement?.style?.backgroundColor || "#ffffff"} />
+                          </div>
+                        </>
+                      )}
+
+                      {/* SHAPE CONTROLS */}
+                      {elementType === "shape" && (
+                        <>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-muted-foreground">Fill</span>
+                            <input type="color" className="w-10 h-8 rounded border cursor-pointer" defaultValue={selectedElement?.style?.fillColor || "#3b82f6"} />
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-muted-foreground">Stroke</span>
+                            <input type="color" className="w-10 h-8 rounded border cursor-pointer" defaultValue={selectedElement?.style?.strokeColor || "#000000"} />
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-muted-foreground">Width</span>
+                            <Input type="number" className="w-16 h-8" defaultValue={selectedElement?.style?.strokeWidth || 0} min={0} max={10} />
+                          </div>
+
+                          <Separator orientation="vertical" className="h-6" />
+
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-muted-foreground">Opacity</span>
+                            <Input type="number" className="w-16 h-8" defaultValue={Math.round((selectedElement?.style?.opacity || 1) * 100)} min={0} max={100} />
+                          </div>
+
+                          <Separator orientation="vertical" className="h-6" />
+
+                          <Button variant="ghost" size="sm" className="h-8 px-2 gap-1" title="Bring to Front">
+                            <ArrowUp className="h-4 w-4" />
+                            <span className="text-xs">Front</span>
+                          </Button>
+                          <Button variant="ghost" size="sm" className="h-8 px-2 gap-1" title="Send to Back">
+                            <ArrowDown className="h-4 w-4" />
+                            <span className="text-xs">Back</span>
+                          </Button>
+                        </>
+                      )}
+
+                      {/* IMAGE/VIDEO CONTROLS */}
+                      {(elementType === "image" || elementType === "video") && (
+                        <>
+                          <Button variant="ghost" size="sm" className="h-8 px-3 gap-2">
+                            <ImageIcon className="h-4 w-4" />
+                            Replace
+                          </Button>
+                          <Button variant="ghost" size="sm" className="h-8 px-3 gap-2">
+                            <Square className="h-4 w-4" />
+                            Crop
+                          </Button>
+
+                          <Separator orientation="vertical" className="h-6" />
+
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-muted-foreground">Brightness</span>
+                            <Input type="number" className="w-16 h-8" defaultValue={100} min={0} max={200} />
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-muted-foreground">Contrast</span>
+                            <Input type="number" className="w-16 h-8" defaultValue={100} min={0} max={200} />
+                          </div>
+
+                          <Select defaultValue="none">
+                            <SelectTrigger className="w-[120px] h-8">
+                              <SelectValue placeholder="Filter" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="none">No Filter</SelectItem>
+                              <SelectItem value="grayscale">Grayscale</SelectItem>
+                              <SelectItem value="sepia">Sepia</SelectItem>
+                              <SelectItem value="blur">Blur</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </>
+                      )}
+
+                      {/* WIDGET CONTROLS */}
+                      {elementType === "widget" && (
+                        <>
+                          <Button variant="ghost" size="sm" className="h-8 px-3 gap-2">
+                            <Settings className="h-4 w-4" />
+                            Configure
+                          </Button>
+
+                          <Separator orientation="vertical" className="h-6" />
+
+                          <Select defaultValue={selectedElement?.widgetConfig?.theme || "light"}>
+                            <SelectTrigger className="w-[100px] h-8">
+                              <SelectValue placeholder="Theme" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="light">Light</SelectItem>
+                              <SelectItem value="dark">Dark</SelectItem>
+                            </SelectContent>
+                          </Select>
+
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-muted-foreground">Refresh (sec)</span>
+                            <Input type="number" className="w-20 h-8" defaultValue={60} min={10} max={3600} />
+                          </div>
+                        </>
+                      )}
+
+                      {/* COMMON ACTIONS */}
+                      <div className="flex-1" />
+                      <Separator orientation="vertical" className="h-6" />
+                      <Button variant="ghost" size="sm" className="h-8 px-3 gap-2" onClick={duplicateElement} title="Duplicate">
+                        <Copy className="h-4 w-4" />
+                        Duplicate
+                      </Button>
+                      <Button variant="ghost" size="sm" className="h-8 px-3 gap-2" title="Lock/Unlock">
+                        {selectedElement?.locked ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
+                      </Button>
+                      <Button variant="ghost" size="sm" className="h-8 px-3 gap-2 text-destructive hover:text-destructive" onClick={deleteElement} title="Delete">
+                        <Trash2 className="h-4 w-4" />
+                        Delete
+                      </Button>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Canvas Area */}
           <CanvasArea 
             currentSlide={currentSlide} 
             zoomLevel={zoomLevel} 
@@ -1993,7 +2748,8 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
             setSelectedElementId={setSelectedElementId}
             currentSlideIndex={currentSlideIndex}
           />
-
+          </div>
+  
           {/* Right Sidebar - Slides */}
           <div className="w-48 border-l bg-card flex flex-col overflow-hidden">
             <div className="p-3 border-b flex-shrink-0">
@@ -2006,7 +2762,7 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
             <ScrollArea className="flex-1">
               <div className="p-2 space-y-2">
                 {slides.map((slide, index) => (
-                  <motion.div
+            <motion.div
                     key={slide.id}
                     className={`relative cursor-pointer rounded-lg overflow-hidden border-2 transition-all ${
                       index === currentSlideIndex
@@ -2025,11 +2781,11 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
                       />
                       <div className="absolute top-1 left-1 bg-black/70 text-white text-xs px-2 py-0.5 rounded">
                         {index + 1}
-                      </div>
-                    </div>
+                </div>
+                </div>
                   </motion.div>
                 ))}
-              </div>
+                </div>
             </ScrollArea>
 
             <div className="p-2 border-t space-y-2 flex-shrink-0">
@@ -2044,10 +2800,10 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
                 <Button variant="outline" size="sm" className="flex-1 gap-2">
                   <Trash2 className="h-4 w-4" />
                 </Button>
-              </div>
-            </div>
-          </div>
-        </div>
+                </div>
+                      </div>
+                  </div>
+                </div>
 
         {/* Bottom Properties Panel */}
         <div className="border-t bg-muted/30 px-4 py-2 flex-shrink-0">
@@ -2085,8 +2841,8 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
                     <SelectItem value="zoom">Zoom</SelectItem>
                   </SelectContent>
                 </Select>
+                </div>
               </div>
-            </div>
 
             <div className="text-muted-foreground">
               Slide {currentSlideIndex + 1} of {slides.length}
@@ -2121,11 +2877,30 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
     const { setNodeRef, isOver } = useDroppable({ id: 'canvas' });
 
     return (
-      <div className="flex-1 bg-muted/20 overflow-auto" ref={setNodeRef}>
+      <div className="flex-1 bg-muted/20 overflow-auto relative" ref={setNodeRef}>
+        {/* Drop zone hint overlay */}
+        <AnimatePresence>
+          {isOver && activeElement && (
+            <motion.div 
+              className="absolute inset-0 z-10 pointer-events-none flex items-center justify-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <div className="bg-primary/10 border-2 border-dashed border-primary rounded-lg p-6 backdrop-blur-sm">
+                <div className="flex flex-col items-center gap-2 text-primary">
+                  <activeElement.icon className="h-12 w-12" />
+                  <p className="font-semibold">Drop to add {activeElement.name}</p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <div className="flex items-center justify-center min-h-full p-6">
           <div
-            className={`bg-white shadow-2xl rounded-lg overflow-hidden transition-all ${
-              isOver ? 'ring-4 ring-primary/30 scale-[1.02]' : ''
+            className={`bg-white shadow-2xl rounded-lg overflow-hidden transition-all duration-200 ${
+              isOver ? 'ring-4 ring-primary/40 scale-[1.01] shadow-primary/20' : ''
             }`}
             style={{
               width: `${960 * (zoomLevel / 100)}px`,
@@ -2159,6 +2934,21 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
                       onClick={() => setSelectedElementId(element.id)}
                       whileHover={{ scale: 1.01 }}
                     >
+                      {/* Resize Handles (shown when selected) */}
+                      {selectedElementId === element.id && (
+                        <>
+                          {/* Corner handles */}
+                          <div className="absolute -top-1 -left-1 w-2 h-2 bg-primary rounded-full border-2 border-white shadow-sm" />
+                          <div className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full border-2 border-white shadow-sm" />
+                          <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-primary rounded-full border-2 border-white shadow-sm" />
+                          <div className="absolute -bottom-1 -right-1 w-2 h-2 bg-primary rounded-full border-2 border-white shadow-sm" />
+                          {/* Edge handles */}
+                          <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-primary rounded-full border-2 border-white shadow-sm" />
+                          <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-primary rounded-full border-2 border-white shadow-sm" />
+                          <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-primary rounded-full border-2 border-white shadow-sm" />
+                          <div className="absolute -right-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-primary rounded-full border-2 border-white shadow-sm" />
+                        </>
+                      )}
                       {element.type === "text" && (
                         <div
                           className="w-full h-full flex items-center justify-center border-2 border-dashed border-transparent group-hover:border-primary/50 transition-all p-2"
@@ -2191,10 +2981,56 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
                         <div
                           className="w-full h-full border-2 border-dashed border-transparent group-hover:border-primary/50 transition-all"
                           style={{
-                            backgroundColor: element.style?.color || "#3b82f6",
-                            borderRadius: element.content === "circle" ? "50%" : "0"
+                            backgroundColor: element.style?.fillColor || element.style?.color || "#3b82f6",
+                            borderRadius: element.content === "circle" ? "50%" : element.content === "star" ? "10%" : "0",
+                            opacity: element.style?.opacity || 1
                           }}
                         />
+                      )}
+                      {element.type === "video" && (
+                        <div className="relative w-full h-full border-2 border-dashed border-transparent group-hover:border-primary/50 transition-all bg-black/90">
+                          <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
+                            <Play className="h-12 w-12 mb-2 opacity-80" />
+                            <span className="text-xs opacity-60">Video Placeholder</span>
+                          </div>
+                        </div>
+                      )}
+                      {element.type === "widget" && (
+                        <div className="relative w-full h-full border-2 border-dashed border-transparent group-hover:border-primary/50 transition-all bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg p-2">
+                          {element.widgetType === "clock" && (
+                            <div className="flex flex-col items-center justify-center h-full text-white">
+                              <Clock className="h-8 w-8 mb-1" />
+                              <div className="text-2xl font-bold">12:34</div>
+                              <div className="text-xs opacity-80">PM</div>
+                            </div>
+                          )}
+                          {element.widgetType === "weather" && (
+                            <div className="flex flex-col items-center justify-center h-full text-white">
+                              <Cloud className="h-8 w-8 mb-1" />
+                              <div className="text-2xl font-bold">27°C</div>
+                              <div className="text-xs opacity-80">Sunny</div>
+                            </div>
+                          )}
+                          {element.widgetType === "news" && (
+                            <div className="flex items-center justify-center h-full text-white px-2">
+                              <Newspaper className="h-6 w-6 mr-2 flex-shrink-0" />
+                              <div className="text-xs font-medium truncate">Breaking News Ticker</div>
+                            </div>
+                          )}
+                          {element.widgetType === "countdown" && (
+                            <div className="flex flex-col items-center justify-center h-full text-white">
+                              <Timer className="h-8 w-8 mb-1" />
+                              <div className="text-2xl font-bold">5:30</div>
+                              <div className="text-xs opacity-80">Time Left</div>
+                            </div>
+                          )}
+                          {/* Config indicator when selected */}
+                          {selectedElementId === element.id && (
+                            <div className="absolute top-1 right-1 bg-white/20 backdrop-blur-sm rounded p-1">
+                              <Settings className="h-3 w-3 text-white" />
+                            </div>
+                          )}
+                        </div>
                       )}
                     </motion.div>
                   ))}
@@ -2202,8 +3038,8 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
               </div>
             </div>
           </div>
-        );
-      };
+    );
+  };
   
   const renderCompleteStep = () => {
     const currentDate = new Date().toLocaleDateString('en-US', { 
