@@ -83,7 +83,9 @@ import {
   MapPin,
   Dumbbell,
   Hotel,
-  GraduationCap
+  GraduationCap,
+  Wand2,
+  X
 } from "lucide-react";
 import {
   Dialog,
@@ -1706,6 +1708,10 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
   const [favoriteElements, setFavoriteElements] = useState<string[]>([]);
   const [recentlyUsed, setRecentlyUsed] = useState<string[]>([]);
   
+  // Effects and AI panel states
+  const [effectsPanelOpen, setEffectsPanelOpen] = useState(false);
+  const [aiPanelOpen, setAiPanelOpen] = useState(false);
+  
   // Drag and drop states
   const [activeElement, setActiveElement] = useState<ElementType | null>(null);
 
@@ -3007,6 +3013,573 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
             )}
           </AnimatePresence>
 
+          {/* Effects Panel (appears when Effects button is clicked) */}
+          <AnimatePresence>
+            {effectsPanelOpen && selectedElementId && selectedElement && (
+              <motion.div
+                initial={{ width: 0, opacity: 0 }}
+                animate={{ width: 280, opacity: 1 }}
+                exit={{ width: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="border-r bg-card flex flex-col overflow-hidden flex-shrink-0"
+              >
+                {/* Panel Header */}
+                <div className="p-4 border-b flex items-center justify-between flex-shrink-0">
+                  <h3 className="font-semibold text-base flex items-center gap-2">
+                    <Wand2 className="h-4 w-4" />
+                    Effects
+                  </h3>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0"
+                    onClick={() => setEffectsPanelOpen(false)}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                {/* Effects Content */}
+                <ScrollArea className="flex-1">
+                  <div className="p-4 space-y-6">
+                    
+                    {/* TEXT EFFECTS */}
+                    {elementType === "text" && (
+                      <>
+                        <div className="space-y-3">
+                          <h4 className="text-sm font-semibold flex items-center gap-2">
+                            <Type className="h-4 w-4" />
+                            Text Effects
+                          </h4>
+                          
+                          <div className="grid grid-cols-2 gap-2">
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Sparkles className="h-3 w-3" />
+                              Shadow
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Sparkles className="h-3 w-3" />
+                              Glow
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Sparkles className="h-3 w-3" />
+                              Outline
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Sparkles className="h-3 w-3" />
+                              3D Text
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Sparkles className="h-3 w-3" />
+                              Gradient
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Sparkles className="h-3 w-3" />
+                              Neon
+                            </Button>
+                          </div>
+                        </div>
+
+                        <Separator />
+
+                        <div className="space-y-3">
+                          <h4 className="text-sm font-semibold">Text Animation</h4>
+                          <div className="grid grid-cols-1 gap-2">
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Play className="h-3 w-3" />
+                              Fade In
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Play className="h-3 w-3" />
+                              Slide In
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Play className="h-3 w-3" />
+                              Typewriter
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Play className="h-3 w-3" />
+                              Bounce
+                            </Button>
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    {/* IMAGE/VIDEO EFFECTS */}
+                    {(elementType === "image" || elementType === "video") && (
+                      <>
+                        <div className="space-y-3">
+                          <h4 className="text-sm font-semibold flex items-center gap-2">
+                            <ImageIcon className="h-4 w-4" />
+                            Filters
+                          </h4>
+                          
+                          <div className="grid grid-cols-2 gap-2">
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Palette className="h-3 w-3" />
+                              Grayscale
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Palette className="h-3 w-3" />
+                              Sepia
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Palette className="h-3 w-3" />
+                              Vintage
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Palette className="h-3 w-3" />
+                              Vivid
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Palette className="h-3 w-3" />
+                              Black & White
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Palette className="h-3 w-3" />
+                              Warm
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Palette className="h-3 w-3" />
+                              Cool
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Palette className="h-3 w-3" />
+                              Blur
+                            </Button>
+                          </div>
+                        </div>
+
+                        <Separator />
+
+                        <div className="space-y-3">
+                          <h4 className="text-sm font-semibold">Visual Effects</h4>
+                          
+                          <div className="grid grid-cols-1 gap-2">
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Sparkles className="h-3 w-3" />
+                              Drop Shadow
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Sparkles className="h-3 w-3" />
+                              Rounded Corners
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Sparkles className="h-3 w-3" />
+                              Border
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Sparkles className="h-3 w-3" />
+                              Vignette
+                            </Button>
+                          </div>
+                        </div>
+
+                        <Separator />
+
+                        <div className="space-y-3">
+                          <h4 className="text-sm font-semibold">Animations</h4>
+                          <div className="grid grid-cols-1 gap-2">
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Play className="h-3 w-3" />
+                              Zoom In
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Play className="h-3 w-3" />
+                              Zoom Out
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Play className="h-3 w-3" />
+                              Pan Left
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Play className="h-3 w-3" />
+                              Pan Right
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Play className="h-3 w-3" />
+                              Fade
+                            </Button>
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    {/* SHAPE EFFECTS */}
+                    {elementType === "shape" && (
+                      <>
+                        <div className="space-y-3">
+                          <h4 className="text-sm font-semibold flex items-center gap-2">
+                            <Square className="h-4 w-4" />
+                            Shape Effects
+                          </h4>
+                          
+                          <div className="grid grid-cols-1 gap-2">
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Sparkles className="h-3 w-3" />
+                              Drop Shadow
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Sparkles className="h-3 w-3" />
+                              Inner Shadow
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Sparkles className="h-3 w-3" />
+                              Glow
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Sparkles className="h-3 w-3" />
+                              Gradient Fill
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Sparkles className="h-3 w-3" />
+                              Pattern Fill
+                            </Button>
+                          </div>
+                        </div>
+
+                        <Separator />
+
+                        <div className="space-y-3">
+                          <h4 className="text-sm font-semibold">Animations</h4>
+                          <div className="grid grid-cols-1 gap-2">
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Play className="h-3 w-3" />
+                              Pulse
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Play className="h-3 w-3" />
+                              Rotate
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Play className="h-3 w-3" />
+                              Scale
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Play className="h-3 w-3" />
+                              Bounce
+                            </Button>
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    {/* WIDGET EFFECTS */}
+                    {elementType === "widget" && (
+                      <>
+                        <div className="space-y-3">
+                          <h4 className="text-sm font-semibold flex items-center gap-2">
+                            <Package className="h-4 w-4" />
+                            Widget Effects
+                          </h4>
+                          
+                          <div className="grid grid-cols-1 gap-2">
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Sparkles className="h-3 w-3" />
+                              Drop Shadow
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Sparkles className="h-3 w-3" />
+                              Border
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Sparkles className="h-3 w-3" />
+                              Background
+                            </Button>
+                          </div>
+                        </div>
+
+                        <Separator />
+
+                        <div className="space-y-3">
+                          <h4 className="text-sm font-semibold">Transition Effects</h4>
+                          <div className="grid grid-cols-1 gap-2">
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Play className="h-3 w-3" />
+                              Fade In
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Play className="h-3 w-3" />
+                              Slide Up
+                            </Button>
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                  </div>
+                </ScrollArea>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* AI Panel (appears when AI button is clicked) */}
+          <AnimatePresence>
+            {aiPanelOpen && selectedElementId && selectedElement && (
+              <motion.div
+                initial={{ width: 0, opacity: 0 }}
+                animate={{ width: 280, opacity: 1 }}
+                exit={{ width: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="border-r bg-card flex flex-col overflow-hidden flex-shrink-0"
+              >
+                {/* Panel Header */}
+                <div className="p-4 border-b flex items-center justify-between flex-shrink-0">
+                  <h3 className="font-semibold text-base flex items-center gap-2">
+                    <Sparkles className="h-4 w-4" />
+                    AI Tools
+                  </h3>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0"
+                    onClick={() => setAiPanelOpen(false)}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                {/* AI Content */}
+                <ScrollArea className="flex-1">
+                  <div className="p-4 space-y-6">
+                    
+                    {/* TEXT AI TOOLS */}
+                    {elementType === "text" && (
+                      <>
+                        <div className="space-y-3">
+                          <h4 className="text-sm font-semibold flex items-center gap-2">
+                            <Sparkles className="h-4 w-4" />
+                            AI Content Generation
+                          </h4>
+                          
+                          <div className="grid grid-cols-1 gap-2">
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Sparkles className="h-3 w-3" />
+                              Generate Headline
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Sparkles className="h-3 w-3" />
+                              Write Description
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Sparkles className="h-3 w-3" />
+                              Create Call-to-Action
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Sparkles className="h-3 w-3" />
+                              Improve Copy
+                            </Button>
+                          </div>
+                        </div>
+
+                        <Separator />
+
+                        <div className="space-y-3">
+                          <h4 className="text-sm font-semibold">AI Text Enhancement</h4>
+                          
+                          <div className="grid grid-cols-1 gap-2">
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Zap className="h-3 w-3" />
+                              Make Shorter
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Zap className="h-3 w-3" />
+                              Make Longer
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Zap className="h-3 w-3" />
+                              Change Tone
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Zap className="h-3 w-3" />
+                              Fix Grammar
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Zap className="h-3 w-3" />
+                              Translate
+                            </Button>
+                          </div>
+                        </div>
+
+                        <Separator />
+
+                        <div className="space-y-3">
+                          <h4 className="text-sm font-semibold">Smart Suggestions</h4>
+                          <div className="bg-muted/50 rounded-lg p-3">
+                            <p className="text-xs text-muted-foreground mb-2">
+                              AI suggests font pairing for your text
+                            </p>
+                            <Button variant="secondary" size="sm" className="w-full gap-2">
+                              <Sparkles className="h-3 w-3" />
+                              Get Font Suggestions
+                            </Button>
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    {/* IMAGE/VIDEO AI TOOLS */}
+                    {(elementType === "image" || elementType === "video") && (
+                      <>
+                        <div className="space-y-3">
+                          <h4 className="text-sm font-semibold flex items-center gap-2">
+                            <Sparkles className="h-4 w-4" />
+                            AI Image Enhancement
+                          </h4>
+                          
+                          <div className="grid grid-cols-1 gap-2">
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Sparkles className="h-3 w-3" />
+                              Enhance Quality
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Sparkles className="h-3 w-3" />
+                              Remove Background
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Sparkles className="h-3 w-3" />
+                              Upscale Image
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Sparkles className="h-3 w-3" />
+                              Auto Crop
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Sparkles className="h-3 w-3" />
+                              Object Removal
+                            </Button>
+                          </div>
+                        </div>
+
+                        <Separator />
+
+                        <div className="space-y-3">
+                          <h4 className="text-sm font-semibold">AI Generation</h4>
+                          
+                          <div className="grid grid-cols-1 gap-2">
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <ImageIcon className="h-3 w-3" />
+                              Generate Similar Image
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <ImageIcon className="h-3 w-3" />
+                              Extend Image
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <ImageIcon className="h-3 w-3" />
+                              Style Transfer
+                            </Button>
+                          </div>
+                        </div>
+
+                        <Separator />
+
+                        <div className="space-y-3">
+                          <h4 className="text-sm font-semibold">Smart Analysis</h4>
+                          <div className="bg-muted/50 rounded-lg p-3">
+                            <p className="text-xs text-muted-foreground mb-2">
+                              AI analyzes your image and suggests improvements
+                            </p>
+                            <Button variant="secondary" size="sm" className="w-full gap-2">
+                              <Sparkles className="h-3 w-3" />
+                              Analyze Image
+                            </Button>
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    {/* SHAPE AI TOOLS */}
+                    {elementType === "shape" && (
+                      <>
+                        <div className="space-y-3">
+                          <h4 className="text-sm font-semibold flex items-center gap-2">
+                            <Sparkles className="h-4 w-4" />
+                            AI Shape Design
+                          </h4>
+                          
+                          <div className="grid grid-cols-1 gap-2">
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Palette className="h-3 w-3" />
+                              Suggest Color Palette
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Palette className="h-3 w-3" />
+                              Generate Pattern
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Sparkles className="h-3 w-3" />
+                              Create Gradient
+                            </Button>
+                          </div>
+                        </div>
+
+                        <Separator />
+
+                        <div className="space-y-3">
+                          <h4 className="text-sm font-semibold">Smart Suggestions</h4>
+                          <div className="bg-muted/50 rounded-lg p-3">
+                            <p className="text-xs text-muted-foreground mb-2">
+                              AI suggests complementary shapes
+                            </p>
+                            <Button variant="secondary" size="sm" className="w-full gap-2">
+                              <Sparkles className="h-3 w-3" />
+                              Get Suggestions
+                            </Button>
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    {/* WIDGET AI TOOLS */}
+                    {elementType === "widget" && (
+                      <>
+                        <div className="space-y-3">
+                          <h4 className="text-sm font-semibold flex items-center gap-2">
+                            <Sparkles className="h-4 w-4" />
+                            AI Widget Optimization
+                          </h4>
+                          
+                          <div className="grid grid-cols-1 gap-2">
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Sparkles className="h-3 w-3" />
+                              Optimize Layout
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Sparkles className="h-3 w-3" />
+                              Generate Content
+                            </Button>
+                            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                              <Zap className="h-3 w-3" />
+                              Auto-configure
+                            </Button>
+                          </div>
+                        </div>
+
+                        <Separator />
+
+                        <div className="space-y-3">
+                          <h4 className="text-sm font-semibold">Smart Insights</h4>
+                          <div className="bg-muted/50 rounded-lg p-3">
+                            <p className="text-xs text-muted-foreground mb-2">
+                              Get AI-powered recommendations for your widget
+                            </p>
+                            <Button variant="secondary" size="sm" className="w-full gap-2">
+                              <Sparkles className="h-3 w-3" />
+                              Get Recommendations
+                            </Button>
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                  </div>
+                </ScrollArea>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* Canvas Area and Editing Bar Container */}
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* Horizontal Contextual Editing Bar */}
@@ -3199,6 +3772,35 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
 
                       {/* COMMON ACTIONS */}
                       <div className="flex-1" />
+                      
+                      {/* Effects and AI Buttons */}
+                      <Button 
+                        variant={effectsPanelOpen ? "secondary" : "ghost"} 
+                        size="sm" 
+                        className="h-8 px-3 gap-2" 
+                        onClick={() => {
+                          setEffectsPanelOpen(!effectsPanelOpen);
+                          setAiPanelOpen(false);
+                        }} 
+                        title="Effects"
+                      >
+                        <Wand2 className="h-4 w-4" />
+                        Effects
+                      </Button>
+                      <Button 
+                        variant={aiPanelOpen ? "secondary" : "ghost"} 
+                        size="sm" 
+                        className="h-8 px-3 gap-2" 
+                        onClick={() => {
+                          setAiPanelOpen(!aiPanelOpen);
+                          setEffectsPanelOpen(false);
+                        }} 
+                        title="AI Tools"
+                      >
+                        <Sparkles className="h-4 w-4" />
+                        AI
+                      </Button>
+                      
                       <Separator orientation="vertical" className="h-6" />
                       <Button variant="ghost" size="sm" className="h-8 px-3 gap-2" onClick={duplicateElement} title="Duplicate">
                         <Copy className="h-4 w-4" />
@@ -3211,7 +3813,7 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
                         <Trash2 className="h-4 w-4" />
                         Delete
                       </Button>
-                    </div>
+                      </div>
                       </div>
             </motion.div>
               )}
