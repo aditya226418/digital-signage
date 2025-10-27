@@ -85,7 +85,8 @@ import {
   Hotel,
   GraduationCap,
   Wand2,
-  X
+  X,
+  Upload
 } from "lucide-react";
 import {
   Dialog,
@@ -2876,18 +2877,27 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
                     {/* IMAGES/MEDIA */}
                     {activeSidebarCategory === "media" && (
                       <>
-                        {/* Uploads Section */}
+                        {/* Your Uploads */}
                         <div>
-                          <h4 className="text-sm font-semibold mb-3">Uploads</h4>
-                          <div className="border-2 border-dashed rounded-lg p-8 text-center bg-muted/30">
+                          <div className="flex items-center justify-between mb-3">
+                            <h4 className="text-sm font-semibold flex items-center gap-2">
+                              <Upload className="h-4 w-4" />
+                              Your Uploads
+                            </h4>
+                          </div>
+                          <div className="border-2 border-dashed rounded-lg p-6 text-center bg-muted/30 hover:bg-muted/50 transition-colors cursor-pointer">
                             <ImageIcon className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-                            <p className="text-sm text-muted-foreground">No uploads yet</p>
+                            <p className="text-xs text-muted-foreground mb-3">No uploads yet</p>
+                            <Button size="sm" variant="secondary" className="gap-2">
+                              <Upload className="h-4 w-4" />
+                              Upload Images
+                            </Button>
                           </div>
                         </div>
 
-                        {/* Media Elements */}
+                        {/* Media Placeholders */}
                         <div>
-                          <h4 className="text-sm font-semibold mb-3">Media</h4>
+                          <h4 className="text-sm font-semibold mb-3">Media Placeholders</h4>
                           <div className="grid grid-cols-2 gap-3">
                             {ELEMENT_CATALOG.filter(el => 
                               el.category === "media" &&
@@ -2898,17 +2908,86 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
                           </div>
                         </div>
 
-                        {/* Stock Images */}
+                        <Separator className="my-4" />
+
+                        {/* Stock Images Header */}
+                        <div className="mb-4">
+                          <h3 className="text-base font-bold mb-1">Stock Images</h3>
+                          <p className="text-xs text-muted-foreground">Free high-quality images from top platforms</p>
+                        </div>
+
+                        {/* Unsplash */}
                         <div>
                           <div className="flex items-center justify-between mb-3">
-                            <h4 className="text-sm font-semibold">Images</h4>
-                            <span className="text-xs text-muted-foreground">({STOCK_ASSETS.length})</span>
+                            <h4 className="text-sm font-semibold flex items-center gap-2">
+                              <ImageIcon className="h-4 w-4" />
+                              Unsplash
+                            </h4>
+                            <Badge variant="secondary" className="text-xs">Free</Badge>
                           </div>
                           <div className="grid grid-cols-2 gap-3">
-                            {STOCK_ASSETS.map(asset => (
-                              <DraggableStockAsset key={asset.id} asset={asset} />
+                            {STOCK_ASSETS.slice(0, 4).map(asset => (
+                              <div key={asset.id} className="relative">
+                                <DraggableStockAsset asset={asset} />
+                                <div className="absolute top-1 right-1 bg-black/50 backdrop-blur-sm px-1.5 py-0.5 rounded text-[10px] text-white">
+                                  Unsplash
+                                </div>
+                              </div>
                             ))}
                           </div>
+                        </div>
+
+                        {/* Pexels */}
+                        <div>
+                          <div className="flex items-center justify-between mb-3">
+                            <h4 className="text-sm font-semibold flex items-center gap-2">
+                              <ImageIcon className="h-4 w-4" />
+                              Pexels
+                            </h4>
+                            <Badge variant="secondary" className="text-xs">Free</Badge>
+                          </div>
+                          <div className="grid grid-cols-2 gap-3">
+                            {STOCK_ASSETS.slice(4, 8).map(asset => (
+                              <div key={asset.id} className="relative">
+                                <DraggableStockAsset asset={asset} />
+                                <div className="absolute top-1 right-1 bg-black/50 backdrop-blur-sm px-1.5 py-0.5 rounded text-[10px] text-white">
+                                  Pexels
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Pixabay */}
+                        <div>
+                          <div className="flex items-center justify-between mb-3">
+                            <h4 className="text-sm font-semibold flex items-center gap-2">
+                              <ImageIcon className="h-4 w-4" />
+                              Pixabay
+                            </h4>
+                            <Badge variant="secondary" className="text-xs">Free</Badge>
+                          </div>
+                          <div className="grid grid-cols-2 gap-3">
+                            {STOCK_ASSETS.slice(8, 12).map(asset => (
+                              <div key={asset.id} className="relative">
+                                <DraggableStockAsset asset={asset} />
+                                <div className="absolute top-1 right-1 bg-black/50 backdrop-blur-sm px-1.5 py-0.5 rounded text-[10px] text-white">
+                                  Pixabay
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* More Stock Sources */}
+                        <div className="border rounded-lg p-4 bg-muted/20 hover:bg-muted/30 transition-colors cursor-pointer text-center">
+                          <p className="text-sm font-medium mb-1">Looking for more?</p>
+                          <p className="text-xs text-muted-foreground mb-3">
+                            Browse millions of stock images
+                          </p>
+                          <Button variant="outline" size="sm" className="w-full">
+                            Explore All Sources
+                          </Button>
                         </div>
                       </>
                     )}
@@ -3593,16 +3672,19 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
                   className="border-b bg-card overflow-hidden flex-shrink-0"
                 >
                   <div className="px-4 py-3">
-                    <div className="flex items-center gap-3 flex-wrap">
-                      <span className="text-sm font-semibold text-muted-foreground">
-                        {elementType === "text" ? "Text" : elementType === "image" ? "Image" : elementType === "shape" ? "Shape" : elementType === "video" ? "Video" : "Widget"}:
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-sm font-semibold text-muted-foreground mr-1">
+                        {elementType === "text" ? "Text" : elementType === "image" ? "Image" : elementType === "shape" ? "Shape" : elementType === "video" ? "Video" : "Widget"}
                       </span>
+
+                      <Separator orientation="vertical" className="h-6" />
 
                       {/* TEXT CONTROLS */}
                       {elementType === "text" && (
                         <>
+                          {/* Font Settings Group */}
                           <Select defaultValue={selectedElement?.style?.fontFamily || "inter"}>
-                            <SelectTrigger className="w-[130px] h-8">
+                            <SelectTrigger className="w-[120px] h-8">
                 <SelectValue placeholder="Font" />
               </SelectTrigger>
               <SelectContent>
@@ -3615,7 +3697,7 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
             </Select>
 
                           <Select defaultValue={selectedElement?.style?.fontSize?.toString() || "24"}>
-                            <SelectTrigger className="w-[75px] h-8">
+                            <SelectTrigger className="w-[70px] h-8">
                 <SelectValue placeholder="Size" />
               </SelectTrigger>
               <SelectContent>
@@ -3627,42 +3709,101 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
 
             <Separator orientation="vertical" className="h-6" />
 
+                          {/* Text Style Group */}
                           <div className="flex gap-1">
-                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="Bold">
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
               <Bold className="h-4 w-4" />
                     </Button>
-                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="Italic">
+                                </TooltipTrigger>
+                                <TooltipContent>Bold</TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                            
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
               <Italic className="h-4 w-4" />
             </Button>
-                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="Underline">
+                                </TooltipTrigger>
+                                <TooltipContent>Italic</TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                            
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
               <Underline className="h-4 w-4" />
             </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>Underline</TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
                           </div>
 
             <Separator orientation="vertical" className="h-6" />
 
+                          {/* Alignment Group */}
                           <div className="flex gap-1">
-                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="Align Left">
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
               <AlignLeft className="h-4 w-4" />
             </Button>
-                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="Align Center">
+                                </TooltipTrigger>
+                                <TooltipContent>Align Left</TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                            
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
               <AlignCenter className="h-4 w-4" />
             </Button>
-                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="Align Right">
+                                </TooltipTrigger>
+                                <TooltipContent>Align Center</TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                            
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
               <AlignRight className="h-4 w-4" />
             </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>Align Right</TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
                           </div>
 
             <Separator orientation="vertical" className="h-6" />
 
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs text-muted-foreground">Color</span>
-                            <input type="color" className="w-10 h-8 rounded border cursor-pointer" defaultValue={selectedElement?.style?.color || "#000000"} />
-                          </div>
-
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs text-muted-foreground">BG</span>
-                            <input type="color" className="w-10 h-8 rounded border cursor-pointer" defaultValue={selectedElement?.style?.backgroundColor || "#ffffff"} />
+                          {/* Color Group */}
+                          <div className="flex gap-2">
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <input type="color" className="w-8 h-8 rounded border cursor-pointer" defaultValue={selectedElement?.style?.color || "#000000"} />
+                                </TooltipTrigger>
+                                <TooltipContent>Text Color</TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                            
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <input type="color" className="w-8 h-8 rounded border cursor-pointer" defaultValue={selectedElement?.style?.backgroundColor || "#ffffff"} />
+                                </TooltipTrigger>
+                                <TooltipContent>Background Color</TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
                           </div>
                         </>
                       )}
@@ -3670,67 +3811,101 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
                       {/* SHAPE CONTROLS */}
                       {elementType === "shape" && (
                         <>
+                          {/* Color Group */}
                           <div className="flex items-center gap-2">
                             <span className="text-xs text-muted-foreground">Fill</span>
-                            <input type="color" className="w-10 h-8 rounded border cursor-pointer" defaultValue={selectedElement?.style?.fillColor || "#3b82f6"} />
+                            <input type="color" className="w-8 h-8 rounded border cursor-pointer" defaultValue={selectedElement?.style?.fillColor || "#3b82f6"} />
                           </div>
 
                           <div className="flex items-center gap-2">
                             <span className="text-xs text-muted-foreground">Stroke</span>
-                            <input type="color" className="w-10 h-8 rounded border cursor-pointer" defaultValue={selectedElement?.style?.strokeColor || "#000000"} />
+                            <input type="color" className="w-8 h-8 rounded border cursor-pointer" defaultValue={selectedElement?.style?.strokeColor || "#000000"} />
                           </div>
 
                           <div className="flex items-center gap-2">
                             <span className="text-xs text-muted-foreground">Width</span>
-                            <Input type="number" className="w-16 h-8" defaultValue={selectedElement?.style?.strokeWidth || 0} min={0} max={10} />
+                            <Input type="number" className="w-14 h-8" defaultValue={selectedElement?.style?.strokeWidth || 0} min={0} max={10} />
                           </div>
 
                           <Separator orientation="vertical" className="h-6" />
 
                           <div className="flex items-center gap-2">
                             <span className="text-xs text-muted-foreground">Opacity</span>
-                            <Input type="number" className="w-16 h-8" defaultValue={Math.round((selectedElement?.style?.opacity || 1) * 100)} min={0} max={100} />
+                            <Input type="number" className="w-14 h-8" defaultValue={Math.round((selectedElement?.style?.opacity || 1) * 100)} min={0} max={100} />
                           </div>
 
                           <Separator orientation="vertical" className="h-6" />
 
-                          <Button variant="ghost" size="sm" className="h-8 px-2 gap-1" title="Bring to Front">
-                            <ArrowUp className="h-4 w-4" />
-                            <span className="text-xs">Front</span>
+                          {/* Layer Controls */}
+                          <div className="flex gap-1">
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                    <ArrowUp className="h-4 w-4" />
             </Button>
-                          <Button variant="ghost" size="sm" className="h-8 px-2 gap-1" title="Send to Back">
-                            <ArrowDown className="h-4 w-4" />
-                            <span className="text-xs">Back</span>
-                          </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>Bring to Front</TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                            
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                    <ArrowDown className="h-4 w-4" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>Send to Back</TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </div>
                         </>
                       )}
 
                       {/* IMAGE/VIDEO CONTROLS */}
                       {(elementType === "image" || elementType === "video") && (
                         <>
-            <Button variant="ghost" size="sm" className="h-8 px-3 gap-2">
+                          {/* Action Buttons */}
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button variant="ghost" size="sm" className="h-8 px-2 gap-1.5">
               <ImageIcon className="h-4 w-4" />
-                            Replace
+                                  <span className="text-xs">Replace</span>
             </Button>
-                          <Button variant="ghost" size="sm" className="h-8 px-3 gap-2">
-                            <Square className="h-4 w-4" />
-                            Crop
-                          </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>Replace {elementType === "image" ? "Image" : "Video"}</TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                          
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button variant="ghost" size="sm" className="h-8 px-2 gap-1.5">
+                                  <Square className="h-4 w-4" />
+                                  <span className="text-xs">Crop</span>
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>Crop {elementType === "image" ? "Image" : "Video"}</TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
 
                           <Separator orientation="vertical" className="h-6" />
 
+                          {/* Adjustments Group */}
                           <div className="flex items-center gap-2">
-                            <span className="text-xs text-muted-foreground">Brightness</span>
-                            <Input type="number" className="w-16 h-8" defaultValue={100} min={0} max={200} />
+                            <span className="text-xs text-muted-foreground">Bright</span>
+                            <Input type="number" className="w-14 h-8" defaultValue={100} min={0} max={200} />
         </div>
 
                           <div className="flex items-center gap-2">
                             <span className="text-xs text-muted-foreground">Contrast</span>
-                            <Input type="number" className="w-16 h-8" defaultValue={100} min={0} max={200} />
+                            <Input type="number" className="w-14 h-8" defaultValue={100} min={0} max={200} />
                           </div>
 
                           <Select defaultValue="none">
-                            <SelectTrigger className="w-[120px] h-8">
+                            <SelectTrigger className="w-[100px] h-8">
                               <SelectValue placeholder="Filter" />
                             </SelectTrigger>
                             <SelectContent>
@@ -3746,15 +3921,22 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
                       {/* WIDGET CONTROLS */}
                       {elementType === "widget" && (
                         <>
-                          <Button variant="ghost" size="sm" className="h-8 px-3 gap-2">
-                            <Settings className="h-4 w-4" />
-                            Configure
-                          </Button>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button variant="ghost" size="sm" className="h-8 px-2 gap-1.5">
+                                  <Settings className="h-4 w-4" />
+                                  <span className="text-xs">Configure</span>
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>Configure Widget Settings</TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
 
                           <Separator orientation="vertical" className="h-6" />
 
                           <Select defaultValue={selectedElement?.widgetConfig?.theme || "light"}>
-                            <SelectTrigger className="w-[100px] h-8">
+                            <SelectTrigger className="w-[90px] h-8">
                               <SelectValue placeholder="Theme" />
                             </SelectTrigger>
                             <SelectContent>
@@ -3764,55 +3946,93 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
                           </Select>
 
                           <div className="flex items-center gap-2">
-                            <span className="text-xs text-muted-foreground">Refresh (sec)</span>
-                            <Input type="number" className="w-20 h-8" defaultValue={60} min={10} max={3600} />
-                      </div>
+                            <span className="text-xs text-muted-foreground">Refresh</span>
+                            <Input type="number" className="w-14 h-8" defaultValue={60} min={10} max={3600} />
+                          </div>
                         </>
                       )}
 
                       {/* COMMON ACTIONS */}
                       <div className="flex-1" />
                       
+                      <Separator orientation="vertical" className="h-6" />
+                      
                       {/* Effects and AI Buttons */}
-                      <Button 
-                        variant={effectsPanelOpen ? "secondary" : "ghost"} 
-                        size="sm" 
-                        className="h-8 px-3 gap-2" 
-                        onClick={() => {
-                          setEffectsPanelOpen(!effectsPanelOpen);
-                          setAiPanelOpen(false);
-                        }} 
-                        title="Effects"
-                      >
-                        <Wand2 className="h-4 w-4" />
-                        Effects
-                      </Button>
-                      <Button 
-                        variant={aiPanelOpen ? "secondary" : "ghost"} 
-                        size="sm" 
-                        className="h-8 px-3 gap-2" 
-                        onClick={() => {
-                          setAiPanelOpen(!aiPanelOpen);
-                          setEffectsPanelOpen(false);
-                        }} 
-                        title="AI Tools"
-                      >
-                        <Sparkles className="h-4 w-4" />
-                        AI
-                      </Button>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button 
+                              variant={effectsPanelOpen ? "secondary" : "ghost"} 
+                              size="sm" 
+                              className="h-8 px-2 gap-1.5" 
+                              onClick={() => {
+                                setEffectsPanelOpen(!effectsPanelOpen);
+                                setAiPanelOpen(false);
+                              }}
+                            >
+                              <Wand2 className="h-4 w-4" />
+                              <span className="text-xs">Effects</span>
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Apply Effects</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button 
+                              variant={aiPanelOpen ? "secondary" : "ghost"} 
+                              size="sm" 
+                              className="h-8 px-2 gap-1.5" 
+                              onClick={() => {
+                                setAiPanelOpen(!aiPanelOpen);
+                                setEffectsPanelOpen(false);
+                              }}
+                            >
+                              <Sparkles className="h-4 w-4" />
+                              <span className="text-xs">AI</span>
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>AI Tools</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                       
                       <Separator orientation="vertical" className="h-6" />
-                      <Button variant="ghost" size="sm" className="h-8 px-3 gap-2" onClick={duplicateElement} title="Duplicate">
-                        <Copy className="h-4 w-4" />
-                        Duplicate
-                      </Button>
-                      <Button variant="ghost" size="sm" className="h-8 px-3 gap-2" title="Lock/Unlock">
-                        {selectedElement?.locked ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
-                      </Button>
-                      <Button variant="ghost" size="sm" className="h-8 px-3 gap-2 text-destructive hover:text-destructive" onClick={deleteElement} title="Delete">
-                        <Trash2 className="h-4 w-4" />
-                        Delete
-                      </Button>
+                      
+                      {/* Action Buttons (Icon Only) */}
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={duplicateElement}>
+                              <Copy className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Duplicate</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                              {selectedElement?.locked ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>{selectedElement?.locked ? "Unlock" : "Lock"}</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={deleteElement}>
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Delete</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                       </div>
                       </div>
             </motion.div>
