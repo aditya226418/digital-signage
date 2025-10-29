@@ -187,7 +187,7 @@ export const DraggableMenuBlockCard = ({ element, showLarge = false }) => {
  * Menu Item Renderer
  * Renders a single menu item with all styling
  */
-const MenuItemRenderer = ({ item, menuData, zoomLevel = 100 }) => {
+const MenuItemRenderer = ({ item, menuData, zoomLevel = 100, onItemClick }) => {
   const { styles, settings } = menuData;
   const scale = zoomLevel / 100;
   
@@ -208,10 +208,12 @@ const MenuItemRenderer = ({ item, menuData, zoomLevel = 100 }) => {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="menu-item relative"
+      className="menu-item relative cursor-pointer hover:bg-black/5 rounded-lg transition-colors"
       style={{
         marginBottom: `${menuData.layout.gap}px`,
+        padding: '8px',
       }}
+      onClick={() => onItemClick && onItemClick(item.id)}
     >
       <div className="flex items-start gap-3">
         {/* Icon/Image */}
@@ -317,7 +319,7 @@ const MenuItemRenderer = ({ item, menuData, zoomLevel = 100 }) => {
  * MenuBlock Canvas Renderer
  * Main rendering component for menu block with column layout
  */
-export const MenuBlockCanvas = ({ menuData, zoomLevel = 100, isSelected = false, onSelect }) => {
+export const MenuBlockCanvas = ({ menuData, zoomLevel = 100, isSelected = false, onSelect, onItemClick }) => {
   // Safety check: Ensure menuData has required structure
   if (!menuData || !menuData.layout || !menuData.styles || !menuData.items) {
     return (
@@ -359,7 +361,12 @@ export const MenuBlockCanvas = ({ menuData, zoomLevel = 100, isSelected = false,
         ...backgroundStyle,
         padding: `${layout.padding}px`,
       }}
-      onClick={() => onSelect && onSelect(menuData.id)}
+      onClick={(e) => {
+        // Only select if clicking the background, not an item
+        if (e.target === e.currentTarget || e.target.classList.contains('menu-column')) {
+          onSelect && onSelect(menuData.id);
+        }
+      }}
     >
       {/* Overlay layer for image backgrounds to ensure text readability */}
       {styles.background.overlay && (
@@ -389,6 +396,7 @@ export const MenuBlockCanvas = ({ menuData, zoomLevel = 100, isSelected = false,
                 item={item} 
                 menuData={menuData} 
                 zoomLevel={zoomLevel}
+                onItemClick={onItemClick}
               />
             ))}
           </div>
@@ -417,7 +425,8 @@ export const MenuBlock = ({
   onSelect,
   onUpdate,
   onDrop,
-  onExport
+  onExport,
+  onItemClick
 }) => {
   const [menuData, setMenuData] = useState(initialMenuData || createMenuBlockElement());
 
@@ -446,6 +455,7 @@ export const MenuBlock = ({
       zoomLevel={zoomLevel}
       isSelected={isSelected}
       onSelect={handleSelect}
+      onItemClick={onItemClick}
     />
   );
 };

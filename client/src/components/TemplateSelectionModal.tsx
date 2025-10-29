@@ -92,6 +92,8 @@ import {
 import { createMenuBlockElement, MenuBlock as MenuBlockCanvas } from "@/components/MenuBlock/MenuBlock";
 // @ts-ignore
 import { MenuBlockSidebar } from "@/components/MenuBlock/MenuBlockSidebar";
+// @ts-ignore
+import { MenuItemEditModal } from "@/components/MenuBlock/MenuItemEditModal";
 import {
   Dialog,
   DialogContent,
@@ -1715,6 +1717,10 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
   // MenuBlock panel state
   const [menuBlockPanelOpen, setMenuBlockPanelOpen] = useState(false);
   const [menuBlockData, setMenuBlockData] = useState<any>(null);
+  
+  // MenuItemEdit modal state
+  const [menuItemEditModalOpen, setMenuItemEditModalOpen] = useState(false);
+  const [selectedMenuItemId, setSelectedMenuItemId] = useState<string | null>(null);
   
   // Drag and drop states
   const [activeElement, setActiveElement] = useState<ElementType | null>(null);
@@ -4357,6 +4363,11 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
                               setAiPanelOpen(false);
                             }}
                             onUpdate={handleMenuBlockUpdate}
+                            onItemClick={(itemId: string) => {
+                              // Open menu item edit modal when clicking on an item
+                              setSelectedMenuItemId(itemId);
+                              setMenuItemEditModalOpen(true);
+                            }}
                           />
                         </div>
                       );
@@ -4704,6 +4715,17 @@ export default function TemplateSelectionModal({ open, onOpenChange }: TemplateS
           </AnimatePresence>
         </div>
       </DialogContent>
+
+      {/* MenuItemEdit Modal - Opens when clicking on menu items */}
+      {menuBlockData && (
+        <MenuItemEditModal
+          open={menuItemEditModalOpen}
+          onOpenChange={setMenuItemEditModalOpen}
+          menuData={menuBlockData}
+          onUpdate={handleMenuBlockUpdate}
+          selectedItemId={selectedMenuItemId}
+        />
+      )}
     </Dialog>
   );
 }
