@@ -1,17 +1,24 @@
 import { useState } from "react";
-import { MoreVertical, Eye, Settings as SettingsIcon, Power } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import DataTableView from "./DataTableView";
-import UpgradeLimitModal from "@/components/UpgradeLimitModal";
+import DynamicScreensTable from "./DynamicScreensTable";
+import FilterDrawer from "./FilterDrawer";
+import ActiveFiltersBar from "./ActiveFiltersBar";
+import DynamicAddScreenModal from "./DynamicAddScreenModal";
+import AdminSchemaModal from "./AdminSchemaModal";
+
+// Schema types
+interface SchemaField {
+  id: string;
+  label: string;
+  type: 'text' | 'number' | 'single-select' | 'multi-select' | 'boolean' | 'date';
+  options?: string[];
+  required?: boolean;
+  helpText?: string;
+}
+
+interface Schema {
+  version: number;
+  fields: SchemaField[];
+}
 
 interface Screen {
   id: string;
@@ -21,9 +28,50 @@ interface Screen {
   currentComposition: string;
   lastSeen: string;
   resolution: string;
+  customFields?: Record<string, any>;
 }
 
-const mockScreens: Screen[] = [
+// Default schema
+const DEFAULT_SCHEMA: Schema = {
+  version: 1,
+  fields: [
+    { 
+      id: "store", 
+      label: "Store", 
+      type: "single-select", 
+      options: ["Axis Mall", "Phoenix Marketcity", "Brookfield Plaza", "Central Square"], 
+      required: true,
+      helpText: "Select the store location for this screen"
+    },
+    { 
+      id: "screen_type", 
+      label: "Screen Type", 
+      type: "multi-select", 
+      options: ["Menu", "Promo", "Info", "Wayfinding", "Directory"],
+      helpText: "You can select multiple screen types"
+    },
+    { 
+      id: "floor", 
+      label: "Floor", 
+      type: "text",
+      helpText: "Enter the floor number or name"
+    },
+    { 
+      id: "kiosk", 
+      label: "Is Kiosk", 
+      type: "boolean"
+    },
+    { 
+      id: "install_date", 
+      label: "Install Date", 
+      type: "date",
+      helpText: "When was this screen installed?"
+    }
+  ]
+};
+
+// Mock screens with custom fields
+const createMockScreens = (): Screen[] => [
   {
     id: "1",
     name: "Lobby Display",
@@ -32,6 +80,13 @@ const mockScreens: Screen[] = [
     currentComposition: "Welcome Playlist",
     lastSeen: "Active now",
     resolution: "1920x1080",
+    customFields: {
+      store: "Axis Mall",
+      screen_type: ["Menu", "Info"],
+      floor: "Ground Floor",
+      kiosk: false,
+      install_date: "2024-01-15T00:00:00.000Z"
+    }
   },
   {
     id: "2",
@@ -41,6 +96,13 @@ const mockScreens: Screen[] = [
     currentComposition: "Meeting Schedule",
     lastSeen: "Active now",
     resolution: "3840x2160",
+    customFields: {
+      store: "Axis Mall",
+      screen_type: ["Info"],
+      floor: "2",
+      kiosk: false,
+      install_date: "2024-02-01T00:00:00.000Z"
+    }
   },
   {
     id: "3",
@@ -50,6 +112,13 @@ const mockScreens: Screen[] = [
     currentComposition: "Menu Board",
     lastSeen: "2 hours ago",
     resolution: "1920x1080",
+    customFields: {
+      store: "Phoenix Marketcity",
+      screen_type: ["Menu"],
+      floor: "Ground Floor",
+      kiosk: false,
+      install_date: "2024-01-20T00:00:00.000Z"
+    }
   },
   {
     id: "4",
@@ -59,6 +128,13 @@ const mockScreens: Screen[] = [
     currentComposition: "Company Highlights",
     lastSeen: "Active now",
     resolution: "1920x1080",
+    customFields: {
+      store: "Axis Mall",
+      screen_type: ["Promo", "Info"],
+      floor: "1",
+      kiosk: true,
+      install_date: "2024-03-01T00:00:00.000Z"
+    }
   },
   {
     id: "5",
@@ -68,6 +144,13 @@ const mockScreens: Screen[] = [
     currentComposition: "Training Materials",
     lastSeen: "1 day ago",
     resolution: "2560x1440",
+    customFields: {
+      store: "Brookfield Plaza",
+      screen_type: ["Info"],
+      floor: "3",
+      kiosk: false,
+      install_date: "2024-02-15T00:00:00.000Z"
+    }
   },
   {
     id: "6",
@@ -77,6 +160,13 @@ const mockScreens: Screen[] = [
     currentComposition: "Executive Dashboard",
     lastSeen: "Active now",
     resolution: "3840x2160",
+    customFields: {
+      store: "Central Square",
+      screen_type: ["Info", "Promo"],
+      floor: "5",
+      kiosk: false,
+      install_date: "2024-01-10T00:00:00.000Z"
+    }
   },
   {
     id: "7",
@@ -86,6 +176,13 @@ const mockScreens: Screen[] = [
     currentComposition: "Parking Info",
     lastSeen: "Active now",
     resolution: "1920x1080",
+    customFields: {
+      store: "Axis Mall",
+      screen_type: ["Wayfinding", "Info"],
+      floor: "Basement",
+      kiosk: false,
+      install_date: "2024-02-20T00:00:00.000Z"
+    }
   },
   {
     id: "8",
@@ -95,149 +192,235 @@ const mockScreens: Screen[] = [
     currentComposition: "Fitness Tips",
     lastSeen: "3 hours ago",
     resolution: "1920x1080",
+    customFields: {
+      store: "Phoenix Marketcity",
+      screen_type: ["Promo"],
+      floor: "Ground Floor",
+      kiosk: false,
+      install_date: "2024-03-10T00:00:00.000Z"
+    }
   },
 ];
 
 export default function ScreensTable() {
-  const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+  // State management
+  const [schema, setSchema] = useState<Schema>(DEFAULT_SCHEMA);
+  const [filters, setFilters] = useState<Record<string, any>>({});
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
+  const [isAddScreenModalOpen, setIsAddScreenModalOpen] = useState(false);
+  const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
+  const [screens, setScreens] = useState<Screen[]>(createMockScreens());
 
-  const handleAddScreen = () => {
-    // Check if user has reached trial limit (1 screen)
-    // In production, this would check actual user data
-    const isTrialUser = true;
-    const currentScreenCount = mockScreens.length;
-    const trialLimit = 1;
+  // Filter logic
+  const getFilteredScreens = () => {
+    return screens.filter(screen => {
+      // Search filter
+      if (searchQuery) {
+        const searchLower = searchQuery.toLowerCase();
+        const matchesSearch = 
+          screen.name.toLowerCase().includes(searchLower) ||
+          screen.location.toLowerCase().includes(searchLower) ||
+          screen.currentComposition.toLowerCase().includes(searchLower) ||
+          Object.values(screen.customFields || {}).some(value => 
+            String(value).toLowerCase().includes(searchLower)
+          );
+        if (!matchesSearch) return false;
+      }
 
-    if (isTrialUser && currentScreenCount >= trialLimit) {
-      setIsUpgradeModalOpen(true);
-    } else {
-      // Open add screen modal (to be implemented)
-      console.log("Open add screen modal");
-    }
+      // Status filter
+      if (filters.status && Array.isArray(filters.status) && filters.status.length > 0) {
+        if (!filters.status.includes(screen.status)) return false;
+      }
+
+      // Last Seen filter
+      if (filters.lastSeen) {
+        const now = Date.now();
+        const activeNow = screen.lastSeen === "Active now";
+        
+        switch (filters.lastSeen) {
+          case 'active':
+            if (!activeNow) return false;
+            break;
+          case '1hour':
+            // Mock: accept "Active now" and recent times
+            if (!activeNow && !screen.lastSeen.includes('min')) return false;
+            break;
+          case '1day':
+            // Mock: exclude "1 day ago" or older
+            if (screen.lastSeen.includes('day') && !screen.lastSeen.includes('day ago')) return false;
+            break;
+          // Add more cases as needed
+        }
+      }
+
+      // Custom field filters
+      for (const field of schema.fields) {
+        const filterValue = filters[field.id];
+        if (filterValue === undefined || filterValue === null || filterValue === '') continue;
+
+        const screenValue = screen.customFields?.[field.id];
+
+        // Text filter
+        if (field.type === 'text' && filterValue) {
+          if (!screenValue || !String(screenValue).toLowerCase().includes(String(filterValue).toLowerCase())) {
+            return false;
+          }
+        }
+
+        // Number filter (range)
+        if (field.type === 'number' && typeof filterValue === 'object') {
+          const numValue = Number(screenValue);
+          if (filterValue.min && numValue < Number(filterValue.min)) return false;
+          if (filterValue.max && numValue > Number(filterValue.max)) return false;
+        }
+
+        // Single select filter
+        if (field.type === 'single-select' && filterValue) {
+          if (screenValue !== filterValue) return false;
+        }
+
+        // Multi select filter
+        if (field.type === 'multi-select' && Array.isArray(filterValue) && filterValue.length > 0) {
+          const screenValues = Array.isArray(screenValue) ? screenValue : [screenValue];
+          const hasMatch = filterValue.some(fv => screenValues.includes(fv));
+          if (!hasMatch) return false;
+        }
+
+        // Boolean filter
+        if (field.type === 'boolean' && typeof filterValue === 'boolean') {
+          if (screenValue !== filterValue) return false;
+        }
+
+        // Date filter (range)
+        if (field.type === 'date' && typeof filterValue === 'object') {
+          if (!screenValue) return false;
+          const screenDate = new Date(screenValue).getTime();
+          if (filterValue.from) {
+            const fromDate = new Date(filterValue.from).getTime();
+            if (screenDate < fromDate) return false;
+          }
+          if (filterValue.to) {
+            const toDate = new Date(filterValue.to).getTime();
+            if (screenDate > toDate) return false;
+          }
+        }
+      }
+
+      return true;
+    });
   };
 
-  const columns = [
-    {
-      key: "name",
-      label: "Screen Name",
-      render: (screen: Screen) => (
-        <div className="font-medium">{screen.name}</div>
-      ),
-    },
-    {
-      key: "location",
-      label: "Location",
-      render: (screen: Screen) => (
-        <div className="text-muted-foreground">{screen.location}</div>
-      ),
-    },
-    {
-      key: "status",
-      label: "Status",
-      render: (screen: Screen) => (
-        <Badge
-          variant={screen.status === "online" ? "default" : "secondary"}
-          className={
-            screen.status === "online"
-              ? "bg-green-500/10 text-green-700 hover:bg-green-500/20 dark:text-green-400"
-              : "bg-gray-500/10 text-gray-700 hover:bg-gray-500/20 dark:text-gray-400"
-          }
-        >
-          <span
-            className={`mr-1.5 h-1.5 w-1.5 rounded-full ${
-              screen.status === "online" ? "bg-green-500" : "bg-gray-500"
-            }`}
-          />
-          {screen.status === "online" ? "Online" : "Offline"}
-        </Badge>
-      ),
-    },
-    {
-      key: "currentComposition",
-      label: "Current Composition",
-      render: (screen: Screen) => (
-        <div className="max-w-xs truncate">{screen.currentComposition}</div>
-      ),
-    },
-    {
-      key: "resolution",
-      label: "Resolution",
-      render: (screen: Screen) => (
-        <div className="text-sm text-muted-foreground">{screen.resolution}</div>
-      ),
-    },
-    {
-      key: "lastSeen",
-      label: "Last Seen",
-      render: (screen: Screen) => (
-        <div className="text-sm text-muted-foreground">{screen.lastSeen}</div>
-      ),
-    },
-    {
-      key: "actions",
-      label: "Actions",
-      render: (screen: Screen) => (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 transition-all duration-200 hover:bg-accent"
-            >
-              <MoreVertical className="h-4 w-4" />
-              <span className="sr-only">Open menu</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="gap-2 cursor-pointer">
-              <Eye className="h-4 w-4" />
-              Live Preview
-            </DropdownMenuItem>
-            <DropdownMenuItem className="gap-2 cursor-pointer">
-              <SettingsIcon className="h-4 w-4" />
-              Settings
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="gap-2 cursor-pointer text-destructive focus:text-destructive">
-              <Power className="h-4 w-4" />
-              Deactivate
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ),
-    },
-  ];
+  const filteredScreens = getFilteredScreens();
 
-  const filterOptions = [
-    { key: "status", label: "Online", value: "online" },
-    { key: "status", label: "Offline", value: "offline" },
-  ];
+  // Count active filters
+  const getActiveFilterCount = () => {
+    let count = 0;
+    Object.entries(filters).forEach(([_, value]) => {
+      if (Array.isArray(value) && value.length > 0) count++;
+      else if (typeof value === 'object' && value !== null) {
+        if (Object.values(value).some(v => v !== null && v !== undefined && v !== '')) count++;
+      }
+      else if (value !== null && value !== undefined && value !== '') count++;
+    });
+    return count;
+  };
+
+  // Handlers
+  const handleRemoveFilter = (key: string) => {
+    setFilters(prev => {
+      const newFilters = { ...prev };
+      delete newFilters[key];
+      return newFilters;
+    });
+  };
+
+  const handleClearAllFilters = () => {
+    setFilters({});
+    setSearchQuery("");
+  };
+
+  const handleCreateScreen = (screenData: any) => {
+    const newScreen: Screen = {
+      id: String(screens.length + 1),
+      name: screenData.name,
+      location: screenData.location,
+      status: "offline",
+      currentComposition: screenData.currentComposition || "None",
+      lastSeen: "Never",
+      resolution: screenData.resolution || "1920x1080",
+      customFields: screenData.customFields || {},
+    };
+    
+    setScreens(prev => [newScreen, ...prev]);
+  };
+
+  const handleUpdateSchema = (newSchema: Schema) => {
+    setSchema(newSchema);
+    // Clear filters that reference removed fields
+    const validFieldIds = new Set(newSchema.fields.map(f => f.id));
+    setFilters(prev => {
+      const newFilters: Record<string, any> = {};
+      Object.entries(prev).forEach(([key, value]) => {
+        if (key === 'status' || key === 'lastSeen' || validFieldIds.has(key)) {
+          newFilters[key] = value;
+        }
+      });
+      return newFilters;
+    });
+  };
 
   return (
-    <>
-      <DataTableView
-        data={mockScreens}
-        columns={columns}
-        searchPlaceholder="Search screens by name, location, or composition..."
-        filterOptions={filterOptions}
-        actions={
-          <Button 
-            className="gap-2 transition-all duration-200 hover:shadow-md"
-            onClick={handleAddScreen}
-          >
-            <Power className="h-4 w-4" />
-            Add Screen
-          </Button>
-        }
+    <div className="space-y-0">
+      {/* Active Filters Bar */}
+      <ActiveFiltersBar
+        filters={filters}
+        onRemoveFilter={handleRemoveFilter}
+        onClearAll={handleClearAllFilters}
+        schema={schema}
       />
 
-      <UpgradeLimitModal 
-        isOpen={isUpgradeModalOpen}
-        onClose={() => setIsUpgradeModalOpen(false)}
+      {/* Main Table */}
+      <DynamicScreensTable
+        data={filteredScreens}
+        schema={schema}
+        onAddScreen={() => setIsAddScreenModalOpen(true)}
+        onOpenAdminSettings={() => setIsAdminModalOpen(true)}
+        onOpenFilters={() => setIsFilterDrawerOpen(true)}
+        activeFilterCount={getActiveFilterCount()}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
       />
-    </>
+
+      {/* Filter Drawer */}
+      <FilterDrawer
+        open={isFilterDrawerOpen}
+        onOpenChange={setIsFilterDrawerOpen}
+        filters={filters}
+        onApplyFilters={setFilters}
+        schema={schema}
+      />
+
+      {/* Add Screen Modal */}
+      <DynamicAddScreenModal
+        open={isAddScreenModalOpen}
+        onClose={() => setIsAddScreenModalOpen(false)}
+        schema={schema}
+        onCreateScreen={handleCreateScreen}
+        onOpenAdminSettings={() => {
+          setIsAddScreenModalOpen(false);
+          setIsAdminModalOpen(true);
+        }}
+      />
+
+      {/* Admin Schema Modal */}
+      <AdminSchemaModal
+        open={isAdminModalOpen}
+        onClose={() => setIsAdminModalOpen(false)}
+        schema={schema}
+        onUpdateSchema={handleUpdateSchema}
+        defaultSchema={DEFAULT_SCHEMA}
+      />
+    </div>
   );
 }
-
