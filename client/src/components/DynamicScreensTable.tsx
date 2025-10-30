@@ -102,8 +102,8 @@ export default function DynamicScreensTable({
     setCurrentPage(1);
   }, [data.length]);
 
-  // Get first 4 custom fields to display in table
-  const displayCustomFields = schema.fields.slice(0, 4);
+  // Get custom fields to display in table (excluding city and state as they're shown with location)
+  const displayCustomFields = schema.fields.filter(field => field.id !== 'city' && field.id !== 'state');
 
   const formatCustomFieldValue = (field: SchemaField, value: any) => {
     if (value === undefined || value === null) return '-';
@@ -355,7 +355,16 @@ export default function DynamicScreensTable({
                         <span className="text-xs text-muted-foreground">{screen.resolution}</span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-muted-foreground">{screen.location}</TableCell>
+                    <TableCell>
+                      <div className="flex flex-col">
+                        <span className="">{screen.location}</span>
+                        {(screen.customFields?.city || screen.customFields?.state) && (
+                          <span className="text-xs text-foreground  mt-0.5">
+                            {[screen.customFields?.city, screen.customFields?.state].filter(Boolean).join(', ')}
+                          </span>
+                        )}
+                      </div>
+                    </TableCell>
                     <TableCell>
                       <Badge
                         variant={screen.status === "online" ? "default" : "secondary"}
