@@ -34,6 +34,22 @@ const DEFAULT_SCHEMA: Schema = {
   version: 1,
   fields: [
     { 
+      id: "state", 
+      label: "State", 
+      type: "single-select", 
+      options: ["Maharashtra", "Karnataka", "Delhi", "Telangana"], 
+      required: false,
+      helpText: "Select the state where this screen is located"
+    },
+    { 
+      id: "city", 
+      label: "City", 
+      type: "single-select", 
+      options: ["Mumbai", "Bangalore", "Delhi", "Pune", "Hyderabad"], 
+      required: false,
+      helpText: "Select the city where this screen is located"
+    },
+    { 
       id: "store", 
       label: "Store", 
       type: "single-select", 
@@ -47,22 +63,6 @@ const DEFAULT_SCHEMA: Schema = {
       type: "multi-select", 
       options: ["Menu", "Promo", "Info"],
       helpText: "You can select multiple screen types"
-    },
-    { 
-      id: "city", 
-      label: "City", 
-      type: "single-select", 
-      options: ["Mumbai", "Bangalore", "Delhi", "Pune", "Hyderabad"], 
-      required: false,
-      helpText: "Select the city where this screen is located"
-    },
-    { 
-      id: "state", 
-      label: "State", 
-      type: "single-select", 
-      options: ["Maharashtra", "Karnataka", "Delhi", "Telangana"], 
-      required: false,
-      helpText: "Select the state where this screen is located"
     }
   ]
 };
