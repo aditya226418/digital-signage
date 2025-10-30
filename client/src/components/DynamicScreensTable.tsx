@@ -104,10 +104,10 @@ export default function DynamicScreensTable({
     setCurrentPage(1);
   }, [data.length]);
 
-  // Reset selected rows when filters change or data changes
+  // Reset selected rows when filters, search, or data changes
   useEffect(() => {
     setSelectedRows(new Set());
-  }, [filters, data.length]);
+  }, [filters, searchQuery, data.length]);
 
   // Get custom fields to display in table (excluding city and state as they're shown with location)
   const displayCustomFields = schema.fields.filter(field => field.id !== 'city' && field.id !== 'state');
@@ -200,7 +200,7 @@ export default function DynamicScreensTable({
   };
 
   // Checkbox selection handlers
-  const hasFiltersApplied = filterEntries.length > 0;
+  const hasFiltersApplied = filterEntries.length > 0 || searchQuery.trim().length > 0;
   const currentPageIds = currentData.map(screen => screen.id);
   const areAllCurrentPageSelected = currentPageIds.length > 0 && currentPageIds.every(id => selectedRows.has(id));
   const areSomeSelected = currentPageIds.some(id => selectedRows.has(id));
@@ -438,15 +438,39 @@ export default function DynamicScreensTable({
             </Popover>
           )}
 
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onClearAllFilters}
-            className="gap-2 transition-all duration-200 hover:bg-destructive/10 hover:text-destructive ml-auto"
-          >
-            <X className="h-4 w-4" />
-            Clear All
-          </Button>
+          {/* Screens Found Indicator */}
+          <div className="flex items-center gap-2 ml-auto">
+            <span className="text-sm text-muted-foreground font-medium">
+              {data.length} {data.length === 1 ? 'screen' : 'screens'} found
+              {searchQuery.trim().length > 0 && (
+                <> for <span className="font-semibold text-foreground">"{searchQuery}"</span></>
+              )}
+            </span>
+            <div className="h-4 w-px bg-border" />
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                onClearAllFilters();
+                if (searchQuery.trim().length > 0) {
+                  onSearchChange('');
+                }
+              }}
+              className="gap-2 transition-all duration-200 hover:bg-destructive/10 hover:text-destructive"
+            >
+              <X className="h-4 w-4" />
+              Clear All
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Search Results Indicator - shown when searching without filters */}
+      {searchQuery.trim().length > 0 && filterEntries.length === 0 && (
+        <div className="flex items-center justify-between px-6 py-3 bg-muted/30 border-b border-border/40">
+          <span className="text-sm text-muted-foreground font-medium">
+            {data.length} {data.length === 1 ? 'screen' : 'screens'} found for <span className="font-semibold text-foreground">"{searchQuery}"</span>
+          </span>
         </div>
       )}
 
