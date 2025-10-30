@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Search, Filter, Wrench, ChevronLeft, ChevronRight, MoreVertical, Eye, Settings as SettingsIcon, Power, Plus, X } from "lucide-react";
+import { Search, Filter, Wrench, ChevronLeft, ChevronRight, MoreVertical, Eye, Settings as SettingsIcon, Power, Plus, X, ChevronDown } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -166,6 +166,39 @@ export default function DynamicScreensTable({
   const visibleFilters = filterEntries.slice(0, 6);
   const hiddenFilters = filterEntries.slice(6);
 
+  // Quick filter helpers for City and Store
+  const cityField = schema.fields.find(f => f.id === 'city');
+  const storeField = schema.fields.find(f => f.id === 'store');
+  
+  const cityFilterCount = filters.city ? (Array.isArray(filters.city) ? filters.city.length : 1) : 0;
+  const storeFilterCount = filters.store ? (Array.isArray(filters.store) ? filters.store.length : 1) : 0;
+
+  const handleQuickFilterToggle = (fieldId: string, value: string) => {
+    const currentValue = filters[fieldId];
+    let newValue: string | string[];
+
+    if (Array.isArray(currentValue)) {
+      // Multi-select
+      if (currentValue.includes(value)) {
+        newValue = currentValue.filter(v => v !== value);
+      } else {
+        newValue = [...currentValue, value];
+      }
+    } else {
+      // Single-select
+      if (currentValue === value) {
+        newValue = '';
+      } else {
+        newValue = value;
+      }
+    }
+
+    onApplyFilters({
+      ...filters,
+      [fieldId]: Array.isArray(newValue) && newValue.length === 0 ? undefined : newValue === '' ? undefined : newValue,
+    });
+  };
+
   // Checkbox selection handlers
   const hasFiltersApplied = filterEntries.length > 0;
   const currentPageIds = currentData.map(screen => screen.id);
@@ -215,7 +248,7 @@ export default function DynamicScreensTable({
               Add Screen
             </Button>
           </div>
-          <div className="flex gap-2 shrink-0">
+          <div className="flex gap-2 shrink-0 flex-wrap">
               <FilterDrawer
                 open={isFilterOpen}
                 onOpenChange={setIsFilterOpen}
@@ -228,7 +261,7 @@ export default function DynamicScreensTable({
                   className="gap-2 transition-all duration-200 hover:bg-accent"
                 >
                   <Filter className="h-4 w-4" />
-                  Filters
+                  All Filters
                   {activeFilterCount > 0 && (
                     <span className="ml-1 rounded-full bg-primary px-2 py-0.5 text-xs text-primary-foreground">
                       {activeFilterCount}
@@ -236,6 +269,82 @@ export default function DynamicScreensTable({
                   )}
                 </Button>
               </FilterDrawer>
+
+              {/* Quick Filter: City */}
+              {cityField && cityField.options && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="gap-2 transition-all duration-200 hover:bg-accent"
+                    >
+                      City
+                      {cityFilterCount > 0 && (
+                        <span className="ml-1 rounded-full bg-primary px-2 py-0.5 text-xs text-primary-foreground">
+                          {cityFilterCount}
+                        </span>
+                      )}
+                      <ChevronDown className="h-3 w-3 ml-1" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-48">
+                    <DropdownMenuLabel>Filter by City</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    {cityField.options.map((city) => (
+                      <DropdownMenuItem
+                        key={city}
+                        onClick={() => handleQuickFilterToggle('city', city)}
+                        className="cursor-pointer"
+                      >
+                        <div className="flex items-center justify-between w-full">
+                          <span>{city}</span>
+                          {filters.city === city && (
+                            <Badge variant="default" className="ml-2 h-5 px-1.5 text-xs">✓</Badge>
+                          )}
+                        </div>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+
+              {/* Quick Filter: Store */}
+              {storeField && storeField.options && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="gap-2 transition-all duration-200 hover:bg-accent"
+                    >
+                      Store
+                      {storeFilterCount > 0 && (
+                        <span className="ml-1 rounded-full bg-primary px-2 py-0.5 text-xs text-primary-foreground">
+                          {storeFilterCount}
+                        </span>
+                      )}
+                      <ChevronDown className="h-3 w-3 ml-1" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-48">
+                    <DropdownMenuLabel>Filter by Store</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    {storeField.options.map((store) => (
+                      <DropdownMenuItem
+                        key={store}
+                        onClick={() => handleQuickFilterToggle('store', store)}
+                        className="cursor-pointer"
+                      >
+                        <div className="flex items-center justify-between w-full">
+                          <span>{store}</span>
+                          {filters.store === store && (
+                            <Badge variant="default" className="ml-2 h-5 px-1.5 text-xs">✓</Badge>
+                          )}
+                        </div>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
 
               <Tooltip>
                 <TooltipTrigger asChild>
