@@ -2,13 +2,10 @@ import { useState, useEffect } from "react";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,12 +19,8 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 
 interface SchemaField {
@@ -50,6 +43,7 @@ interface FilterDrawerProps {
   filters: Record<string, any>;
   onApplyFilters: (filters: Record<string, any>) => void;
   schema: Schema;
+  children: React.ReactNode;
 }
 
 export default function FilterDrawer({
@@ -58,6 +52,7 @@ export default function FilterDrawer({
   filters,
   onApplyFilters,
   schema,
+  children,
 }: FilterDrawerProps) {
   const [localFilters, setLocalFilters] = useState<Record<string, any>>({});
 
@@ -90,27 +85,28 @@ export default function FilterDrawer({
   };
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent 
-        side="right" 
-        className="w-full sm:max-w-[420px] overflow-y-auto"
+    <Popover open={open} onOpenChange={onOpenChange}>
+      <PopoverTrigger asChild>
+        {children}
+      </PopoverTrigger>
+      <PopoverContent 
+        className="w-[400px] p-0" 
+        align="start"
+        sideOffset={8}
       >
-        <SheetHeader>
-          <SheetTitle>Filters</SheetTitle>
-          <SheetDescription>
+        <div className="p-4 border-b">
+          <h3 className="font-semibold text-base">Filters</h3>
+          <p className="text-xs text-muted-foreground mt-1">
             Apply filters to refine your screen list
-          </SheetDescription>
-        </SheetHeader>
+          </p>
+        </div>
 
-        <div className="py-6 space-y-6">
-          {/* Default Filters Section */}
-          <div className="space-y-4">
-            {/* <h3 className="text-sm font-semibold text-foreground">Default Filters</h3> */}
-            
+        <ScrollArea className="h-[420px]">
+          <div className="p-4 space-y-4">
             {/* Status Filter */}
-            <div className="space-y-3">
+            <div className="space-y-2">
               <Label className="text-sm font-medium">Status</Label>
-              <div className="space-y-2">
+              <div className="flex gap-3">
                 {['online', 'offline'].map((status) => (
                   <div key={status} className="flex items-center space-x-2">
                     <Checkbox
@@ -130,13 +126,13 @@ export default function FilterDrawer({
             </div>
 
             {/* Last Seen Filter */}
-            <div className="space-y-3">
+            <div className="space-y-2">
               <Label htmlFor="lastSeen" className="text-sm font-medium">Last Seen</Label>
               <Select
                 value={localFilters.lastSeen || ''}
                 onValueChange={(value) => updateFilter('lastSeen', value)}
               >
-                <SelectTrigger id="lastSeen">
+                <SelectTrigger id="lastSeen" className="h-9">
                   <SelectValue placeholder="Select time range" />
                 </SelectTrigger>
                 <SelectContent>
@@ -147,118 +143,117 @@ export default function FilterDrawer({
                 </SelectContent>
               </Select>
             </div>
-          </div>
 
-          <Separator />
+            {schema.fields.length > 0 && <Separator className="my-3" />}
 
-          {/* Custom Filters Section */}
-          {schema.fields.length > 0 && (
-            <div className="space-y-4">
-              {/* <h3 className="text-sm font-semibold text-foreground">Custom Filters</h3> */}
-              
-              {schema.fields.map((field) => (
-                <div key={field.id} className="space-y-3">
-                  <Label htmlFor={field.id} className="text-sm font-medium">
-                    {field.label}
-                  </Label>
+            {/* Custom Filters Section */}
+            {schema.fields.length > 0 && (
+              <div className="space-y-3">
+                {schema.fields.map((field) => (
+                  <div key={field.id} className="space-y-2">
+                    <Label htmlFor={field.id} className="text-sm font-medium">
+                      {field.label}
+                    </Label>
 
-                  {/* Text Field */}
-                  {field.type === 'text' && (
-                    <Input
-                      id={field.id}
-                      placeholder={`Filter by ${field.label.toLowerCase()}`}
-                      value={localFilters[field.id] || ''}
-                      onChange={(e) => updateFilter(field.id, e.target.value)}
-                    />
-                  )}
-
-                  {/* Number Field (Range) */}
-                  {field.type === 'number' && (
-                    <div className="flex gap-2">
+                    {/* Text Field */}
+                    {field.type === 'text' && (
                       <Input
-                        type="number"
-                        placeholder="Min"
-                        value={localFilters[field.id]?.min || ''}
-                        onChange={(e) => updateFilter(field.id, {
-                          ...localFilters[field.id],
-                          min: e.target.value,
-                        })}
-                      />
-                      <Input
-                        type="number"
-                        placeholder="Max"
-                        value={localFilters[field.id]?.max || ''}
-                        onChange={(e) => updateFilter(field.id, {
-                          ...localFilters[field.id],
-                          max: e.target.value,
-                        })}
-                      />
-                    </div>
-                  )}
-
-                  {/* Single Select */}
-                  {field.type === 'single-select' && field.options && (
-                    <Select
-                      value={localFilters[field.id] || ''}
-                      onValueChange={(value) => updateFilter(field.id, value)}
-                    >
-                      <SelectTrigger id={field.id}>
-                        <SelectValue placeholder={`Select ${field.label.toLowerCase()}`} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {field.options.map((option) => (
-                          <SelectItem key={option} value={option}>
-                            {option}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-
-                  {/* Multi Select */}
-                  {field.type === 'multi-select' && field.options && (
-                    <div className="space-y-2">
-                      {field.options.map((option) => (
-                        <div key={option} className="flex items-center space-x-2">
-                          <Checkbox
-                            id={`${field.id}-${option}`}
-                            checked={(localFilters[field.id] || []).includes(option)}
-                            onCheckedChange={() => toggleMultiSelect(field.id, option)}
-                          />
-                          <label
-                            htmlFor={`${field.id}-${option}`}
-                            className="text-sm font-normal leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                          >
-                            {option}
-                          </label>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Boolean */}
-                  {field.type === 'boolean' && (
-                    <div className="flex items-center space-x-2">
-                      <Switch
                         id={field.id}
-                        checked={localFilters[field.id] || false}
-                        onCheckedChange={(checked) => updateFilter(field.id, checked)}
+                        placeholder={`Filter by ${field.label.toLowerCase()}`}
+                        value={localFilters[field.id] || ''}
+                        onChange={(e) => updateFilter(field.id, e.target.value)}
+                        className="h-9"
                       />
-                      <Label htmlFor={field.id} className="text-sm font-normal cursor-pointer">
-                        {localFilters[field.id] ? 'Yes' : 'No'}
-                      </Label>
-                    </div>
-                  )}
+                    )}
 
-                  {/* Date Range */}
-                  {field.type === 'date' && (
-                    <div className="space-y-2">
+                    {/* Number Field (Range) */}
+                    {field.type === 'number' && (
+                      <div className="flex gap-2">
+                        <Input
+                          type="number"
+                          placeholder="Min"
+                          value={localFilters[field.id]?.min || ''}
+                          onChange={(e) => updateFilter(field.id, {
+                            ...localFilters[field.id],
+                            min: e.target.value,
+                          })}
+                          className="h-9"
+                        />
+                        <Input
+                          type="number"
+                          placeholder="Max"
+                          value={localFilters[field.id]?.max || ''}
+                          onChange={(e) => updateFilter(field.id, {
+                            ...localFilters[field.id],
+                            max: e.target.value,
+                          })}
+                          className="h-9"
+                        />
+                      </div>
+                    )}
+
+                    {/* Single Select */}
+                    {field.type === 'single-select' && field.options && (
+                      <Select
+                        value={localFilters[field.id] || ''}
+                        onValueChange={(value) => updateFilter(field.id, value)}
+                      >
+                        <SelectTrigger id={field.id} className="h-9">
+                          <SelectValue placeholder={`Select ${field.label.toLowerCase()}`} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {field.options.map((option) => (
+                            <SelectItem key={option} value={option}>
+                              {option}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+
+                    {/* Multi Select */}
+                    {field.type === 'multi-select' && field.options && (
+                      <div className="flex flex-wrap gap-3">
+                        {field.options.map((option) => (
+                          <div key={option} className="flex items-center space-x-2">
+                            <Checkbox
+                              id={`${field.id}-${option}`}
+                              checked={(localFilters[field.id] || []).includes(option)}
+                              onCheckedChange={() => toggleMultiSelect(field.id, option)}
+                            />
+                            <label
+                              htmlFor={`${field.id}-${option}`}
+                              className="text-sm font-normal leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                            >
+                              {option}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Boolean */}
+                    {field.type === 'boolean' && (
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          id={field.id}
+                          checked={localFilters[field.id] || false}
+                          onCheckedChange={(checked) => updateFilter(field.id, checked)}
+                        />
+                        <Label htmlFor={field.id} className="text-sm font-normal cursor-pointer">
+                          {localFilters[field.id] ? 'Yes' : 'No'}
+                        </Label>
+                      </div>
+                    )}
+
+                    {/* Date Range */}
+                    {field.type === 'date' && (
                       <Popover>
                         <PopoverTrigger asChild>
                           <Button
                             variant="outline"
                             className={cn(
-                              "w-full justify-start text-left font-normal",
+                              "w-full h-9 justify-start text-left font-normal text-sm",
                               !localFilters[field.id]?.from && "text-muted-foreground"
                             )}
                           >
@@ -266,11 +261,11 @@ export default function FilterDrawer({
                             {localFilters[field.id]?.from ? (
                               localFilters[field.id]?.to ? (
                                 <>
-                                  {format(new Date(localFilters[field.id].from), "LLL dd, y")} -{" "}
-                                  {format(new Date(localFilters[field.id].to), "LLL dd, y")}
+                                  {format(new Date(localFilters[field.id].from), "MMM dd")} -{" "}
+                                  {format(new Date(localFilters[field.id].to), "MMM dd, y")}
                                 </>
                               ) : (
-                                format(new Date(localFilters[field.id].from), "LLL dd, y")
+                                format(new Date(localFilters[field.id].from), "MMM dd, y")
                               )
                             ) : (
                               <span>Pick a date range</span>
@@ -290,32 +285,27 @@ export default function FilterDrawer({
                                 to: range?.to?.toISOString(),
                               });
                             }}
-                            numberOfMonths={2}
+                            numberOfMonths={1}
                           />
                         </PopoverContent>
                       </Popover>
-                    </div>
-                  )}
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </ScrollArea>
 
-                  {field.helpText && (
-                    <p className="text-xs text-muted-foreground">{field.helpText}</p>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <SheetFooter className="gap-2 sm:gap-0">
-          <Button variant="ghost" onClick={handleReset}>
+        <div className="p-4 border-t flex gap-2">
+          <Button variant="outline" onClick={handleReset} className="flex-1">
             Reset
           </Button>
-          <Button onClick={handleApply}>
+          <Button onClick={handleApply} className="flex-1">
             Apply Filters
           </Button>
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }
-

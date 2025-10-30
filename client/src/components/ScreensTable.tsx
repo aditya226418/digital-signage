@@ -1,6 +1,5 @@
 import { useState } from "react";
 import DynamicScreensTable from "./DynamicScreensTable";
-import FilterDrawer from "./FilterDrawer";
 import DynamicAddScreenModal from "./DynamicAddScreenModal";
 import AdminSchemaModal from "./AdminSchemaModal";
 
@@ -165,7 +164,6 @@ export default function ScreensTable() {
   const [schema, setSchema] = useState<Schema>(DEFAULT_SCHEMA);
   const [filters, setFilters] = useState<Record<string, any>>({});
   const [searchQuery, setSearchQuery] = useState("");
-  const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
   const [isAddScreenModalOpen, setIsAddScreenModalOpen] = useState(false);
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
   const [screens, setScreens] = useState<Screen[]>(createMockScreens());
@@ -336,22 +334,13 @@ export default function ScreensTable() {
         schema={schema}
         onAddScreen={() => setIsAddScreenModalOpen(true)}
         onOpenAdminSettings={() => setIsAdminModalOpen(true)}
-        onOpenFilters={() => setIsFilterDrawerOpen(true)}
         activeFilterCount={getActiveFilterCount()}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         filters={filters}
         onRemoveFilter={handleRemoveFilter}
         onClearAllFilters={handleClearAllFilters}
-      />
-
-      {/* Filter Drawer */}
-      <FilterDrawer
-        open={isFilterDrawerOpen}
-        onOpenChange={setIsFilterDrawerOpen}
-        filters={filters}
         onApplyFilters={setFilters}
-        schema={schema}
       />
 
       {/* Add Screen Modal */}

@@ -24,6 +24,7 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { motion, AnimatePresence } from "framer-motion";
+import FilterDrawer from "./FilterDrawer";
 
 interface SchemaField {
   id: string;
@@ -55,13 +56,13 @@ interface DynamicScreensTableProps {
   schema: Schema;
   onAddScreen: () => void;
   onOpenAdminSettings: () => void;
-  onOpenFilters: () => void;
   activeFilterCount: number;
   searchQuery: string;
   onSearchChange: (query: string) => void;
   filters: Record<string, any>;
   onRemoveFilter: (key: string) => void;
   onClearAllFilters: () => void;
+  onApplyFilters: (filters: Record<string, any>) => void;
 }
 
 export default function DynamicScreensTable({
@@ -69,16 +70,17 @@ export default function DynamicScreensTable({
   schema,
   onAddScreen,
   onOpenAdminSettings,
-  onOpenFilters,
   activeFilterCount,
   searchQuery,
   onSearchChange,
   filters,
   onRemoveFilter,
   onClearAllFilters,
+  onApplyFilters,
 }: DynamicScreensTableProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const itemsPerPage = 10;
 
   useEffect(() => {
@@ -173,19 +175,26 @@ export default function DynamicScreensTable({
             </Button>
           </div>
           <div className="flex gap-2 shrink-0">
-              <Button
-                variant="outline"
-                className="gap-2 transition-all duration-200 hover:bg-accent"
-                onClick={onOpenFilters}
+              <FilterDrawer
+                open={isFilterOpen}
+                onOpenChange={setIsFilterOpen}
+                filters={filters}
+                onApplyFilters={onApplyFilters}
+                schema={schema}
               >
-                <Filter className="h-4 w-4" />
-                Filters
-                {activeFilterCount > 0 && (
-                  <span className="ml-1 rounded-full bg-primary px-2 py-0.5 text-xs text-primary-foreground">
-                    {activeFilterCount}
-                  </span>
-                )}
-              </Button>
+                <Button
+                  variant="outline"
+                  className="gap-2 transition-all duration-200 hover:bg-accent"
+                >
+                  <Filter className="h-4 w-4" />
+                  Filters
+                  {activeFilterCount > 0 && (
+                    <span className="ml-1 rounded-full bg-primary px-2 py-0.5 text-xs text-primary-foreground">
+                      {activeFilterCount}
+                    </span>
+                  )}
+                </Button>
+              </FilterDrawer>
 
               <Tooltip>
                 <TooltipTrigger asChild>
