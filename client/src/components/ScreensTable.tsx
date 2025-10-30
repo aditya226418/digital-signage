@@ -1,7 +1,6 @@
 import { useState } from "react";
 import DynamicScreensTable from "./DynamicScreensTable";
 import FilterDrawer from "./FilterDrawer";
-import ActiveFiltersBar from "./ActiveFiltersBar";
 import DynamicAddScreenModal from "./DynamicAddScreenModal";
 import AdminSchemaModal from "./AdminSchemaModal";
 
@@ -331,15 +330,7 @@ export default function ScreensTable() {
 
   return (
     <div className="space-y-0">
-      {/* Active Filters Bar */}
-      <ActiveFiltersBar
-        filters={filters}
-        onRemoveFilter={handleRemoveFilter}
-        onClearAll={handleClearAllFilters}
-        schema={schema}
-      />
-
-      {/* Main Table */}
+      {/* Main Table with Integrated Filters */}
       <DynamicScreensTable
         data={filteredScreens}
         schema={schema}
@@ -349,6 +340,9 @@ export default function ScreensTable() {
         activeFilterCount={getActiveFilterCount()}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
+        filters={filters}
+        onRemoveFilter={handleRemoveFilter}
+        onClearAllFilters={handleClearAllFilters}
       />
 
       {/* Filter Drawer */}
