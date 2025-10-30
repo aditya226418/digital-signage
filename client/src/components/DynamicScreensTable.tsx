@@ -261,7 +261,7 @@ export default function DynamicScreensTable({
                   className="gap-2 transition-all duration-200 hover:bg-accent"
                 >
                   <Filter className="h-4 w-4" />
-                  All Filters
+                  Filters
                   {activeFilterCount > 0 && (
                     <span className="ml-1 rounded-full bg-primary px-2 py-0.5 text-xs text-primary-foreground">
                       {activeFilterCount}
