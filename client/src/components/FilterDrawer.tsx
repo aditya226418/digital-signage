@@ -105,7 +105,7 @@ export default function FilterDrawer({
         <div className="py-6 space-y-6">
           {/* Default Filters Section */}
           <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-foreground">Default Filters</h3>
+            {/* <h3 className="text-sm font-semibold text-foreground">Default Filters</h3> */}
             
             {/* Status Filter */}
             <div className="space-y-3">
@@ -154,7 +154,7 @@ export default function FilterDrawer({
           {/* Custom Filters Section */}
           {schema.fields.length > 0 && (
             <div className="space-y-4">
-              <h3 className="text-sm font-semibold text-foreground">Custom Filters</h3>
+              {/* <h3 className="text-sm font-semibold text-foreground">Custom Filters</h3> */}
               
               {schema.fields.map((field) => (
                 <div key={field.id} className="space-y-3">

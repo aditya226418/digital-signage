@@ -25,7 +25,7 @@ interface Screen {
   name: string;
   location: string;
   status: "online" | "offline";
-  currentComposition: string;
+  defaultComposition: string;
   lastSeen: string;
   resolution: string;
   customFields?: Record<string, any>;
@@ -39,7 +39,7 @@ const DEFAULT_SCHEMA: Schema = {
       id: "store", 
       label: "Store", 
       type: "single-select", 
-      options: ["Axis Mall", "Phoenix Marketcity", "Brookfield Plaza", "Central Square"], 
+      options: ["Axis Mall", "Phoenix Marketcity"], 
       required: true,
       helpText: "Select the store location for this screen"
     },
@@ -47,25 +47,8 @@ const DEFAULT_SCHEMA: Schema = {
       id: "screen_type", 
       label: "Screen Type", 
       type: "multi-select", 
-      options: ["Menu", "Promo", "Info", "Wayfinding", "Directory"],
+      options: ["Menu", "Promo", "Info"],
       helpText: "You can select multiple screen types"
-    },
-    { 
-      id: "floor", 
-      label: "Floor", 
-      type: "text",
-      helpText: "Enter the floor number or name"
-    },
-    { 
-      id: "kiosk", 
-      label: "Is Kiosk", 
-      type: "boolean"
-    },
-    { 
-      id: "install_date", 
-      label: "Install Date", 
-      type: "date",
-      helpText: "When was this screen installed?"
     }
   ]
 };
@@ -77,15 +60,12 @@ const createMockScreens = (): Screen[] => [
     name: "Lobby Display",
     location: "Main Entrance",
     status: "online",
-    currentComposition: "Welcome Playlist",
+    defaultComposition: "Welcome Playlist",
     lastSeen: "Active now",
     resolution: "1920x1080",
     customFields: {
       store: "Axis Mall",
-      screen_type: ["Menu", "Info"],
-      floor: "Ground Floor",
-      kiosk: false,
-      install_date: "2024-01-15T00:00:00.000Z"
+      screen_type: ["Menu", "Info"]
     }
   },
   {
@@ -93,15 +73,12 @@ const createMockScreens = (): Screen[] => [
     name: "Conference Room A",
     location: "Floor 2, Room 201",
     status: "online",
-    currentComposition: "Meeting Schedule",
+    defaultComposition: "Meeting Schedule",
     lastSeen: "Active now",
     resolution: "3840x2160",
     customFields: {
       store: "Axis Mall",
-      screen_type: ["Info"],
-      floor: "2",
-      kiosk: false,
-      install_date: "2024-02-01T00:00:00.000Z"
+      screen_type: ["Info"]
     }
   },
   {
@@ -109,15 +86,12 @@ const createMockScreens = (): Screen[] => [
     name: "Cafeteria Screen",
     location: "Ground Floor Cafeteria",
     status: "offline",
-    currentComposition: "Menu Board",
+    defaultComposition: "Menu Board",
     lastSeen: "2 hours ago",
     resolution: "1920x1080",
     customFields: {
       store: "Phoenix Marketcity",
-      screen_type: ["Menu"],
-      floor: "Ground Floor",
-      kiosk: false,
-      install_date: "2024-01-20T00:00:00.000Z"
+      screen_type: ["Menu"]
     }
   },
   {
@@ -125,15 +99,12 @@ const createMockScreens = (): Screen[] => [
     name: "Reception Area",
     location: "Main Lobby",
     status: "online",
-    currentComposition: "Company Highlights",
+    defaultComposition: "Company Highlights",
     lastSeen: "Active now",
     resolution: "1920x1080",
     customFields: {
       store: "Axis Mall",
-      screen_type: ["Promo", "Info"],
-      floor: "1",
-      kiosk: true,
-      install_date: "2024-03-01T00:00:00.000Z"
+      screen_type: ["Promo", "Info"]
     }
   },
   {
@@ -141,15 +112,12 @@ const createMockScreens = (): Screen[] => [
     name: "Training Room",
     location: "Floor 3, Room 305",
     status: "offline",
-    currentComposition: "Training Materials",
+    defaultComposition: "Training Materials",
     lastSeen: "1 day ago",
     resolution: "2560x1440",
     customFields: {
-      store: "Brookfield Plaza",
-      screen_type: ["Info"],
-      floor: "3",
-      kiosk: false,
-      install_date: "2024-02-15T00:00:00.000Z"
+      store: "Phoenix Marketcity",
+      screen_type: ["Info"]
     }
   },
   {
@@ -157,15 +125,12 @@ const createMockScreens = (): Screen[] => [
     name: "Executive Floor Display",
     location: "Floor 5, Executive Area",
     status: "online",
-    currentComposition: "Executive Dashboard",
+    defaultComposition: "Executive Dashboard",
     lastSeen: "Active now",
     resolution: "3840x2160",
     customFields: {
-      store: "Central Square",
-      screen_type: ["Info", "Promo"],
-      floor: "5",
-      kiosk: false,
-      install_date: "2024-01-10T00:00:00.000Z"
+      store: "Axis Mall",
+      screen_type: ["Info", "Promo"]
     }
   },
   {
@@ -173,15 +138,12 @@ const createMockScreens = (): Screen[] => [
     name: "Parking Lot Screen",
     location: "Basement Parking",
     status: "online",
-    currentComposition: "Parking Info",
+    defaultComposition: "Parking Info",
     lastSeen: "Active now",
     resolution: "1920x1080",
     customFields: {
       store: "Axis Mall",
-      screen_type: ["Wayfinding", "Info"],
-      floor: "Basement",
-      kiosk: false,
-      install_date: "2024-02-20T00:00:00.000Z"
+      screen_type: ["Info"]
     }
   },
   {
@@ -189,15 +151,12 @@ const createMockScreens = (): Screen[] => [
     name: "Gym Display",
     location: "Ground Floor Gym",
     status: "offline",
-    currentComposition: "Fitness Tips",
+    defaultComposition: "Fitness Tips",
     lastSeen: "3 hours ago",
     resolution: "1920x1080",
     customFields: {
       store: "Phoenix Marketcity",
-      screen_type: ["Promo"],
-      floor: "Ground Floor",
-      kiosk: false,
-      install_date: "2024-03-10T00:00:00.000Z"
+      screen_type: ["Promo"]
     }
   },
 ];
@@ -221,7 +180,7 @@ export default function ScreensTable() {
         const matchesSearch = 
           screen.name.toLowerCase().includes(searchLower) ||
           screen.location.toLowerCase().includes(searchLower) ||
-          screen.currentComposition.toLowerCase().includes(searchLower) ||
+          screen.defaultComposition.toLowerCase().includes(searchLower) ||
           Object.values(screen.customFields || {}).some(value => 
             String(value).toLowerCase().includes(searchLower)
           );
@@ -346,7 +305,7 @@ export default function ScreensTable() {
       name: screenData.name,
       location: screenData.location,
       status: "offline",
-      currentComposition: screenData.currentComposition || "None",
+      defaultComposition: screenData.defaultComposition || "None",
       lastSeen: "Never",
       resolution: screenData.resolution || "1920x1080",
       customFields: screenData.customFields || {},

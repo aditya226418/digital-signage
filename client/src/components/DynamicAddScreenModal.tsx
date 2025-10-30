@@ -62,7 +62,7 @@ export default function DynamicAddScreenModal({
     name: '',
     location: '',
     resolution: '',
-    currentComposition: '',
+    defaultComposition: '',
   });
   
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -148,7 +148,7 @@ export default function DynamicAddScreenModal({
       name: formData.name,
       location: formData.location || '',
       resolution: formData.resolution || '1920x1080',
-      currentComposition: formData.currentComposition || '',
+      defaultComposition: formData.defaultComposition || '',
       status: 'offline', // New screens start offline
       lastSeen: 'Never',
       activationCode: activationCode,
@@ -168,7 +168,7 @@ export default function DynamicAddScreenModal({
       name: '',
       location: '',
       resolution: '',
-      currentComposition: '',
+      defaultComposition: '',
     });
     setActivationCode(null);
     setErrors({});
@@ -368,14 +368,14 @@ export default function DynamicAddScreenModal({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="currentComposition" className="text-sm font-medium">
-                  Current Composition
+                <Label htmlFor="defaultComposition" className="text-sm font-medium">
+                  Default Composition
                 </Label>
                 <Select
-                  value={formData.currentComposition}
-                  onValueChange={(value) => updateField('currentComposition', value)}
+                  value={formData.defaultComposition}
+                  onValueChange={(value) => updateField('defaultComposition', value)}
                 >
-                  <SelectTrigger id="currentComposition">
+                  <SelectTrigger id="defaultComposition">
                     <SelectValue placeholder="Select composition" />
                   </SelectTrigger>
                   <SelectContent>

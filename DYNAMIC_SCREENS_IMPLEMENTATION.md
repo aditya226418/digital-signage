@@ -148,20 +148,18 @@ Successfully implemented a fully dynamic screens management system with custom o
 {
   version: 1,
   fields: [
-    { id: "store", label: "Store", type: "single-select", options: [...], required: true },
-    { id: "screen_type", label: "Screen Type", type: "multi-select", options: [...] },
-    { id: "floor", label: "Floor", type: "text" },
-    { id: "kiosk", label: "Is Kiosk", type: "boolean" },
-    { id: "install_date", label: "Install Date", type: "date" }
+    { id: "store", label: "Store", type: "single-select", options: ["Axis Mall", "Phoenix Marketcity"], required: true },
+    { id: "screen_type", label: "Screen Type", type: "multi-select", options: ["Menu", "Promo", "Info"] }
   ]
 }
 ```
 
 **Mock Data**:
-- 8 sample screens with diverse custom field values
+- 8 sample screens with custom field values
 - Mix of online/offline statuses
 - Various resolutions and locations
-- Realistic custom field data
+- Store values: Axis Mall and Phoenix Marketcity
+- Screen types: Menu, Promo, and Info combinations
 
 **Filtering Logic**:
 - `getFilteredScreens()`: Comprehensive client-side filtering

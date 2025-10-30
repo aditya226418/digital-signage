@@ -42,7 +42,7 @@ interface Screen {
   name: string;
   location: string;
   status: "online" | "offline";
-  currentComposition: string;
+  defaultComposition: string;
   lastSeen: string;
   resolution: string;
   customFields?: Record<string, any>;
@@ -116,17 +116,16 @@ export default function DynamicScreensTable({
         {/* Search, Filters, and Actions Row */}
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-col gap-3 sm:flex-row sm:flex-1">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder="Search screens by name, location, or composition..."
-                value={searchQuery}
-                onChange={(e) => onSearchChange(e.target.value)}
-                className="pl-9 transition-all duration-200 focus:ring-2 focus:ring-primary/20"
-              />
-            </div>
-
-            <div className="flex gap-2 shrink-0">
+          <div className="flex gap-2 shrink-0">
+            <Button
+              className="gap-2 transition-all duration-200 hover:shadow-md"
+              onClick={onAddScreen}
+            >
+              <Plus className="h-4 w-4" />
+              Add Screen
+            </Button>
+          </div>
+          <div className="flex gap-2 shrink-0">
               <Button
                 variant="outline"
                 className="gap-2 transition-all duration-200 hover:bg-accent"
@@ -157,18 +156,21 @@ export default function DynamicScreensTable({
                 </TooltipContent>
               </Tooltip>
             </div>
+            <div className="relative flex-1 w-3">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder="Search screens by name, location, or composition..."
+                value={searchQuery}
+                onChange={(e) => onSearchChange(e.target.value)}
+                className="pl-9 transition-all duration-200 focus:ring-2 focus:ring-primary/20 "
+              />
+            </div>
+
+            
           </div>
 
           {/* Actions */}
-          <div className="flex gap-2 shrink-0">
-            <Button
-              className="gap-2 transition-all duration-200 hover:shadow-md"
-              onClick={onAddScreen}
-            >
-              <Plus className="h-4 w-4" />
-              Add Screen
-            </Button>
-          </div>
+         
         </div>
       </CardHeader>
 
@@ -180,8 +182,7 @@ export default function DynamicScreensTable({
                 <TableHead className="font-semibold">Screen Name</TableHead>
                 <TableHead className="font-semibold">Location</TableHead>
                 <TableHead className="font-semibold">Status</TableHead>
-                <TableHead className="font-semibold">Current Composition</TableHead>
-                <TableHead className="font-semibold">Resolution</TableHead>
+                <TableHead className="font-semibold">Default Composition</TableHead>
                 <TableHead className="font-semibold">Last Seen</TableHead>
                 {displayCustomFields.map((field) => (
                   <TableHead key={field.id} className="font-semibold">
@@ -201,7 +202,6 @@ export default function DynamicScreensTable({
                     <TableCell><Skeleton className="h-5 w-20" /></TableCell>
                     <TableCell><Skeleton className="h-5 w-36" /></TableCell>
                     <TableCell><Skeleton className="h-5 w-24" /></TableCell>
-                    <TableCell><Skeleton className="h-5 w-24" /></TableCell>
                     {displayCustomFields.map((field) => (
                       <TableCell key={field.id}><Skeleton className="h-5 w-24" /></TableCell>
                     ))}
@@ -211,7 +211,7 @@ export default function DynamicScreensTable({
               ) : currentData.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={7 + displayCustomFields.length}
+                    colSpan={6 + displayCustomFields.length}
                     className="h-32 text-center text-muted-foreground"
                   >
                     No screens found
@@ -223,7 +223,12 @@ export default function DynamicScreensTable({
                     key={screen.id}
                     className="transition-colors duration-150 hover:bg-muted/30"
                   >
-                    <TableCell className="font-medium">{screen.name}</TableCell>
+                    <TableCell>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{screen.name}</span>
+                        <span className="text-xs text-muted-foreground">{screen.resolution}</span>
+                      </div>
+                    </TableCell>
                     <TableCell className="text-muted-foreground">{screen.location}</TableCell>
                     <TableCell>
                       <Badge
@@ -242,8 +247,7 @@ export default function DynamicScreensTable({
                         {screen.status === "online" ? "Online" : "Offline"}
                       </Badge>
                     </TableCell>
-                    <TableCell className="max-w-xs truncate">{screen.currentComposition}</TableCell>
-                    <TableCell className="text-sm text-muted-foreground">{screen.resolution}</TableCell>
+                    <TableCell className="max-w-xs truncate">{screen.defaultComposition}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">{screen.lastSeen}</TableCell>
                     {displayCustomFields.map((field) => (
                       <TableCell key={field.id} className="text-sm">
