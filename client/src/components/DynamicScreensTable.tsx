@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Table,
   TableBody,
@@ -81,6 +82,7 @@ export default function DynamicScreensTable({
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const itemsPerPage = 10;
 
   useEffect(() => {
@@ -101,6 +103,11 @@ export default function DynamicScreensTable({
   useEffect(() => {
     setCurrentPage(1);
   }, [data.length]);
+
+  // Reset selected rows when filters change or data changes
+  useEffect(() => {
+    setSelectedRows(new Set());
+  }, [filters, data.length]);
 
   // Get custom fields to display in table (excluding city and state as they're shown with location)
   const displayCustomFields = schema.fields.filter(field => field.id !== 'city' && field.id !== 'state');
@@ -158,6 +165,40 @@ export default function DynamicScreensTable({
 
   const visibleFilters = filterEntries.slice(0, 6);
   const hiddenFilters = filterEntries.slice(6);
+
+  // Checkbox selection handlers
+  const hasFiltersApplied = filterEntries.length > 0;
+  const currentPageIds = currentData.map(screen => screen.id);
+  const areAllCurrentPageSelected = currentPageIds.length > 0 && currentPageIds.every(id => selectedRows.has(id));
+  const areSomeSelected = currentPageIds.some(id => selectedRows.has(id));
+
+  const toggleSelectAll = () => {
+    if (areAllCurrentPageSelected) {
+      setSelectedRows(prev => {
+        const newSet = new Set(prev);
+        currentPageIds.forEach(id => newSet.delete(id));
+        return newSet;
+      });
+    } else {
+      setSelectedRows(prev => {
+        const newSet = new Set(prev);
+        currentPageIds.forEach(id => newSet.add(id));
+        return newSet;
+      });
+    }
+  };
+
+  const toggleSelectRow = (id: string) => {
+    setSelectedRows(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
+      return newSet;
+    });
+  };
 
   return (
     <Card className="border-border/40 shadow-sm transition-all duration-300">
@@ -300,11 +341,84 @@ export default function DynamicScreensTable({
         </div>
       )}
 
+      {/* Sticky Action Bar - appears when rows are selected */}
+      <AnimatePresence>
+        {selectedRows.size > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className="flex items-center gap-2 px-6 py-3 bg-primary/10 border-b border-primary/20 sticky top-0 z-10"
+          >
+            <div className="flex items-center gap-4">
+              <span className="text-sm font-medium">
+                {selectedRows.size} {selectedRows.size === 1 ? 'screen' : 'screens'} selected
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                onClick={() => {
+                  // Handle manage action
+                  console.log('Managing screens:', Array.from(selectedRows));
+                }}
+              >
+                <SettingsIcon className="h-4 w-4" />
+                Manage ({selectedRows.size})
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                onClick={() => {
+                  // Handle publish action
+                  console.log('Publishing to screens:', Array.from(selectedRows));
+                }}
+              >
+                <Eye className="h-4 w-4" />
+                Publish
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSelectedRows(new Set())}
+                className="gap-2"
+              >
+                <X className="h-4 w-4" />
+                Clear
+              </Button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <CardContent className="p-0">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/50 hover:bg-muted/50">
+                {hasFiltersApplied && (
+                  <TableHead className="w-12">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="flex items-center">
+                          <Checkbox
+                            checked={areAllCurrentPageSelected}
+                            onCheckedChange={toggleSelectAll}
+                            aria-label="Select all"
+                            className={areSomeSelected && !areAllCurrentPageSelected ? "data-[state=checked]:bg-primary" : ""}
+                          />
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Select All Screens</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TableHead>
+                )}
                 <TableHead className="font-semibold">Screen Name</TableHead>
                 <TableHead className="font-semibold">Location</TableHead>
                 <TableHead className="font-semibold">Status</TableHead>
@@ -323,6 +437,9 @@ export default function DynamicScreensTable({
                 // Loading skeleton
                 Array.from({ length: Math.min(5, itemsPerPage) }).map((_, index) => (
                   <TableRow key={index}>
+                    {hasFiltersApplied && (
+                      <TableCell><Skeleton className="h-5 w-5" /></TableCell>
+                    )}
                     <TableCell><Skeleton className="h-5 w-32" /></TableCell>
                     <TableCell><Skeleton className="h-5 w-40" /></TableCell>
                     <TableCell><Skeleton className="h-5 w-20" /></TableCell>
@@ -337,7 +454,7 @@ export default function DynamicScreensTable({
               ) : currentData.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={6 + displayCustomFields.length}
+                    colSpan={6 + displayCustomFields.length + (hasFiltersApplied ? 1 : 0)}
                     className="h-32 text-center text-muted-foreground"
                   >
                     No screens found
@@ -349,6 +466,24 @@ export default function DynamicScreensTable({
                     key={screen.id}
                     className="transition-colors duration-150 hover:bg-muted/30"
                   >
+                    {hasFiltersApplied && (
+                      <TableCell>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="flex items-center">
+                              <Checkbox
+                                checked={selectedRows.has(screen.id)}
+                                onCheckedChange={() => toggleSelectRow(screen.id)}
+                                aria-label={`Select ${screen.name}`}
+                              />
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Select {screen.name}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TableCell>
+                    )}
                     <TableCell>
                       <div className="flex flex-col">
                         <span className="font-medium">{screen.name}</span>
