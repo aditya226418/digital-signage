@@ -103,48 +103,10 @@ export default function FilterDrawer({
 
         <ScrollArea className="h-[420px]">
           <div className="p-4 space-y-4">
-            {/* Status Filter */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">Status</Label>
-              <div className="flex gap-3">
-                {['online', 'offline'].map((status) => (
-                  <div key={status} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`status-${status}`}
-                      checked={(localFilters.status || []).includes(status)}
-                      onCheckedChange={() => toggleMultiSelect('status', status)}
-                    />
-                    <label
-                      htmlFor={`status-${status}`}
-                      className="text-sm font-normal leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 capitalize cursor-pointer"
-                    >
-                      {status}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div>
+            
 
-            {/* Last Seen Filter */}
-            <div className="space-y-2">
-              <Label htmlFor="lastSeen" className="text-sm font-medium">Last Seen</Label>
-              <Select
-                value={localFilters.lastSeen || ''}
-                onValueChange={(value) => updateFilter('lastSeen', value)}
-              >
-                <SelectTrigger id="lastSeen" className="h-9">
-                  <SelectValue placeholder="Select time range" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="active">Active Now</SelectItem>
-                  <SelectItem value="1hour">Within 1 hour</SelectItem>
-                  <SelectItem value="1day">Within 1 day</SelectItem>
-                  <SelectItem value="7days">Within 7 days</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
 
-            {schema.fields.length > 0 && <Separator className="my-3" />}
+            {/* {schema.fields.length > 0 && <Separator className="my-3" />} */}
 
             {/* Custom Filters Section */}
             {schema.fields.length > 0 && (
@@ -210,6 +172,7 @@ export default function FilterDrawer({
                         </SelectContent>
                       </Select>
                     )}
+                    
 
                     {/* Multi Select */}
                     {field.type === 'multi-select' && field.options && (
@@ -294,6 +257,27 @@ export default function FilterDrawer({
                 ))}
               </div>
             )}
+            {/* Status Filter */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Status</Label>
+              <div className="flex gap-3">
+                {['online', 'offline'].map((status) => (
+                  <div key={status} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`status-${status}`}
+                      checked={(localFilters.status || []).includes(status)}
+                      onCheckedChange={() => toggleMultiSelect('status', status)}
+                    />
+                    <label
+                      htmlFor={`status-${status}`}
+                      className="text-sm font-normal leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 capitalize cursor-pointer"
+                    >
+                      {status}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </ScrollArea>
 
