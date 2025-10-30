@@ -47,6 +47,22 @@ const DEFAULT_SCHEMA: Schema = {
       type: "multi-select", 
       options: ["Menu", "Promo", "Info"],
       helpText: "You can select multiple screen types"
+    },
+    { 
+      id: "city", 
+      label: "City", 
+      type: "single-select", 
+      options: ["Mumbai", "Bangalore", "Delhi", "Pune", "Hyderabad"], 
+      required: false,
+      helpText: "Select the city where this screen is located"
+    },
+    { 
+      id: "state", 
+      label: "State", 
+      type: "single-select", 
+      options: ["Maharashtra", "Karnataka", "Delhi", "Telangana"], 
+      required: false,
+      helpText: "Select the state where this screen is located"
     }
   ]
 };
@@ -63,7 +79,9 @@ const createMockScreens = (): Screen[] => [
     resolution: "1920x1080",
     customFields: {
       store: "Axis Mall",
-      screen_type: ["Menu", "Info"]
+      screen_type: ["Menu", "Info"],
+      city: "Mumbai",
+      state: "Maharashtra"
     }
   },
   {
@@ -76,7 +94,9 @@ const createMockScreens = (): Screen[] => [
     resolution: "3840x2160",
     customFields: {
       store: "Axis Mall",
-      screen_type: ["Info"]
+      screen_type: ["Info"],
+      city: "Mumbai",
+      state: "Maharashtra"
     }
   },
   {
@@ -89,7 +109,9 @@ const createMockScreens = (): Screen[] => [
     resolution: "1920x1080",
     customFields: {
       store: "Phoenix Marketcity",
-      screen_type: ["Menu"]
+      screen_type: ["Menu"],
+      city: "Bangalore",
+      state: "Karnataka"
     }
   },
   {
@@ -102,7 +124,9 @@ const createMockScreens = (): Screen[] => [
     resolution: "1920x1080",
     customFields: {
       store: "Axis Mall",
-      screen_type: ["Promo", "Info"]
+      screen_type: ["Promo", "Info"],
+      city: "Pune",
+      state: "Maharashtra"
     }
   },
   {
@@ -115,7 +139,9 @@ const createMockScreens = (): Screen[] => [
     resolution: "2560x1440",
     customFields: {
       store: "Phoenix Marketcity",
-      screen_type: ["Info"]
+      screen_type: ["Info"],
+      city: "Hyderabad",
+      state: "Telangana"
     }
   },
   {
@@ -128,7 +154,9 @@ const createMockScreens = (): Screen[] => [
     resolution: "3840x2160",
     customFields: {
       store: "Axis Mall",
-      screen_type: ["Info", "Promo"]
+      screen_type: ["Info", "Promo"],
+      city: "Delhi",
+      state: "Delhi"
     }
   },
   {
@@ -141,7 +169,9 @@ const createMockScreens = (): Screen[] => [
     resolution: "1920x1080",
     customFields: {
       store: "Axis Mall",
-      screen_type: ["Info"]
+      screen_type: ["Info"],
+      city: "Bangalore",
+      state: "Karnataka"
     }
   },
   {
@@ -154,7 +184,9 @@ const createMockScreens = (): Screen[] => [
     resolution: "1920x1080",
     customFields: {
       store: "Phoenix Marketcity",
-      screen_type: ["Promo"]
+      screen_type: ["Promo"],
+      city: "Pune",
+      state: "Maharashtra"
     }
   },
 ];

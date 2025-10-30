@@ -102,8 +102,8 @@ export default function DynamicScreensTable({
     setCurrentPage(1);
   }, [data.length]);
 
-  // Get first 2-3 custom fields to display in table
-  const displayCustomFields = schema.fields.slice(0, 2);
+  // Get first 4 custom fields to display in table
+  const displayCustomFields = schema.fields.slice(0, 4);
 
   const formatCustomFieldValue = (field: SchemaField, value: any) => {
     if (value === undefined || value === null) return '-';
