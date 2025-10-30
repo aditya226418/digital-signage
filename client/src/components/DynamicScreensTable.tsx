@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Search, Filter, Wrench, ChevronLeft, ChevronRight, MoreVertical, Eye, Settings as SettingsIcon, Power, Plus, X, ChevronDown } from "lucide-react";
+import { Search, Filter, Wrench, ChevronLeft, ChevronRight, MoreVertical, Eye, Settings as SettingsIcon, Power, Plus, X, ChevronDown, Send } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -603,6 +603,10 @@ export default function DynamicScreensTable({
                           <DropdownMenuItem className="gap-2 cursor-pointer">
                             <SettingsIcon className="h-4 w-4" />
                             Settings
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="gap-2 cursor-pointer">
+                            <Send className="h-4 w-4" />
+                            Publish
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem className="gap-2 cursor-pointer text-destructive focus:text-destructive">
