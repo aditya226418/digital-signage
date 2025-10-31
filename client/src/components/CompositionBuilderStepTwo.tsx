@@ -112,9 +112,29 @@ function SortableFilmstripItem({
 
         {/* Media Thumbnail */}
         <div className="w-full aspect-square bg-gradient-to-br from-neutral-100 to-neutral-50 rounded border border-neutral-200 flex items-center justify-center mb-1.5 mt-2.5 relative overflow-hidden group-hover:border-primary/30 transition-colors">
-          <IconComponent className="h-6 w-6 text-neutral-500 group-hover:text-primary transition-colors" />
-          {/* Subtle overlay on hover */}
-          <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+          {media.thumbnailUrl ? (
+            <>
+              <img 
+                src={media.thumbnailUrl} 
+                alt={media.name}
+                className="w-full h-full object-cover"
+              />
+              {/* Overlay with play icon for videos */}
+              {media.type === "video" && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                  <VideoIcon className="h-5 w-5 text-white" />
+                </div>
+              )}
+              {/* Subtle overlay on hover */}
+              <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+            </>
+          ) : (
+            <>
+              <IconComponent className="h-6 w-6 text-neutral-500 group-hover:text-primary transition-colors" />
+              {/* Subtle overlay on hover */}
+              <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+            </>
+          )}
         </div>
 
         {/* Media Name with Tooltip */}
@@ -328,13 +348,35 @@ function MediaPickerPopover({
                   `}
                 >
                   {isAdded && (
-                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 text-white rounded-full flex items-center justify-center">
+                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 text-white rounded-full flex items-center justify-center z-10">
                       <CheckCircle2 className="h-2.5 w-2.5" />
                     </div>
                   )}
 
-                  <div className="w-full aspect-square bg-neutral-100 rounded flex items-center justify-center mb-1.5">
-                    <IconComponent className="h-5 w-5 text-neutral-600" />
+                  <div className="w-full aspect-square bg-neutral-100 rounded flex items-center justify-center mb-1.5 overflow-hidden relative">
+                    {media.thumbnailUrl ? (
+                      <>
+                        <img 
+                          src={media.thumbnailUrl} 
+                          alt={media.name}
+                          className="w-full h-full object-cover"
+                        />
+                        {/* Overlay with play icon for videos */}
+                        {media.type === "video" && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                            <VideoIcon className="h-4 w-4 text-white" />
+                          </div>
+                        )}
+                        {/* App icon overlay */}
+                        {media.type === "app" && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-purple-500/90">
+                            <AppWindowIcon className="h-5 w-5 text-white" />
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <IconComponent className="h-5 w-5 text-neutral-600" />
+                    )}
                   </div>
 
                   <div className="text-[10px] font-medium truncate mb-1">{media.name}</div>
