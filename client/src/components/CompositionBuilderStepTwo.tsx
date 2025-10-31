@@ -31,7 +31,7 @@ import {
   SortableContext,
   sortableKeyboardCoordinates,
   useSortable,
-  horizontalListSortingStrategy,
+  verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { mockMediaLibrary } from "@/lib/mockCompositionData";
@@ -89,91 +89,97 @@ function SortableFilmstripItem({
     <motion.div
       ref={setNodeRef}
       style={style}
-      className={`relative flex-shrink-0 w-28 group ${isDragging ? "opacity-50 z-50" : ""}`}
-      whileHover={{ y: -2 }}
+      className={`relative flex-shrink-0 w-full group ${isDragging ? "opacity-50 z-50" : ""}`}
+      whileHover={{ x: -2 }}
     >
       <div className="bg-white border border-neutral-200 rounded-md p-2 hover:border-primary/50 hover:shadow-lg transition-all duration-200">
-        {/* Type Badge */}
-        <div className="absolute top-1 right-1 z-10">
-          <Badge className={`${typeInfo.color} text-white text-[8px] px-1 py-0 h-3.5 gap-0.5`}>
-            <typeInfo.icon className="h-2 w-2" />
-            {typeInfo.label}
-          </Badge>
-        </div>
+        {/* Horizontal Layout: Thumbnail Left, Content Right */}
+        <div className="flex gap-2">
+          {/* Left: Thumbnail */}
+          <div className="relative flex-shrink-0 w-20 h-20">
+            {/* Drag Handle - Top Left of Thumbnail */}
+            <button
+              {...attributes}
+              {...listeners}
+              className="absolute -top-1 -left-1 z-10 flex items-center justify-center w-5 h-5 bg-white/95 hover:bg-neutral-100 border border-neutral-300 rounded-full shadow-sm cursor-grab active:cursor-grabbing transition-colors"
+            >
+              <GripVertical className="h-3 w-3 text-neutral-500" />
+            </button>
 
-        {/* Drag Handle - Top Left */}
-        <button
-          {...attributes}
-          {...listeners}
-          className="absolute top-1 left-1 z-10 flex items-center justify-center w-4 h-4 bg-white/90 hover:bg-neutral-100 border border-neutral-300 rounded shadow-sm cursor-grab active:cursor-grabbing transition-colors"
-        >
-          <GripVertical className="h-2.5 w-2.5 text-neutral-500" />
-        </button>
+            {/* Order Number - Top Right of Thumbnail */}
+            <div className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-[9px] font-bold shadow-md border-2 border-white z-10">
+              {index + 1}
+            </div>
 
-        {/* Media Thumbnail */}
-        <div className="w-full aspect-square bg-gradient-to-br from-neutral-100 to-neutral-50 rounded border border-neutral-200 flex items-center justify-center mb-1.5 mt-2.5 relative overflow-hidden group-hover:border-primary/30 transition-colors">
-          {media.thumbnailUrl ? (
-            <>
-              <img 
-                src={media.thumbnailUrl} 
-                alt={media.name}
-                className="w-full h-full object-cover"
-              />
-              {/* Overlay with play icon for videos */}
-              {media.type === "video" && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                  <VideoIcon className="h-5 w-5 text-white" />
-                </div>
+            {/* Thumbnail Image */}
+            <div className="w-full h-full bg-gradient-to-br from-neutral-100 to-neutral-50 rounded border border-neutral-200 flex items-center justify-center relative overflow-hidden group-hover:border-primary/30 transition-colors">
+              {media.thumbnailUrl ? (
+                <>
+                  <img 
+                    src={media.thumbnailUrl} 
+                    alt={media.name}
+                    className="w-full h-full object-cover"
+                  />
+                  {/* Overlay with play icon for videos */}
+                  {media.type === "video" && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                      <VideoIcon className="h-4 w-4 text-white" />
+                    </div>
+                  )}
+                  {/* Subtle overlay on hover */}
+                  <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </>
+              ) : (
+                <>
+                  <IconComponent className="h-6 w-6 text-neutral-500 group-hover:text-primary transition-colors" />
+                  <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </>
               )}
-              {/* Subtle overlay on hover */}
-              <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-            </>
-          ) : (
-            <>
-              <IconComponent className="h-6 w-6 text-neutral-500 group-hover:text-primary transition-colors" />
-              {/* Subtle overlay on hover */}
-              <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-            </>
-          )}
-        </div>
+            </div>
+          </div>
 
-        {/* Media Name with Tooltip */}
-        <div 
-          className="text-[10px] font-semibold truncate mb-1.5 text-neutral-800 group-hover:text-primary transition-colors" 
-          title={media.name}
-        >
-          {media.name}
-        </div>
+          {/* Right: Content */}
+          <div className="flex-1 min-w-0 flex flex-col">
+            {/* Type Badge */}
+            <Badge className={`${typeInfo.color} text-white text-[8px] px-1.5 py-0 h-3.5 gap-0.5 w-fit mb-1`}>
+              <typeInfo.icon className="h-2 w-2" />
+              {typeInfo.label}
+            </Badge>
 
-        {/* Duration Control */}
-        <div className="flex items-center gap-0.5 mb-1.5 bg-neutral-50 rounded px-1.5 py-1 border border-neutral-200">
-          <Clock className="h-2.5 w-2.5 text-neutral-500 flex-shrink-0" />
-          <Input
-            type="number"
-            value={media.duration || 5}
-            onChange={(e) => onDurationChange(parseInt(e.target.value) || 5)}
-            className="h-4 text-[10px] px-1 w-full border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 font-medium"
-            min={1}
-            max={999}
-          />
-          <span className="text-[9px] text-neutral-500 font-medium">s</span>
-        </div>
+            {/* Media Name */}
+            <div 
+              className="text-[10px] font-semibold truncate mb-1.5 text-neutral-800 group-hover:text-primary transition-colors" 
+              title={media.name}
+            >
+              {media.name}
+            </div>
 
-        {/* Delete Button */}
-        <Button
-          onClick={onRemove}
-          variant="ghost"
-          size="sm"
-          className="w-full h-6 text-[9px] text-red-600 hover:text-red-700 hover:bg-red-50 gap-0.5 font-medium px-1"
-        >
-          <Trash2 className="h-2.5 w-2.5" />
-          Remove
-        </Button>
-      </div>
-      
-      {/* Order Number Indicator */}
-      <div className="absolute -top-1.5 -left-1.5 w-5 h-5 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-[9px] font-bold shadow-md border-2 border-white">
-        {index + 1}
+            {/* Duration Control */}
+            <div className="flex items-center gap-0.5 mb-1.5 bg-neutral-50 rounded px-1.5 py-0.5 border border-neutral-200 w-fit">
+              <Clock className="h-2.5 w-2.5 text-neutral-500 flex-shrink-0" />
+              <Input
+                type="number"
+                value={media.duration || 5}
+                onChange={(e) => onDurationChange(parseInt(e.target.value) || 5)}
+                className="h-4 text-[10px] px-1 w-12 border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 font-medium"
+                min={1}
+                max={999}
+              />
+              <span className="text-[9px] text-neutral-500 font-medium">s</span>
+            </div>
+
+            {/* Delete Button */}
+            <Button
+              onClick={onRemove}
+              variant="ghost"
+              size="sm"
+              className="w-fit h-5 text-[9px] text-red-600 hover:text-red-700 hover:bg-red-50 gap-0.5 font-medium px-1.5 mt-auto"
+            >
+              <Trash2 className="h-2.5 w-2.5" />
+              Remove
+            </Button>
+          </div>
+        </div>
       </div>
     </motion.div>
   );
@@ -267,8 +273,8 @@ function MediaPickerPopover({
       </PopoverTrigger>
       <PopoverContent 
         className="w-[700px] p-0" 
-        align="center" 
-        side="top"
+        align="end" 
+        side="left"
         sideOffset={10}
       >
         <div className="p-3 border-b bg-neutral-50">
@@ -493,49 +499,53 @@ export default function CompositionBuilderStepTwo({
           )}
         </div>
 
-          {/* Mock Screen with Zones - Compact */}
-          <div className="bg-gradient-to-br from-neutral-50 to-white rounded-lg shadow-sm border border-neutral-200 p-2.5 mb-3">
-            <div className="mb-2 flex items-center justify-between">
-              <div className="text-[10px] font-semibold text-neutral-600">
-                📺 Layout Preview
+        {/* Side-by-side layout: Zone Selector (70%) + Filmstrip (30%) */}
+        <div className="flex gap-3">
+          {/* Left: Mock Screen with Zones - 70% */}
+          <div className="flex-[0_0_70%]">
+            <div className="bg-gradient-to-br from-neutral-50 to-white rounded-lg shadow-sm border border-neutral-200 p-2.5">
+              <div className="mb-2 flex items-center justify-between">
+                <div className="text-[10px] font-semibold text-neutral-600">
+                  📺 Layout Preview
+                </div>
+                <Badge variant="outline" className="text-[9px] h-4 px-1.5">
+                  {selectedLayout.name}
+                </Badge>
               </div>
-              <Badge variant="outline" className="text-[9px] h-4 px-1.5">
-                {selectedLayout.name}
-              </Badge>
-            </div>
-            <div className="w-full max-w-[700px] mx-auto aspect-video bg-gradient-to-br from-neutral-100 to-neutral-50 rounded border border-neutral-300 relative shadow-inner overflow-hidden">
-              {selectedLayout.zones.map((zone, index) => (
-                <ZoneSelector
-                  key={zone.id}
-                  zone={zone}
-                  zoneNumber={index + 1}
-                  isActive={activeZoneId === zone.id}
-                  mediaCount={zones[zone.id]?.length || 0}
-                  onClick={() => setActiveZoneId(zone.id)}
-                />
-              ))}
+              <div className="w-full max-w-[700px] mx-auto aspect-video bg-gradient-to-br from-neutral-100 to-neutral-50 rounded border border-neutral-300 relative shadow-inner overflow-hidden">
+                {selectedLayout.zones.map((zone, index) => (
+                  <ZoneSelector
+                    key={zone.id}
+                    zone={zone}
+                    zoneNumber={index + 1}
+                    isActive={activeZoneId === zone.id}
+                    mediaCount={zones[zone.id]?.length || 0}
+                    onClick={() => setActiveZoneId(zone.id)}
+                  />
+                ))}
+              </div>
             </div>
           </div>
 
-          {/* Filmstrip Timeline Section */}
+          {/* Right: Vertical Filmstrip - 30% */}
           <AnimatePresence mode="wait">
             {activeZone && (
               <motion.div
                 key={activeZoneId}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                className="bg-white rounded-lg shadow-sm border border-neutral-200 p-2.5"
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 10 }}
+                className="flex-[0_0_30%] bg-white rounded-lg shadow-sm border border-neutral-200 p-2.5 flex flex-col min-h-[500px]"
               >
-                <div className="flex items-center justify-between mb-2 pb-2 border-b border-neutral-200">
-                  <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-1.5">
-                      <div className="w-2 h-2 rounded-full bg-primary animate-pulse shadow-sm" />
-                      <h4 className="text-xs font-bold text-neutral-900">
-                        Zone {selectedLayout.zones.findIndex((z) => z.id === activeZoneId) + 1}
-                      </h4>
-                    </div>
-                    <div className="h-3 w-px bg-neutral-300" />
+                {/* Filmstrip Header */}
+                <div className="flex-shrink-0 mb-2 pb-2 border-b border-neutral-200">
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <div className="w-2 h-2 rounded-full bg-primary animate-pulse shadow-sm" />
+                    <h4 className="text-xs font-bold text-neutral-900">
+                      Zone {selectedLayout.zones.findIndex((z) => z.id === activeZoneId) + 1}
+                    </h4>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
                     <Badge variant="secondary" className="gap-1 h-5 text-[10px] px-1.5 bg-blue-50 text-blue-700 border-blue-200">
                       <Clock className="h-2.5 w-2.5" />
                       {formatDuration(totalDuration)}
@@ -545,13 +555,13 @@ export default function CompositionBuilderStepTwo({
                     </Badge>
                   </div>
                   {activeZoneMedia.length > 0 && (
-                    <div className="text-[9px] text-muted-foreground">
+                    <div className="text-[9px] text-muted-foreground mt-1.5">
                       💡 Drag to reorder
                     </div>
                   )}
                 </div>
 
-                {/* Filmstrip */}
+                {/* Vertical Filmstrip */}
                 <DndContext
                   sensors={sensors}
                   collisionDetection={closestCenter}
@@ -559,35 +569,39 @@ export default function CompositionBuilderStepTwo({
                 >
                   <SortableContext
                     items={activeZoneMedia.map((m, i) => `${m.id}-${i}`)}
-                    strategy={horizontalListSortingStrategy}
+                    strategy={verticalListSortingStrategy}
                   >
-                    <ScrollArea className="w-full">
-                      <div className="flex gap-2.5 pb-2 min-w-min">
-                        {/* Add Media Button in Filmstrip - Styled like a media item */}
-                        <div className="flex-shrink-0 w-28">
+                    <ScrollArea className="flex-1">
+                      <div className="flex flex-col gap-2.5 pr-2">
+                        {/* Add Media Button - Horizontal layout matching media items */}
+                        <div className="flex-shrink-0">
                           <MediaPickerPopover
                             onAddMedia={handleAddMedia}
                             selectedMediaIds={addedMediaIds}
                             trigger={
-                              <button className="w-full h-full bg-gradient-to-br from-primary/5 to-primary/10 border-2 border-dashed border-primary/40 rounded-md p-2 hover:from-primary/10 hover:to-primary/15 hover:border-primary/60 hover:shadow-lg transition-all duration-200 cursor-pointer group relative">
+                              <button className="w-full bg-gradient-to-br from-primary/5 to-primary/10 border-2 border-dashed border-primary/40 rounded-md p-2 hover:from-primary/10 hover:to-primary/15 hover:border-primary/60 hover:shadow-lg transition-all duration-200 cursor-pointer group relative">
                                 {/* Sparkle effect */}
                                 <div className="absolute top-1.5 right-1.5">
-                                  <div className="w-1 h-1 bg-primary rounded-full animate-ping" />
+                                  <div className="w-1.5 h-1.5 bg-primary rounded-full animate-ping" />
                                 </div>
                                 
-                                {/* Icon placeholder */}
-                                <div className="w-full aspect-square bg-white rounded flex items-center justify-center mb-2 mt-2.5 border border-primary/20 group-hover:border-primary/40 transition-colors shadow-sm">
-                                  <Plus className="h-8 w-8 text-primary group-hover:scale-110 transition-transform" />
-                                </div>
-
-                                {/* Text label */}
-                                <div className="text-[10px] font-bold text-center text-primary mb-1.5">
-                                  Add Media
-                                </div>
-                                
-                                {/* Hint text */}
-                                <div className="text-[8px] text-center text-primary/70">
-                                  Click to browse
+                                {/* Horizontal Layout matching media items */}
+                                <div className="flex gap-2 items-center">
+                                  {/* Left: Icon Thumbnail */}
+                                  <div className="flex-shrink-0 w-20 h-20 bg-white rounded border border-primary/20 group-hover:border-primary/40 transition-colors shadow-sm flex items-center justify-center relative overflow-hidden">
+                                    <Plus className="h-10 w-10 text-primary group-hover:scale-110 transition-transform" />
+                                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10" />
+                                  </div>
+                                  
+                                  {/* Right: Text */}
+                                  <div className="flex-1 text-left">
+                                    <div className="text-[11px] font-bold text-primary mb-0.5">
+                                      Add Media
+                                    </div>
+                                    <div className="text-[9px] text-primary/70 leading-tight">
+                                      Click to browse library
+                                    </div>
+                                  </div>
                                 </div>
                               </button>
                             }
@@ -596,13 +610,13 @@ export default function CompositionBuilderStepTwo({
 
                         {/* Media Items */}
                         {activeZoneMedia.length === 0 ? (
-                          <div className="flex-1 flex items-center justify-center py-6 px-4">
+                          <div className="flex-1 flex items-center justify-center py-8 px-4">
                             <div className="text-center">
                               <div className="w-12 h-12 mx-auto mb-2 bg-neutral-100 rounded-full flex items-center justify-center">
                                 <ImageIcon className="h-6 w-6 text-neutral-400" />
                               </div>
-                              <p className="text-xs font-medium text-neutral-600 mb-0.5">No media added yet</p>
-                              <p className="text-[10px] text-muted-foreground">Click "Add Media" to get started</p>
+                              <p className="text-xs font-medium text-neutral-600 mb-0.5">No media yet</p>
+                              <p className="text-[10px] text-muted-foreground">Add media above</p>
                             </div>
                           </div>
                         ) : (
@@ -623,6 +637,7 @@ export default function CompositionBuilderStepTwo({
               </motion.div>
             )}
           </AnimatePresence>
+        </div>
       </div>
     </div>
   );
