@@ -550,9 +550,8 @@ export default function DynamicScreensTable({
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-col">
-                        <span className="">{screen.location}</span>
                         {(screen.customFields?.city || screen.customFields?.state) && (
-                          <span className="text-xs text-foreground  mt-0.5">
+                          <span className="">
                             {[screen.customFields?.city, screen.customFields?.state].filter(Boolean).join(', ')}
                           </span>
                         )}

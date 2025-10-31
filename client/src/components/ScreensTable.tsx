@@ -53,7 +53,7 @@ const DEFAULT_SCHEMA: Schema = {
       id: "store", 
       label: "Store", 
       type: "single-select", 
-      options: ["Axis Mall", "Phoenix Marketcity"], 
+      options: ["McDonald's Bandra West", "McDonald's Koramangala", "McDonald's Connaught Place", "McDonald's Hitech City"], 
       required: true,
       helpText: "Select the store location for this screen"
     },
@@ -72,14 +72,14 @@ const DEFAULT_SCHEMA: Schema = {
 const createMockScreens = (): Screen[] => [
   {
     id: "1",
-    name: "Lobby Display",
-    location: "Main Entrance",
+    name: "Front Counter Display",
+    location: "Main Counter",
     status: "online",
-    defaultComposition: "Welcome Playlist",
+    defaultComposition: "Menu Board Day",
     lastSeen: "Active now",
     resolution: "1920x1080",
     customFields: {
-      store: "Axis Mall",
+      store: "McDonald's Bandra West",
       screen_type: ["Menu", "Info"],
       city: "Mumbai",
       state: "Maharashtra"
@@ -87,107 +87,107 @@ const createMockScreens = (): Screen[] => [
   },
   {
     id: "2",
-    name: "Conference Room A",
-    location: "Floor 2, Room 201",
+    name: "Drive-Thru Menu",
+    location: "Drive-Thru Lane",
     status: "online",
-    defaultComposition: "Meeting Schedule",
+    defaultComposition: "Drive-Thru Combo Meals",
     lastSeen: "Active now",
     resolution: "3840x2160",
     customFields: {
-      store: "Axis Mall",
-      screen_type: ["Info"],
+      store: "McDonald's Bandra West",
+      screen_type: ["Menu"],
       city: "Mumbai",
       state: "Maharashtra"
     }
   },
   {
     id: "3",
-    name: "Cafeteria Screen",
-    location: "Ground Floor Cafeteria",
+    name: "Dining Area Screen",
+    location: "Seating Area 1",
     status: "offline",
-    defaultComposition: "Menu Board",
+    defaultComposition: "Happy Meal Promos",
     lastSeen: "2 hours ago",
     resolution: "1920x1080",
     customFields: {
-      store: "Phoenix Marketcity",
-      screen_type: ["Menu"],
+      store: "McDonald's Koramangala",
+      screen_type: ["Promo"],
       city: "Bangalore",
       state: "Karnataka"
     }
   },
   {
     id: "4",
-    name: "Reception Area",
-    location: "Main Lobby",
+    name: "Order Kiosk 1",
+    location: "Entrance Area",
     status: "online",
-    defaultComposition: "Company Highlights",
+    defaultComposition: "Self-Service Menu",
     lastSeen: "Active now",
     resolution: "1920x1080",
     customFields: {
-      store: "Axis Mall",
-      screen_type: ["Promo", "Info"],
-      city: "Mumbai",
-      state: "Maharashtra"
+      store: "McDonald's Connaught Place",
+      screen_type: ["Menu", "Info"],
+      city: "Delhi",
+      state: "Delhi"
     }
   },
   {
     id: "5",
-    name: "Training Room",
-    location: "Floor 3, Room 305",
+    name: "Kitchen Display",
+    location: "Kitchen Area",
     status: "offline",
-    defaultComposition: "Training Materials",
+    defaultComposition: "Order Queue",
     lastSeen: "1 day ago",
     resolution: "2560x1440",
     customFields: {
-      store: "Phoenix Marketcity",
+      store: "McDonald's Hitech City",
       screen_type: ["Info"],
-      city: "Bangalore",
-      state: "Karnataka"
+      city: "Hyderabad",
+      state: "Telangana"
     }
   },
   {
     id: "6",
-    name: "Executive Floor Display",
-    location: "Floor 5, Executive Area",
+    name: "McCafe Menu Board",
+    location: "McCafe Counter",
     status: "online",
-    defaultComposition: "Executive Dashboard",
+    defaultComposition: "Coffee & Desserts",
     lastSeen: "Active now",
     resolution: "3840x2160",
     customFields: {
-      store: "Axis Mall",
-      screen_type: ["Info", "Promo"],
+      store: "McDonald's Bandra West",
+      screen_type: ["Menu", "Promo"],
       city: "Mumbai",
       state: "Maharashtra"
     }
   },
   {
     id: "7",
-    name: "Parking Lot Screen",
-    location: "Basement Parking",
+    name: "Digital Menu Board 2",
+    location: "Counter Position 2",
     status: "online",
-    defaultComposition: "Parking Info",
+    defaultComposition: "Breakfast Menu",
     lastSeen: "Active now",
     resolution: "1920x1080",
     customFields: {
-      store: "Axis Mall",
-      screen_type: ["Info"],
-      city: "Mumbai",
-      state: "Maharashtra"
+      store: "McDonald's Koramangala",
+      screen_type: ["Menu"],
+      city: "Bangalore",
+      state: "Karnataka"
     }
   },
   {
     id: "8",
-    name: "Gym Display",
-    location: "Ground Floor Gym",
+    name: "Promotional Display",
+    location: "Window Display",
     status: "offline",
-    defaultComposition: "Fitness Tips",
+    defaultComposition: "Limited Time Offers",
     lastSeen: "3 hours ago",
     resolution: "1920x1080",
     customFields: {
-      store: "Phoenix Marketcity",
+      store: "McDonald's Connaught Place",
       screen_type: ["Promo"],
-      city: "Bangalore",
-      state: "Karnataka"
+      city: "Delhi",
+      state: "Delhi"
     }
   },
 ];
