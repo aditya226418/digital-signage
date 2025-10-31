@@ -26,6 +26,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { motion, AnimatePresence } from "framer-motion";
 import FilterDrawer from "./FilterDrawer";
+import StoreQuickViewModal from "./StoreQuickViewModal";
 
 interface SchemaField {
   id: string;
@@ -83,6 +84,8 @@ export default function DynamicScreensTable({
   const [isLoading, setIsLoading] = useState(true);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
+  const [isStoreModalOpen, setIsStoreModalOpen] = useState(false);
+  const [selectedStore, setSelectedStore] = useState<string>("");
   const itemsPerPage = 10;
 
   useEffect(() => {
@@ -231,6 +234,17 @@ export default function DynamicScreensTable({
       }
       return newSet;
     });
+  };
+
+  // Handle store click to open quick view modal
+  const handleStoreClick = (storeName: string) => {
+    setSelectedStore(storeName);
+    setIsStoreModalOpen(true);
+  };
+
+  // Get all screens from the original data that belong to the selected store
+  const getStoreScreens = () => {
+    return data.filter(screen => screen.customFields?.store === selectedStore);
   };
 
   return (
@@ -542,11 +556,26 @@ export default function DynamicScreensTable({
                       </TableCell>
                     )}
                     <TableCell>
-                      <div className="flex flex-col">
-                        <span className="font-bold text-md  ">
-                          {screen.customFields?.store || '-'}
-                        </span>
-                      </div>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div 
+                            className="flex flex-col cursor-pointer group"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (screen.customFields?.store) {
+                                handleStoreClick(screen.customFields.store);
+                              }
+                            }}
+                          >
+                            <span className="font-bold text-md group-hover:text-primary underline decoration-primary/0 group-hover:decoration-primary/100 decoration-2 underline-offset-4 transition-all">
+                              {screen.customFields?.store || '-'}
+                            </span>
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Quick view of {screen.customFields?.store || 'this store'}</p>
+                        </TooltipContent>
+                      </Tooltip>
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-col">
@@ -692,6 +721,14 @@ export default function DynamicScreensTable({
           </div>
         )}
       </CardContent>
+
+      {/* Store Quick View Modal */}
+      <StoreQuickViewModal
+        open={isStoreModalOpen}
+        onClose={() => setIsStoreModalOpen(false)}
+        storeName={selectedStore}
+        screens={getStoreScreens()}
+      />
     </Card>
   );
 }
