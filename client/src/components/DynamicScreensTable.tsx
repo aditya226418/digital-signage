@@ -109,8 +109,8 @@ export default function DynamicScreensTable({
     setSelectedRows(new Set());
   }, [filters, searchQuery, data.length]);
 
-  // Get custom fields to display in table (excluding city and state as they're shown with location)
-  const displayCustomFields = schema.fields.filter(field => field.id !== 'city' && field.id !== 'state');
+  // Get custom fields to display in table (excluding city and state as they're shown with location, and store as it's a separate column)
+  const displayCustomFields = schema.fields.filter(field => field.id !== 'city' && field.id !== 'state' && field.id !== 'store');
 
   const formatCustomFieldValue = (field: SchemaField, value: any) => {
     if (value === undefined || value === null) return '-';
@@ -476,11 +476,11 @@ export default function DynamicScreensTable({
                     </Tooltip>
                   </TableHead>
                 )}
-                <TableHead className="font-semibold">Screen Name</TableHead>
+                <TableHead className="font-semibold">Store</TableHead>
                 <TableHead className="font-semibold">Location</TableHead>
+                <TableHead className="font-semibold">Screen Name</TableHead>
                 <TableHead className="font-semibold">Status</TableHead>
                 <TableHead className="font-semibold">Default Composition</TableHead>
-                <TableHead className="font-semibold">Last Seen</TableHead>
                 {displayCustomFields.map((field) => (
                   <TableHead key={field.id} className="font-semibold">
                     {field.label}
@@ -499,9 +499,9 @@ export default function DynamicScreensTable({
                     )}
                     <TableCell><Skeleton className="h-5 w-32" /></TableCell>
                     <TableCell><Skeleton className="h-5 w-40" /></TableCell>
+                    <TableCell><Skeleton className="h-5 w-32" /></TableCell>
                     <TableCell><Skeleton className="h-5 w-20" /></TableCell>
                     <TableCell><Skeleton className="h-5 w-36" /></TableCell>
-                    <TableCell><Skeleton className="h-5 w-24" /></TableCell>
                     {displayCustomFields.map((field) => (
                       <TableCell key={field.id}><Skeleton className="h-5 w-24" /></TableCell>
                     ))}
@@ -511,7 +511,7 @@ export default function DynamicScreensTable({
               ) : currentData.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={6 + displayCustomFields.length + (hasFiltersApplied ? 1 : 0)}
+                    colSpan={5 + displayCustomFields.length + (hasFiltersApplied ? 1 : 0)}
                     className="h-32 text-center text-muted-foreground"
                   >
                     No screens found
@@ -543,8 +543,9 @@ export default function DynamicScreensTable({
                     )}
                     <TableCell>
                       <div className="flex flex-col">
-                        <span className="font-medium">{screen.name}</span>
-                        <span className="text-xs text-muted-foreground">{screen.resolution}</span>
+                        <span className="font-bold text-md  ">
+                          {screen.customFields?.store || '-'}
+                        </span>
                       </div>
                     </TableCell>
                     <TableCell>
@@ -558,24 +559,36 @@ export default function DynamicScreensTable({
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge
-                        variant={screen.status === "online" ? "default" : "secondary"}
-                        className={
-                          screen.status === "online"
-                            ? "bg-green-500/10 text-green-700 hover:bg-green-500/20 dark:text-green-400"
-                            : "bg-gray-500/10 text-gray-700 hover:bg-gray-500/20 dark:text-gray-400"
-                        }
-                      >
-                        <span
-                          className={`mr-1.5 h-1.5 w-1.5 rounded-full ${
-                            screen.status === "online" ? "bg-green-500" : "bg-gray-500"
-                          }`}
-                        />
-                        {screen.status === "online" ? "Online" : "Offline"}
-                      </Badge>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{screen.name}</span>
+                        <span className="text-xs text-muted-foreground">{screen.resolution}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-col gap-1">
+                        <Badge
+                          variant={screen.status === "online" ? "default" : "secondary"}
+                          className={
+                            screen.status === "online"
+                              ? "bg-green-500/10 text-green-700 hover:bg-green-500/20 dark:text-green-400 w-fit"
+                              : "bg-gray-500/10 text-gray-700 hover:bg-gray-500/20 dark:text-gray-400 w-fit"
+                          }
+                        >
+                          <span
+                            className={`mr-1.5 h-1.5 w-1.5 rounded-full ${
+                              screen.status === "online" ? "bg-green-500" : "bg-gray-500"
+                            }`}
+                          />
+                          {screen.status === "online" ? "Online" : "Offline"}
+                        </Badge>
+                        {screen.status === "offline" && (
+                          <span className="text-xs text-muted-foreground">
+                            {screen.lastSeen}
+                          </span>
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell className="max-w-xs truncate">{screen.defaultComposition}</TableCell>
-                    <TableCell className="text-sm text-muted-foreground">{screen.lastSeen}</TableCell>
                     {displayCustomFields.map((field) => (
                       <TableCell key={field.id} className="text-sm">
                         {formatCustomFieldValue(field, screen.customFields?.[field.id])}
