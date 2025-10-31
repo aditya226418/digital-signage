@@ -68,6 +68,7 @@ const DEFAULT_SCHEMA: Schema = {
 };
 
 // Mock screens with custom fields
+// Store location mappings - all screens in the same store have same city/state
 const createMockScreens = (): Screen[] => [
   {
     id: "1",
@@ -125,7 +126,7 @@ const createMockScreens = (): Screen[] => [
     customFields: {
       store: "Axis Mall",
       screen_type: ["Promo", "Info"],
-      city: "Pune",
+      city: "Mumbai",
       state: "Maharashtra"
     }
   },
@@ -140,8 +141,8 @@ const createMockScreens = (): Screen[] => [
     customFields: {
       store: "Phoenix Marketcity",
       screen_type: ["Info"],
-      city: "Hyderabad",
-      state: "Telangana"
+      city: "Bangalore",
+      state: "Karnataka"
     }
   },
   {
@@ -155,8 +156,8 @@ const createMockScreens = (): Screen[] => [
     customFields: {
       store: "Axis Mall",
       screen_type: ["Info", "Promo"],
-      city: "Delhi",
-      state: "Delhi"
+      city: "Mumbai",
+      state: "Maharashtra"
     }
   },
   {
@@ -170,8 +171,8 @@ const createMockScreens = (): Screen[] => [
     customFields: {
       store: "Axis Mall",
       screen_type: ["Info"],
-      city: "Bangalore",
-      state: "Karnataka"
+      city: "Mumbai",
+      state: "Maharashtra"
     }
   },
   {
@@ -185,8 +186,8 @@ const createMockScreens = (): Screen[] => [
     customFields: {
       store: "Phoenix Marketcity",
       screen_type: ["Promo"],
-      city: "Pune",
-      state: "Maharashtra"
+      city: "Bangalore",
+      state: "Karnataka"
     }
   },
 ];
