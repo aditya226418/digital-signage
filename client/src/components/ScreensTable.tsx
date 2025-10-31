@@ -37,7 +37,7 @@ const DEFAULT_SCHEMA: Schema = {
       id: "state", 
       label: "State", 
       type: "single-select", 
-      options: ["Maharashtra", "Karnataka", "Delhi", "Telangana"], 
+      options: ["Maharashtra", "Karnataka", "Delhi", "Telangana", "Gujarat"], 
       required: false,
       helpText: "Select the state where this screen is located"
     },
@@ -45,7 +45,7 @@ const DEFAULT_SCHEMA: Schema = {
       id: "city", 
       label: "City", 
       type: "single-select", 
-      options: ["Mumbai", "Bangalore", "Delhi", "Pune", "Hyderabad"], 
+      options: ["Mumbai", "Navi Mumbai", "Bangalore", "Delhi", "Pune", "Hyderabad", "Ahmedabad"], 
       required: false,
       helpText: "Select the city where this screen is located"
     },
@@ -53,7 +53,7 @@ const DEFAULT_SCHEMA: Schema = {
       id: "store", 
       label: "Store", 
       type: "single-select", 
-      options: ["McDonald's Bandra West", "McDonald's Koramangala", "McDonald's Connaught Place", "McDonald's Hitech City"], 
+      options: ["McDonald's Bandra West", "McDonald's Navi Mumbai", "McDonald's Koramangala", "McDonald's Indiranagar", "McDonald's Marathahalli", "McDonald's Connaught Place", "McDonald's Hitech City", "McDonald's Pune Central", "McDonald's Ahmedabad", "McDonald's CG Road"], 
       required: true,
       helpText: "Select the store location for this screen"
     },
@@ -188,6 +188,276 @@ const createMockScreens = (): Screen[] => [
       screen_type: ["Promo"],
       city: "Delhi",
       state: "Delhi"
+    }
+  },
+  {
+    id: "9",
+    name: "Front Counter Menu",
+    location: "Main Counter",
+    status: "online",
+    defaultComposition: "Menu Board",
+    lastSeen: "Active now",
+    resolution: "1920x1080",
+    customFields: {
+      store: "McDonald's Navi Mumbai",
+      screen_type: ["Menu", "Info"],
+      city: "Navi Mumbai",
+      state: "Maharashtra"
+    }
+  },
+  {
+    id: "10",
+    name: "Drive-Thru Display",
+    location: "Drive-Thru Lane",
+    status: "online",
+    defaultComposition: "Combo Meals",
+    lastSeen: "Active now",
+    resolution: "3840x2160",
+    customFields: {
+      store: "McDonald's Navi Mumbai",
+      screen_type: ["Menu"],
+      city: "Navi Mumbai",
+      state: "Maharashtra"
+    }
+  },
+  {
+    id: "11",
+    name: "McCafe Menu",
+    location: "McCafe Counter",
+    status: "online",
+    defaultComposition: "Beverages & Desserts",
+    lastSeen: "Active now",
+    resolution: "1920x1080",
+    customFields: {
+      store: "McDonald's Navi Mumbai",
+      screen_type: ["Menu", "Promo"],
+      city: "Navi Mumbai",
+      state: "Maharashtra"
+    }
+  },
+  {
+    id: "12",
+    name: "Seating Area Display",
+    location: "Dining Hall",
+    status: "online",
+    defaultComposition: "Promotional Offers",
+    lastSeen: "Active now",
+    resolution: "1920x1080",
+    customFields: {
+      store: "McDonald's Navi Mumbai",
+      screen_type: ["Promo", "Info"],
+      city: "Navi Mumbai",
+      state: "Maharashtra"
+    }
+  },
+  {
+    id: "13",
+    name: "Menu Board Main",
+    location: "Counter 1",
+    status: "online",
+    defaultComposition: "Daily Menu",
+    lastSeen: "Active now",
+    resolution: "1920x1080",
+    customFields: {
+      store: "McDonald's Indiranagar",
+      screen_type: ["Menu"],
+      city: "Bangalore",
+      state: "Karnataka"
+    }
+  },
+  {
+    id: "14",
+    name: "Menu Board Secondary",
+    location: "Counter 2",
+    status: "online",
+    defaultComposition: "Meal Combos",
+    lastSeen: "Active now",
+    resolution: "1920x1080",
+    customFields: {
+      store: "McDonald's Indiranagar",
+      screen_type: ["Menu"],
+      city: "Bangalore",
+      state: "Karnataka"
+    }
+  },
+  {
+    id: "15",
+    name: "Promo Display",
+    location: "Window",
+    status: "offline",
+    defaultComposition: "Limited Offers",
+    lastSeen: "4 hours ago",
+    resolution: "1920x1080",
+    customFields: {
+      store: "McDonald's Indiranagar",
+      screen_type: ["Promo"],
+      city: "Bangalore",
+      state: "Karnataka"
+    }
+  },
+  {
+    id: "16",
+    name: "Interactive Kiosk",
+    location: "Entrance",
+    status: "online",
+    defaultComposition: "Self Order",
+    lastSeen: "Active now",
+    resolution: "1920x1080",
+    customFields: {
+      store: "McDonald's Marathahalli",
+      screen_type: ["Menu", "Info"],
+      city: "Bangalore",
+      state: "Karnataka"
+    }
+  },
+  {
+    id: "17",
+    name: "Kitchen Display Board",
+    location: "Kitchen Area",
+    status: "online",
+    defaultComposition: "Order Queue",
+    lastSeen: "Active now",
+    resolution: "2560x1440",
+    customFields: {
+      store: "McDonald's Marathahalli",
+      screen_type: ["Info"],
+      city: "Bangalore",
+      state: "Karnataka"
+    }
+  },
+  {
+    id: "18",
+    name: "Drive-Thru Menu",
+    location: "Drive-Thru",
+    status: "online",
+    defaultComposition: "Fast Orders",
+    lastSeen: "Active now",
+    resolution: "1920x1080",
+    customFields: {
+      store: "McDonald's Marathahalli",
+      screen_type: ["Menu"],
+      city: "Bangalore",
+      state: "Karnataka"
+    }
+  },
+  {
+    id: "19",
+    name: "Front Counter Display",
+    location: "Main Area",
+    status: "online",
+    defaultComposition: "Today's Special",
+    lastSeen: "Active now",
+    resolution: "1920x1080",
+    customFields: {
+      store: "McDonald's Pune Central",
+      screen_type: ["Menu", "Promo"],
+      city: "Pune",
+      state: "Maharashtra"
+    }
+  },
+  {
+    id: "20",
+    name: "Menu Board",
+    location: "Counter",
+    status: "offline",
+    defaultComposition: "Standard Menu",
+    lastSeen: "5 hours ago",
+    resolution: "1920x1080",
+    customFields: {
+      store: "McDonald's Pune Central",
+      screen_type: ["Menu"],
+      city: "Pune",
+      state: "Maharashtra"
+    }
+  },
+  {
+    id: "21",
+    name: "Promotional Screen",
+    location: "Wall Display",
+    status: "online",
+    defaultComposition: "New Launches",
+    lastSeen: "Active now",
+    resolution: "1920x1080",
+    customFields: {
+      store: "McDonald's Pune Central",
+      screen_type: ["Promo"],
+      city: "Pune",
+      state: "Maharashtra"
+    }
+  },
+  {
+    id: "22",
+    name: "Information Display",
+    location: "Lobby",
+    status: "online",
+    defaultComposition: "Store Info",
+    lastSeen: "Active now",
+    resolution: "1920x1080",
+    customFields: {
+      store: "McDonald's Ahmedabad",
+      screen_type: ["Info"],
+      city: "Ahmedabad",
+      state: "Gujarat"
+    }
+  },
+  {
+    id: "23",
+    name: "Menu Board Premium",
+    location: "Premium Counter",
+    status: "online",
+    defaultComposition: "Premium Range",
+    lastSeen: "Active now",
+    resolution: "1920x1080",
+    customFields: {
+      store: "McDonald's Ahmedabad",
+      screen_type: ["Menu", "Promo"],
+      city: "Ahmedabad",
+      state: "Gujarat"
+    }
+  },
+  {
+    id: "24",
+    name: "Order Status Display",
+    location: "Waiting Area",
+    status: "online",
+    defaultComposition: "Order Numbers",
+    lastSeen: "Active now",
+    resolution: "1920x1080",
+    customFields: {
+      store: "McDonald's Ahmedabad",
+      screen_type: ["Info"],
+      city: "Ahmedabad",
+      state: "Gujarat"
+    }
+  },
+  {
+    id: "25",
+    name: "Front Counter Menu",
+    location: "Main Counter",
+    status: "online",
+    defaultComposition: "Daily Menu",
+    lastSeen: "Active now",
+    resolution: "1920x1080",
+    customFields: {
+      store: "McDonald's CG Road",
+      screen_type: ["Menu"],
+      city: "Ahmedabad",
+      state: "Gujarat"
+    }
+  },
+  {
+    id: "26",
+    name: "Promotional Board",
+    location: "Display Wall",
+    status: "online",
+    defaultComposition: "Current Offers",
+    lastSeen: "Active now",
+    resolution: "3840x2160",
+    customFields: {
+      store: "McDonald's CG Road",
+      screen_type: ["Promo"],
+      city: "Ahmedabad",
+      state: "Gujarat"
     }
   },
 ];
