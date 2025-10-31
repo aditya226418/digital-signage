@@ -28,6 +28,8 @@ import {
   useSensor,
   useSensors,
   DragEndEvent,
+  DragStartEvent,
+  DragOverlay,
 } from "@dnd-kit/core";
 import {
   arrayMove,
@@ -69,11 +71,12 @@ function SortableFilmstripItem({
     transform,
     transition,
     isDragging,
+    isOver,
   } = useSortable({ id: `${media.id}-${index}` });
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
+    transition: transition || "transform 200ms ease",
   };
 
   const IconComponent = (Icons as any)[media.thumbnail] || Icons.ImageIcon;
@@ -95,10 +98,27 @@ function SortableFilmstripItem({
     <motion.div
       ref={setNodeRef}
       style={style}
-      className={`relative flex-shrink-0 w-full group ${isDragging ? "opacity-50 z-50" : ""}`}
+      className={`relative flex-shrink-0 w-full group ${
+        isDragging ? "opacity-30 z-50" : ""
+      } ${
+        isOver ? "shadow-2xl scale-[1.02]" : ""
+      }`}
       whileHover={{ x: -2 }}
     >
-      <div className="bg-white border border-neutral-200 rounded-md p-2 hover:border-primary/50 hover:shadow-lg transition-all duration-200">
+      {/* Drop Indicator - Shows where item will be placed */}
+      {isOver && (
+        <div className="absolute -top-2 left-0 right-0 h-1 bg-primary rounded-full shadow-lg z-50 animate-pulse">
+          <div className="absolute left-1/2 -translate-x-1/2 -top-2 w-3 h-3 bg-primary rounded-full border-2 border-white shadow-md" />
+        </div>
+      )}
+      
+      <div className={`bg-white border rounded-md p-2 transition-all duration-200 ${
+        isOver 
+          ? "border-primary border-2 shadow-xl bg-primary/5" 
+          : isDragging 
+            ? "border-neutral-300 shadow-none"
+            : "border-neutral-200 hover:border-primary/50 hover:shadow-lg"
+      }`}>
         {/* Horizontal Layout: Thumbnail Left, Content Right */}
         <div className="flex gap-2">
           {/* Left: Thumbnail */}
@@ -416,6 +436,7 @@ export default function CompositionBuilderStepTwo({
   const [activeZoneId, setActiveZoneId] = useState<string | null>(
     selectedLayout.zones[0]?.id || null
   );
+  const [activeDragId, setActiveDragId] = useState<string | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -468,7 +489,13 @@ export default function CompositionBuilderStepTwo({
     onZonesChange(newZones);
   };
 
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveDragId(event.active.id as string);
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
+    setActiveDragId(null);
+    
     if (!activeZoneId) return;
 
     const { active, over } = event;
@@ -595,7 +622,7 @@ export default function CompositionBuilderStepTwo({
                   </div>
                   {activeZoneMedia.length > 0 && (
                     <div className="text-[9px] text-muted-foreground mt-1.5">
-                      💡 Drag to reorder
+                      💡 Drag items to reorder • Drop indicator shows position
                     </div>
                   )}
                 </div>
@@ -604,6 +631,7 @@ export default function CompositionBuilderStepTwo({
                 <DndContext
                   sensors={sensors}
                   collisionDetection={closestCenter}
+                  onDragStart={handleDragStart}
                   onDragEnd={handleDragEnd}
                 >
                   <SortableContext
@@ -672,6 +700,46 @@ export default function CompositionBuilderStepTwo({
                       </div>
                     </ScrollArea>
                   </SortableContext>
+                  
+                  {/* Drag Overlay - Shows a preview of what's being dragged */}
+                  <DragOverlay dropAnimation={null}>
+                    {activeDragId ? (() => {
+                      const dragIndex = activeZoneMedia.findIndex((_, i) => `${activeZoneMedia[i].id}-${i}` === activeDragId);
+                      const dragMedia = activeZoneMedia[dragIndex];
+                      
+                      if (!dragMedia) return null;
+                      
+                      const IconComponent = (Icons as any)[dragMedia.thumbnail] || Icons.ImageIcon;
+                      
+                      return (
+                        <div className="w-full bg-white border-2 border-primary rounded-md p-2 shadow-2xl rotate-3 scale-105">
+                          <div className="flex gap-2">
+                            <div className="relative flex-shrink-0 w-20 h-20">
+                              <div className="w-full h-full bg-gradient-to-br from-primary/20 to-primary/10 rounded border-2 border-primary/50 flex items-center justify-center relative overflow-hidden">
+                                {dragMedia.thumbnailUrl ? (
+                                  <img 
+                                    src={dragMedia.thumbnailUrl} 
+                                    alt={dragMedia.name}
+                                    className="w-full h-full object-cover opacity-90"
+                                  />
+                                ) : (
+                                  <IconComponent className="h-6 w-6 text-primary" />
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex-1 min-w-0 flex flex-col justify-center">
+                              <div className="text-[10px] font-bold truncate text-primary">
+                                {dragMedia.name}
+                              </div>
+                              <div className="text-[9px] text-primary/70 mt-1">
+                                Moving...
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })() : null}
+                  </DragOverlay>
                 </DndContext>
               </motion.div>
             )}
