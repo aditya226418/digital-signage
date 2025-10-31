@@ -15,6 +15,9 @@ import {
   AppWindowIcon,
   Search,
   X,
+  Eye,
+  ArrowRight,
+  ArrowLeft,
 } from "lucide-react";
 import * as Icons from "lucide-react";
 import {
@@ -42,6 +45,9 @@ interface CompositionBuilderStepTwoProps {
   selectedLayout: LayoutTemplate;
   zones: Record<string, MediaItem[]>;
   onZonesChange: (zones: Record<string, MediaItem[]>) => void;
+  onChangeLayout: () => void;
+  onPreview: () => void;
+  onContinue: () => void;
 }
 
 // Sortable Filmstrip Item
@@ -403,6 +409,9 @@ export default function CompositionBuilderStepTwo({
   selectedLayout,
   zones,
   onZonesChange,
+  onChangeLayout,
+  onPreview,
+  onContinue,
 }: CompositionBuilderStepTwoProps) {
   const [activeZoneId, setActiveZoneId] = useState<string | null>(
     selectedLayout.zones[0]?.id || null
@@ -491,12 +500,42 @@ export default function CompositionBuilderStepTwo({
             <h3 className="text-sm font-semibold">{selectedLayout.name}</h3>
             <p className="text-xs text-muted-foreground">Click a zone to select, then add media</p>
           </div>
-          {allZonesHaveMedia && (
-            <Badge className="gap-1 h-5 text-[10px] bg-green-500">
-              <CheckCircle2 className="h-2.5 w-2.5" />
-              Ready
-            </Badge>
-          )}
+          <div className="flex items-center gap-2">
+            {allZonesHaveMedia && (
+              <Badge className="gap-1 h-5 text-[10px] bg-green-500">
+                <CheckCircle2 className="h-2.5 w-2.5" />
+                Ready
+              </Badge>
+            )}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onChangeLayout}
+              className="h-7 text-xs gap-1.5"
+            >
+              <ArrowLeft className="h-3 w-3" />
+              Change Layout
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onPreview}
+              disabled={!allZonesHaveMedia}
+              className="h-7 text-xs gap-1.5"
+            >
+              <Eye className="h-3 w-3" />
+              Preview
+            </Button>
+            <Button
+              size="sm"
+              onClick={onContinue}
+              disabled={!allZonesHaveMedia}
+              className="h-7 text-xs gap-1.5"
+            >
+              Continue
+              <ArrowRight className="h-3 w-3" />
+            </Button>
+          </div>
         </div>
 
         {/* Side-by-side layout: Zone Selector (70%) + Filmstrip (30%) */}

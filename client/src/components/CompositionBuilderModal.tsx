@@ -135,38 +135,6 @@ export default function CompositionBuilderModal({
                   <div className="hidden md:block h-6 w-px bg-border" />
                   <CompositionStepProgress currentStep={step} />
                 </div>
-                
-                {/* Step 2 Actions */}
-                {step === 2 && selectedLayout && (
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setStep(1)}
-                      className="gap-1.5 h-7 text-xs"
-                    >
-                      <ArrowLeft className="h-3 w-3" />
-                      Change Layout
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowPreview(true)}
-                      disabled={!selectedLayout.zones.every((zone) => zones[zone.id]?.length > 0)}
-                      className="h-7 text-xs"
-                    >
-                      Preview
-                    </Button>
-                    <Button
-                      size="sm"
-                      onClick={() => setStep(3)}
-                      disabled={!selectedLayout.zones.every((zone) => zones[zone.id]?.length > 0)}
-                      className="h-7 text-xs"
-                    >
-                      Continue
-                    </Button>
-                  </div>
-                )}
 
                 <Button
                   variant="ghost"
@@ -209,6 +177,9 @@ export default function CompositionBuilderModal({
                       selectedLayout={selectedLayout}
                       zones={zones}
                       onZonesChange={setZones}
+                      onChangeLayout={() => setStep(1)}
+                      onPreview={() => setShowPreview(true)}
+                      onContinue={() => setStep(3)}
                     />
                   </motion.div>
                 )}

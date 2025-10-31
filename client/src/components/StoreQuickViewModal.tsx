@@ -90,14 +90,6 @@ export default function StoreQuickViewModal({
                 <span className="font-medium">{screens.length} Total Screens</span>
               </div>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onClose}
-              className="h-8 w-8"
-            >
-              <X className="h-4 w-4" />
-            </Button>
           </div>
 
           {/* Store-level Actions */}
