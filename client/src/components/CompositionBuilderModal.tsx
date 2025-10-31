@@ -1,21 +1,9 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  DndContext,
-  DragOverlay,
-  PointerSensor,
-  KeyboardSensor,
-  useSensor,
-  useSensors,
-  DragEndEvent,
-  DragStartEvent,
-} from "@dnd-kit/core";
 import { LayoutTemplate, MediaItem } from "@/lib/mockCompositionData";
 import CompositionStepProgress from "@/components/CompositionStepProgress";
 import LayoutPicker from "@/components/LayoutPicker";
-import MediaLibraryPanel from "@/components/MediaLibraryPanel";
-import InteractiveLayoutPreview from "@/components/InteractiveLayoutPreview";
-import ZonePlaylistPanel from "@/components/ZonePlaylistPanel";
+import CompositionBuilderStepTwo from "@/components/CompositionBuilderStepTwo";
 import PreviewSimulatorModal from "@/components/PreviewSimulatorModal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,8 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { ArrowLeft, Eye, X, CheckCircle2, Sparkles } from "lucide-react";
-import * as Icons from "lucide-react";
+import { X, CheckCircle2, Sparkles, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface CompositionBuilderModalProps {
@@ -47,21 +34,10 @@ export default function CompositionBuilderModal({
   const [step, setStep] = useState(1);
   const [selectedLayout, setSelectedLayout] = useState<LayoutTemplate | null>(null);
   const [zones, setZones] = useState<Record<string, MediaItem[]>>({});
-  const [activeZoneId, setActiveZoneId] = useState<string | null>(null);
   const [compositionName, setCompositionName] = useState("");
   const [compositionStatus, setCompositionStatus] = useState<"active" | "draft">("draft");
   const [showPreview, setShowPreview] = useState(false);
-  const [activeDragItem, setActiveDragItem] = useState<MediaItem | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
-
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    }),
-    useSensor(KeyboardSensor)
-  );
 
   const handleLayoutSelect = (layout: LayoutTemplate) => {
     setSelectedLayout(layout);
@@ -70,69 +46,7 @@ export default function CompositionBuilderModal({
       initialZones[zone.id] = [];
     });
     setZones(initialZones);
-    setActiveZoneId(layout.zones[0]?.id || null);
     setStep(2);
-  };
-
-  const handleDragStart = (event: DragStartEvent) => {
-    const mediaItem = event.active.data.current as MediaItem;
-    setActiveDragItem(mediaItem);
-  };
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    setActiveDragItem(null);
-    const { active, over } = event;
-
-    if (!over) return;
-
-    const mediaItem = active.data.current as MediaItem;
-    const zoneId = over.id as string;
-
-    if (mediaItem && zoneId) {
-      setZones((prev) => ({
-        ...prev,
-        [zoneId]: [...(prev[zoneId] || []), { ...mediaItem }],
-      }));
-      setActiveZoneId(zoneId);
-    }
-  };
-
-  const handleZoneReorder = (zoneId: string, oldIndex: number, newIndex: number) => {
-    setZones((prev) => {
-      const zoneMedia = [...(prev[zoneId] || [])];
-      const [removed] = zoneMedia.splice(oldIndex, 1);
-      zoneMedia.splice(newIndex, 0, removed);
-      return {
-        ...prev,
-        [zoneId]: zoneMedia,
-      };
-    });
-  };
-
-  const handleZoneRemove = (zoneId: string, index: number) => {
-    setZones((prev) => {
-      const zoneMedia = [...(prev[zoneId] || [])];
-      zoneMedia.splice(index, 1);
-      return {
-        ...prev,
-        [zoneId]: zoneMedia,
-      };
-    });
-  };
-
-  const handleZoneDurationChange = (
-    zoneId: string,
-    index: number,
-    duration: number
-  ) => {
-    setZones((prev) => {
-      const zoneMedia = [...(prev[zoneId] || [])];
-      zoneMedia[index] = { ...zoneMedia[index], duration };
-      return {
-        ...prev,
-        [zoneId]: zoneMedia,
-      };
-    });
   };
 
   const handleSaveComposition = () => {
@@ -168,19 +82,12 @@ export default function CompositionBuilderModal({
     setStep(1);
     setSelectedLayout(null);
     setZones({});
-    setActiveZoneId(null);
     setCompositionName("");
     setCompositionStatus("draft");
     setShowPreview(false);
-    setActiveDragItem(null);
     setShowSuccess(false);
     onOpenChange(false);
   };
-
-  const activeZone = selectedLayout?.zones.find((z) => z.id === activeZoneId);
-  const canPreview =
-    selectedLayout &&
-    Object.values(zones).some((zoneMedia) => zoneMedia.length > 0);
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
@@ -263,82 +170,16 @@ export default function CompositionBuilderModal({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -6 }}
                     transition={{ duration: 0.18, ease: "easeOut" }}
-                    className="w-full max-w-[1400px] mx-auto px-6 py-8"
+                    className="h-full"
                   >
-                    <DndContext
-                      sensors={sensors}
-                      onDragStart={handleDragStart}
-                      onDragEnd={handleDragEnd}
-                    >
-                      <div className="grid grid-cols-1 lg:grid-cols-[320px_minmax(0,1fr)_360px] gap-6 min-h-[600px]">
-                        <MediaLibraryPanel className="hidden lg:flex max-h-[calc(100vh-240px)]" />
-                        <InteractiveLayoutPreview
-                          layout={selectedLayout}
-                          zones={zones}
-                          activeZoneId={activeZoneId}
-                          onZoneClick={setActiveZoneId}
-                        />
-                        {activeZone && (
-                          <ZonePlaylistPanel
-                            zoneName={activeZone.name}
-                            media={zones[activeZone.id] || []}
-                            onReorder={(oldIdx, newIdx) =>
-                              handleZoneReorder(activeZone.id, oldIdx, newIdx)
-                            }
-                            onRemove={(idx) => handleZoneRemove(activeZone.id, idx)}
-                            onDurationChange={(idx, dur) =>
-                              handleZoneDurationChange(activeZone.id, idx, dur)
-                            }
-                            className="hidden lg:flex max-h-[calc(100vh-240px)]"
-                          />
-                        )}
-                      </div>
-
-                      <DragOverlay>
-                        {activeDragItem && (
-                          <div className="bg-white rounded-lg p-3 shadow-lg border-2 border-primary">
-                            <div className="flex items-center gap-2">
-                              {(() => {
-                                const IconComponent =
-                                  (Icons as any)[activeDragItem.thumbnail] ||
-                                  Icons.ImageIcon;
-                                return (
-                                  <IconComponent className="h-5 w-5 text-neutral-600" />
-                                );
-                              })()}
-                              <span className="font-medium text-sm">
-                                {activeDragItem.name}
-                              </span>
-                            </div>
-                          </div>
-                        )}
-                      </DragOverlay>
-                    </DndContext>
-
-                    <div className="mt-6 flex items-center justify-between">
-                      <Button
-                        variant="outline"
-                        onClick={() => setStep(1)}
-                        className="gap-2"
-                      >
-                        <ArrowLeft className="h-4 w-4" />
-                        Change Layout
-                      </Button>
-                      <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          onClick={() => setShowPreview(true)}
-                          disabled={!canPreview}
-                          className="gap-2"
-                        >
-                          <Eye className="h-4 w-4" />
-                          Preview
-                        </Button>
-                        <Button onClick={() => setStep(3)} disabled={!canPreview}>
-                          Continue to Save
-                        </Button>
-                      </div>
-                    </div>
+                    <CompositionBuilderStepTwo
+                      selectedLayout={selectedLayout}
+                      zones={zones}
+                      onZonesChange={setZones}
+                      onBack={() => setStep(1)}
+                      onContinue={() => setStep(3)}
+                      onPreview={() => setShowPreview(true)}
+                    />
                   </motion.div>
                 )}
 
