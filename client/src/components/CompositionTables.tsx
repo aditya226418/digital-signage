@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { MoreVertical, Play, Edit, Copy, Trash2, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import DataTableView from "./DataTableView";
+import CompositionBuilderModal from "./CompositionBuilderModal";
 
 interface Playlist {
   id: string;
@@ -529,6 +531,63 @@ export function LayoutsTable() {
 
 // Unified Compositions Table
 export function CompositionsTable() {
+  const [compositions, setCompositions] = useState<Composition[]>(mockCompositions);
+  const [isBuilderOpen, setIsBuilderOpen] = useState(false);
+
+  const loadCompositions = () => {
+    const saved = localStorage.getItem("compositions");
+    if (saved) {
+      try {
+        const savedCompositions = JSON.parse(saved);
+        const converted = savedCompositions.map((comp: any) => ({
+          id: comp.id,
+          name: comp.name,
+          createdBy: comp.createdBy || "Current User",
+          createdDate: comp.createdDate,
+          status: comp.status,
+          screens: comp.screens || 0,
+          layout: {
+            name: comp.layout?.name || "Unknown Layout",
+            zones: comp.layout?.zones?.length || 1,
+            resolution: comp.layout?.resolution || "1920x1080",
+            type: comp.layout?.type || "single",
+          },
+          playlist: {
+            name: `${comp.name} Playlist`,
+            itemCount: Object.values(comp.zones || {}).reduce(
+              (sum: number, zoneMedia: any) => sum + (zoneMedia?.length || 0),
+              0
+            ),
+            duration: calculateTotalDuration(comp.zones || {}),
+          },
+        }));
+        setCompositions([...converted, ...mockCompositions]);
+      } catch (error) {
+        console.error("Failed to load compositions:", error);
+      }
+    }
+  };
+
+  // Load compositions from localStorage
+  useEffect(() => {
+    loadCompositions();
+  }, []);
+
+  const calculateTotalDuration = (zones: any): string => {
+    let totalSeconds = 0;
+    Object.values(zones).forEach((zoneMedia: any) => {
+      if (Array.isArray(zoneMedia)) {
+        totalSeconds += zoneMedia.reduce(
+          (sum, item) => sum + (item.duration || 5),
+          0
+        );
+      }
+    });
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+  };
+
   const columns = [
     {
       key: "name",
@@ -655,18 +714,30 @@ export function CompositionsTable() {
   ];
 
   return (
-    <DataTableView
-      data={mockCompositions}
-      columns={columns}
-      searchPlaceholder="Search compositions..."
-      filterOptions={filterOptions}
-      actions={
-        <Button className="gap-2 transition-all duration-200 hover:shadow-md">
-          <Plus className="h-4 w-4" />
-          Create Composition
-        </Button>
-      }
-    />
+    <>
+      <DataTableView
+        data={compositions}
+        columns={columns}
+        searchPlaceholder="Search compositions..."
+        filterOptions={filterOptions}
+        actions={
+          <Button
+            onClick={() => setIsBuilderOpen(true)}
+            className="gap-2 transition-all duration-200 hover:shadow-md"
+          >
+            <Plus className="h-4 w-4" />
+            Create Composition
+          </Button>
+        }
+      />
+
+      {/* Composition Builder Modal */}
+      <CompositionBuilderModal
+        open={isBuilderOpen}
+        onOpenChange={setIsBuilderOpen}
+        onSuccess={loadCompositions}
+      />
+    </>
   );
 }
 

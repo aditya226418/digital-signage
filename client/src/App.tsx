@@ -22,12 +22,9 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Dashboard} />
-      <Route path="/:module*">
+      <Route path="/:module">
         {(params) => {
-          const moduleParamRaw = params["module*"];
-          const moduleParam = Array.isArray(moduleParamRaw)
-            ? moduleParamRaw[0]
-            : moduleParamRaw;
+          const moduleParam = params.module;
 
           if (moduleParam && moduleRoutes.has(moduleParam)) {
             return <Dashboard />;

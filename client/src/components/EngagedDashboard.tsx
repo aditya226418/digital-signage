@@ -204,36 +204,36 @@ export default function EngagedDashboard({
         <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
           <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b border-border/40 bg-background/80 px-6 backdrop-blur-sm">
             <SidebarTrigger className="hover:bg-accent" />
-            <div className="flex flex-1 items-center justify-between">
-              <div>
-                {activeModule === "dashboard" ? (
-                  <>
-                    <h1 className="text-lg font-semibold" data-testid="text-dashboard-title">
-                      Welcome Brian
-                    </h1>
-                    <p className="text-sm text-muted-foreground">
-                      Manage your digital signage screens and content
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <h1 className="text-lg font-semibold capitalize">
-                      {activeModule === "myplan" ? "My Plan" : activeModule}
-                    </h1>
-                    <p className="text-sm text-muted-foreground">
-                      {activeModule === "screens" && "Manage and monitor your screens"}
-                      {activeModule === "media" && "Manage all your media files"}
-                      {activeModule === "compositions" && "Combine layouts and playlists into screen compositions"}
-                      {activeModule === "apps" && "Browse and add app integrations"}
-                      {activeModule === "publish" && "Schedule and publish content"}
-                      {activeModule === "myplan" && "View and manage your subscription"}
-                      {activeModule === "settings" && "Configure application settings"}
-                      {activeModule === "account" && "Manage your account"}
-                    </p>
-                  </>
-                )}
+              <div className="flex flex-1 items-center justify-between">
+                <div>
+                  {activeModule === "dashboard" ? (
+                    <>
+                      <h1 className="text-lg font-semibold" data-testid="text-dashboard-title">
+                        Welcome Brian
+                      </h1>
+                      <p className="text-sm text-muted-foreground">
+                        Manage your digital signage screens and content
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <h1 className="text-lg font-semibold capitalize">
+                        {activeModule === "myplan" ? "My Plan" : activeModule}
+                      </h1>
+                      <p className="text-sm text-muted-foreground">
+                        {activeModule === "screens" && "Manage and monitor your screens"}
+                        {activeModule === "media" && "Manage all your media files"}
+                        {activeModule === "compositions" && "Combine layouts and playlists into screen compositions"}
+                        {activeModule === "apps" && "Browse and add app integrations"}
+                        {activeModule === "publish" && "Schedule and publish content"}
+                        {activeModule === "myplan" && "View and manage your subscription"}
+                        {activeModule === "settings" && "Configure application settings"}
+                        {activeModule === "account" && "Manage your account"}
+                      </p>
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
           </header>
 
           <div className="p-6">
@@ -243,32 +243,32 @@ export default function EngagedDashboard({
                 className="animate-in fade-in slide-in-from-bottom-4 duration-500"
               >
                 {activeModule === "dashboard" && (
-                  <DashboardContent
-                    screens={screens}
-                    totalScreens={totalScreens}
-                    onlineCount={onlineCount}
-                    offlineCount={offlineCount}
-                    mediaCount={mediaCount}
-                    playlists={playlists}
-                    activeCampaigns={activeCampaigns}
-                    uptime={uptime}
-                    onAddScreen={onAddScreen}
-                    onUploadMedia={onUploadMedia}
-                    onCreatePlaylist={onCreatePlaylist}
-                  />
-                )}
+                    <DashboardContent
+                      screens={screens}
+                      totalScreens={totalScreens}
+                      onlineCount={onlineCount}
+                      offlineCount={offlineCount}
+                      mediaCount={mediaCount}
+                      playlists={playlists}
+                      activeCampaigns={activeCampaigns}
+                      uptime={uptime}
+                      onAddScreen={onAddScreen}
+                      onUploadMedia={onUploadMedia}
+                      onCreatePlaylist={onCreatePlaylist}
+                    />
+                  )}
 
-                {activeModule === "screens" && <ScreensTable />}
+                  {activeModule === "screens" && <ScreensTable />}
 
-                {activeModule === "media" && <MediaTable />}
+                  {activeModule === "media" && <MediaTable />}
 
-                {activeModule === "compositions" && <CompositionsTable />}
+                  {activeModule === "compositions" && <CompositionsTable />}
 
-                {activeModule === "apps" && <AppsGallery />}
+                  {activeModule === "apps" && <AppsGallery />}
 
-                {activeModule === "publish" && <PublishTable />}
+                  {activeModule === "publish" && <PublishTable />}
 
-                {activeModule === "myplan" && <MyPlan />}
+                  {activeModule === "myplan" && <MyPlan />}
 
                 {activeModule === "settings" && (
                   <div className="rounded-lg border border-border/40 bg-card p-12 text-center">
