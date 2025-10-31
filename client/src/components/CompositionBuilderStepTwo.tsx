@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
-  ArrowLeft,
   Plus,
   Trash2,
   GripVertical,
@@ -43,9 +42,6 @@ interface CompositionBuilderStepTwoProps {
   selectedLayout: LayoutTemplate;
   zones: Record<string, MediaItem[]>;
   onZonesChange: (zones: Record<string, MediaItem[]>) => void;
-  onBack: () => void;
-  onContinue: () => void;
-  onPreview: () => void;
 }
 
 // Sortable Filmstrip Item
@@ -314,9 +310,6 @@ export default function CompositionBuilderStepTwo({
   selectedLayout,
   zones,
   onZonesChange,
-  onBack,
-  onContinue,
-  onPreview,
 }: CompositionBuilderStepTwoProps) {
   const [activeZoneId, setActiveZoneId] = useState<string | null>(
     selectedLayout.zones[0]?.id || null
@@ -397,23 +390,21 @@ export default function CompositionBuilderStepTwo({
   };
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Main Content Area */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="max-w-[1400px] mx-auto px-4 py-4">
-          {/* Header */}
-          <div className="mb-3 flex items-center justify-between">
-            <div>
-              <h3 className="text-sm font-semibold">{selectedLayout.name}</h3>
-              <p className="text-xs text-muted-foreground">Click a zone to select, then add media</p>
-            </div>
-            {allZonesHaveMedia && (
-              <Badge className="gap-1 h-6 text-xs bg-green-500">
-                <CheckCircle2 className="h-3 w-3" />
-                Ready
-              </Badge>
-            )}
+    <div className="flex-1 overflow-y-auto">
+      <div className="max-w-[1400px] mx-auto px-4 py-4">
+        {/* Header */}
+        <div className="mb-3 flex items-center justify-between">
+          <div>
+            <h3 className="text-sm font-semibold">{selectedLayout.name}</h3>
+            <p className="text-xs text-muted-foreground">Click a zone to select, then add media</p>
           </div>
+          {allZonesHaveMedia && (
+            <Badge className="gap-1 h-6 text-xs bg-green-500">
+              <CheckCircle2 className="h-3 w-3" />
+              Ready
+            </Badge>
+          )}
+        </div>
 
           {/* Mock Screen with Zones - Compact */}
           <div className="bg-white rounded-lg shadow-sm border p-3 mb-4">
@@ -473,14 +464,14 @@ export default function CompositionBuilderStepTwo({
                             onAddMedia={handleAddMedia}
                             selectedMediaIds={addedMediaIds}
                             trigger={
-                              <button className="w-full bg-white border border-dashed border-neutral-300 rounded-md p-2 hover:border-primary hover:bg-neutral-50 transition-all cursor-pointer group">
+                              <button className="w-full bg-white border border-dashed border-neutral-300 rounded-md p-2 border-primary hover:bg-neutral-50 transition-all cursor-pointer group">
                                 {/* Icon placeholder */}
                                 <div className="w-full aspect-square bg-neutral-50 group-hover:bg-neutral-100 rounded flex items-center justify-center mb-1.5 transition-colors">
-                                  <Plus className="h-7 w-7 text-neutral-400 group-hover:text-primary transition-colors" />
+                                  <Plus className="h-7 w-7 text-neutral-400 text-primary transition-colors" />
                                 </div>
 
                                 {/* Text label */}
-                                <div className="text-[10px] font-medium text-center text-neutral-500 group-hover:text-primary transition-colors">
+                                <div className="text-[10px] font-medium text-center text-neutral-500 text-primary transition-colors">
                                   Add Media
                                 </div>
                               </button>
@@ -505,31 +496,6 @@ export default function CompositionBuilderStepTwo({
               </motion.div>
             )}
           </AnimatePresence>
-        </div>
-      </div>
-
-      {/* Fixed Bottom Actions */}
-      <div className="border-t bg-white px-4 py-3">
-        <div className="max-w-[1400px] mx-auto flex items-center justify-between">
-          <Button variant="outline" size="sm" onClick={onBack} className="gap-1.5 h-8">
-            <ArrowLeft className="h-3.5 w-3.5" />
-            Change Layout
-          </Button>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onPreview}
-              disabled={!allZonesHaveMedia}
-              className="h-8"
-            >
-              Preview
-            </Button>
-            <Button size="sm" onClick={onContinue} disabled={!allZonesHaveMedia} className="h-8">
-              Continue to Save
-            </Button>
-          </div>
-        </div>
       </div>
     </div>
   );

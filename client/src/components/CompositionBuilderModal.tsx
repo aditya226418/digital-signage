@@ -128,13 +128,46 @@ export default function CompositionBuilderModal({
           // Builder Content
           <div className="flex flex-col h-full bg-neutral-50 overflow-hidden">
             {/* Header with Step Progress and Close Button */}
-            <div className="sticky top-0 z-50 bg-white border-b border-border/40 px-6 py-4">
+            <div className="sticky top-0 z-50 bg-white border-b border-border/40 px-6 py-3">
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
                   <h2 className="text-lg font-semibold">Create Composition</h2>
                   <div className="hidden md:block h-6 w-px bg-border" />
                   <CompositionStepProgress currentStep={step} />
                 </div>
+                
+                {/* Step 2 Actions */}
+                {step === 2 && selectedLayout && (
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setStep(1)}
+                      className="gap-1.5 h-7 text-xs"
+                    >
+                      <ArrowLeft className="h-3 w-3" />
+                      Change Layout
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowPreview(true)}
+                      disabled={!selectedLayout.zones.every((zone) => zones[zone.id]?.length > 0)}
+                      className="h-7 text-xs"
+                    >
+                      Preview
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={() => setStep(3)}
+                      disabled={!selectedLayout.zones.every((zone) => zones[zone.id]?.length > 0)}
+                      className="h-7 text-xs"
+                    >
+                      Continue
+                    </Button>
+                  </div>
+                )}
+
                 <Button
                   variant="ghost"
                   size="icon"
@@ -176,9 +209,6 @@ export default function CompositionBuilderModal({
                       selectedLayout={selectedLayout}
                       zones={zones}
                       onZonesChange={setZones}
-                      onBack={() => setStep(1)}
-                      onContinue={() => setStep(3)}
-                      onPreview={() => setShowPreview(true)}
                     />
                   </motion.div>
                 )}
