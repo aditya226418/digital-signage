@@ -7,16 +7,13 @@ import {
   Send,
   Settings,
   User,
-  ChevronRight,
-  ListVideo,
-  LayoutGrid,
   Grid3x3,
   CreditCard,
 } from "lucide-react";
 import DashboardContent from "./DashboardContent";
 import ScreensTable from "./ScreensTable";
 import { MediaTable } from "./MediaTables";
-import { PlaylistsTable, LayoutsTable } from "./CompositionTables";
+import { CompositionsTable } from "./CompositionTables";
 import PublishTable from "./PublishTable";
 import AppsGallery from "./AppsGallery";
 import MyPlan from "./MyPlan";
@@ -32,19 +29,11 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
   SidebarProvider,
   SidebarRail,
   SidebarSeparator,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 import { useLocation } from "wouter";
 
 interface Screen {
@@ -78,8 +67,7 @@ const moduleIds = [
   "dashboard",
   "screens",
   "media",
-  "playlists",
-  "layouts",
+  "compositions",
   "apps",
   "publish",
   "myplan",
@@ -117,22 +105,6 @@ export default function EngagedDashboard({
 }: EngagedDashboardProps) {
   const [location, setLocation] = useLocation();
   const activeModule = getActiveModule(location);
-  const [openMenus, setOpenMenus] = useState<string[]>(["compositions"]);
-
-  useEffect(() => {
-    if (
-      (activeModule === "playlists" || activeModule === "layouts") &&
-      !openMenus.includes("compositions")
-    ) {
-      setOpenMenus((prev) => [...prev, "compositions"]);
-    }
-  }, [activeModule, openMenus]);
-
-  const toggleMenu = (menuId: string) => {
-    setOpenMenus((prev) =>
-      prev.includes(menuId) ? prev.filter((id) => id !== menuId) : [...prev, menuId]
-    );
-  };
 
   const handleNavigate = (moduleId: string) => {
     const nextPath = getModulePath(moduleId);
@@ -145,15 +117,7 @@ export default function EngagedDashboard({
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
     { id: "screens", label: "Screens", icon: Monitor },
     { id: "media", label: "Media", icon: Image },
-    {
-      id: "compositions",
-      label: "Compositions",
-      icon: Layers,
-      subItems: [
-        { id: "playlists", label: "Playlists", icon: ListVideo },
-        { id: "layouts", label: "Layouts", icon: LayoutGrid },
-      ],
-    },
+    { id: "compositions", label: "Compositions", icon: Layers },
     { id: "apps", label: "Apps", icon: Grid3x3 },
     { id: "publish", label: "Publish", icon: Send },
   ];
@@ -186,63 +150,19 @@ export default function EngagedDashboard({
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {mainNavItems.map((item) => {
-                  const hasSubItems = "subItems" in item && item.subItems;
-                  const isOpen = openMenus.includes(item.id);
-
-                  if (hasSubItems) {
-                    return (
-                      <Collapsible
-                        key={item.id}
-                        open={isOpen}
-                        onOpenChange={() => toggleMenu(item.id)}
-                        className="group/collapsible"
-                      >
-                        <SidebarMenuItem>
-                          <CollapsibleTrigger asChild>
-                            <SidebarMenuButton
-                              tooltip={item.label}
-                              className="group/item"
-                            >
-                              <item.icon className="h-4 w-4" />
-                              <span>{item.label}</span>
-                              <ChevronRight className="ml-auto h-4 w-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                            </SidebarMenuButton>
-                          </CollapsibleTrigger>
-                          <CollapsibleContent>
-                            <SidebarMenuSub>
-                              {item.subItems.map((subItem) => (
-                                <SidebarMenuSubItem key={subItem.id}>
-                                  <SidebarMenuSubButton
-                                    isActive={activeModule === subItem.id}
-                                    onClick={() => handleNavigate(subItem.id)}
-                                  >
-                                    <subItem.icon className="h-4 w-4" />
-                                    <span>{subItem.label}</span>
-                                  </SidebarMenuSubButton>
-                                </SidebarMenuSubItem>
-                              ))}
-                            </SidebarMenuSub>
-                          </CollapsibleContent>
-                        </SidebarMenuItem>
-                      </Collapsible>
-                    );
-                  }
-
-                  return (
-                    <SidebarMenuItem key={item.id}>
-                      <SidebarMenuButton
-                        isActive={activeModule === item.id}
-                        onClick={() => handleNavigate(item.id)}
-                        tooltip={item.label}
-                        className="group/item"
-                      >
-                        <item.icon className="h-4 w-4" />
-                        <span>{item.label}</span>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  );
-                })}
+                {mainNavItems.map((item) => (
+                  <SidebarMenuItem key={item.id}>
+                    <SidebarMenuButton
+                      isActive={activeModule === item.id}
+                      onClick={() => handleNavigate(item.id)}
+                      tooltip={item.label}
+                      className="group/item"
+                    >
+                      <item.icon className="h-4 w-4" />
+                      <span>{item.label}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
@@ -303,8 +223,7 @@ export default function EngagedDashboard({
                     <p className="text-sm text-muted-foreground">
                       {activeModule === "screens" && "Manage and monitor your screens"}
                       {activeModule === "media" && "Manage all your media files"}
-                      {activeModule === "playlists" && "Create and manage playlists"}
-                      {activeModule === "layouts" && "Design and manage layouts"}
+                      {activeModule === "compositions" && "Combine layouts and playlists into screen compositions"}
                       {activeModule === "apps" && "Browse and add app integrations"}
                       {activeModule === "publish" && "Schedule and publish content"}
                       {activeModule === "myplan" && "View and manage your subscription"}
@@ -343,8 +262,7 @@ export default function EngagedDashboard({
 
                 {activeModule === "media" && <MediaTable />}
 
-                {activeModule === "playlists" && <PlaylistsTable />}
-                {activeModule === "layouts" && <LayoutsTable />}
+                {activeModule === "compositions" && <CompositionsTable />}
 
                 {activeModule === "apps" && <AppsGallery />}
 

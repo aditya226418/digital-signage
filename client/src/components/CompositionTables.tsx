@@ -33,6 +33,28 @@ interface Layout {
   usedBy: number;
 }
 
+interface Composition {
+  id: string;
+  name: string;
+  createdBy: string;
+  createdDate: string;
+  status: "active" | "draft";
+  screens: number;
+  // Layout information
+  layout: {
+    name: string;
+    zones: number;
+    resolution: string;
+    type: "single" | "multi-zone" | "grid";
+  };
+  // Playlist information
+  playlist: {
+    name: string;
+    itemCount: number;
+    duration: string;
+  };
+}
+
 const mockPlaylists: Playlist[] = [
   {
     id: "1",
@@ -136,6 +158,124 @@ const mockLayouts: Layout[] = [
     createdDate: "2024-03-10",
     type: "single",
     usedBy: 4,
+  },
+];
+
+// Compositions data - each composition combines a layout with a playlist
+const mockCompositions: Composition[] = [
+  {
+    id: "c1",
+    name: "Welcome Experience",
+    createdBy: "John Doe",
+    createdDate: "2024-03-15",
+    status: "active",
+    screens: 5,
+    layout: {
+      name: "Full Screen Banner",
+      zones: 1,
+      resolution: "1920x1080",
+      type: "single",
+    },
+    playlist: {
+      name: "Welcome Playlist",
+      itemCount: 8,
+      duration: "15:30",
+    },
+  },
+  {
+    id: "c2",
+    name: "Product Showcase Display",
+    createdBy: "Sarah Smith",
+    createdDate: "2024-03-14",
+    status: "active",
+    screens: 3,
+    layout: {
+      name: "Split Screen Dual",
+      zones: 2,
+      resolution: "1920x1080",
+      type: "multi-zone",
+    },
+    playlist: {
+      name: "Product Showcase",
+      itemCount: 12,
+      duration: "22:45",
+    },
+  },
+  {
+    id: "c3",
+    name: "Company News Grid",
+    createdBy: "Mike Johnson",
+    createdDate: "2024-03-13",
+    status: "active",
+    screens: 7,
+    layout: {
+      name: "Grid 2x2",
+      zones: 4,
+      resolution: "1920x1080",
+      type: "grid",
+    },
+    playlist: {
+      name: "Company News",
+      itemCount: 5,
+      duration: "8:20",
+    },
+  },
+  {
+    id: "c4",
+    name: "Promotional Campaign",
+    createdBy: "John Doe",
+    createdDate: "2024-03-12",
+    status: "draft",
+    screens: 0,
+    layout: {
+      name: "Header + Content",
+      zones: 2,
+      resolution: "1920x1080",
+      type: "multi-zone",
+    },
+    playlist: {
+      name: "Promotional Content",
+      itemCount: 15,
+      duration: "30:00",
+    },
+  },
+  {
+    id: "c5",
+    name: "Training Program 4K",
+    createdBy: "Sarah Smith",
+    createdDate: "2024-03-10",
+    status: "active",
+    screens: 2,
+    layout: {
+      name: "4K Full Screen",
+      zones: 1,
+      resolution: "3840x2160",
+      type: "single",
+    },
+    playlist: {
+      name: "Training Materials",
+      itemCount: 6,
+      duration: "18:15",
+    },
+  },
+  {
+    id: "c6",
+    name: "Lobby Information Display",
+    createdBy: "Mike Johnson",
+    createdDate: "2024-03-09",
+    status: "active",
+    screens: 4,
+    layout: {
+      name: "Split Screen Dual",
+      zones: 2,
+      resolution: "1920x1080",
+      type: "multi-zone",
+    },
+    playlist: {
+      name: "Company News",
+      itemCount: 5,
+      duration: "8:20",
+    },
   },
 ];
 
@@ -381,6 +521,149 @@ export function LayoutsTable() {
         <Button className="gap-2 transition-all duration-200 hover:shadow-md">
           <Plus className="h-4 w-4" />
           Create Layout
+        </Button>
+      }
+    />
+  );
+}
+
+// Unified Compositions Table
+export function CompositionsTable() {
+  const columns = [
+    {
+      key: "name",
+      label: "Composition Name",
+      render: (composition: Composition) => (
+        <div className="font-medium">{composition.name}</div>
+      ),
+    },
+    {
+      key: "layout",
+      label: "Layout",
+      render: (composition: Composition) => (
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium">{composition.layout.name}</span>
+            <Badge variant="outline" className="capitalize text-xs">
+              {composition.layout.type}
+            </Badge>
+          </div>
+          <div className="text-xs text-muted-foreground">
+            {composition.layout.zones} {composition.layout.zones !== 1 ? "zones" : "zone"} • {composition.layout.resolution}
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: "playlist",
+      label: "Playlist",
+      render: (composition: Composition) => (
+        <div>
+          <div className="text-sm font-medium">{composition.playlist.name}</div>
+          <div className="text-xs text-muted-foreground">
+            {composition.playlist.itemCount} items • {composition.playlist.duration}
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: "status",
+      label: "Status",
+      render: (composition: Composition) => (
+        <Badge
+          variant={composition.status === "active" ? "default" : "secondary"}
+          className={
+            composition.status === "active"
+              ? "bg-green-500/10 text-green-700 hover:bg-green-500/20 dark:text-green-400"
+              : "bg-orange-500/10 text-orange-700 hover:bg-orange-500/20 dark:text-orange-400"
+          }
+        >
+          {composition.status === "active" ? "Active" : "Draft"}
+        </Badge>
+      ),
+    },
+    {
+      key: "screens",
+      label: "Screens",
+      render: (composition: Composition) => (
+        <div className="text-sm text-muted-foreground">
+          {composition.screens} screen{composition.screens !== 1 ? "s" : ""}
+        </div>
+      ),
+    },
+    {
+      key: "createdBy",
+      label: "Created By",
+      render: (composition: Composition) => (
+        <div className="text-sm text-muted-foreground">{composition.createdBy}</div>
+      ),
+    },
+    {
+      key: "createdDate",
+      label: "Date",
+      render: (composition: Composition) => (
+        <div className="text-sm text-muted-foreground">{composition.createdDate}</div>
+      ),
+    },
+    {
+      key: "actions",
+      label: "Actions",
+      render: (composition: Composition) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 transition-all duration-200 hover:bg-accent"
+            >
+              <MoreVertical className="h-4 w-4" />
+              <span className="sr-only">Open menu</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="gap-2 cursor-pointer">
+              <Play className="h-4 w-4" />
+              Preview
+            </DropdownMenuItem>
+            <DropdownMenuItem className="gap-2 cursor-pointer">
+              <Edit className="h-4 w-4" />
+              Edit
+            </DropdownMenuItem>
+            <DropdownMenuItem className="gap-2 cursor-pointer">
+              <Copy className="h-4 w-4" />
+              Duplicate
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="gap-2 cursor-pointer text-destructive focus:text-destructive">
+              <Trash2 className="h-4 w-4" />
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ),
+    },
+  ];
+
+  const filterOptions = [
+    { key: "status", label: "Active", value: "active" },
+    { key: "status", label: "Draft", value: "draft" },
+    { key: "layout.type", label: "Single Zone", value: "single" },
+    { key: "layout.type", label: "Multi-Zone", value: "multi-zone" },
+    { key: "layout.type", label: "Grid", value: "grid" },
+  ];
+
+  return (
+    <DataTableView
+      data={mockCompositions}
+      columns={columns}
+      searchPlaceholder="Search compositions..."
+      filterOptions={filterOptions}
+      actions={
+        <Button className="gap-2 transition-all duration-200 hover:shadow-md">
+          <Plus className="h-4 w-4" />
+          Create Composition
         </Button>
       }
     />
