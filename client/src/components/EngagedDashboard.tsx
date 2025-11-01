@@ -9,6 +9,7 @@ import {
   User,
   Grid3x3,
   CreditCard,
+  Building2,
 } from "lucide-react";
 import DashboardContent from "./DashboardContent";
 import ScreensTable from "./ScreensTable";
@@ -17,6 +18,7 @@ import { CompositionsTable } from "./CompositionTables";
 import PublishTable from "./PublishTable";
 import AppsGallery from "./AppsGallery";
 import MyPlan from "./MyPlan";
+import StoresList from "./StoresList";
 import {
   Sidebar,
   SidebarContent,
@@ -70,6 +72,7 @@ const moduleIds = [
   "compositions",
   "apps",
   "publish",
+  "stores",
   "myplan",
   "settings",
   "account",
@@ -120,6 +123,7 @@ export default function EngagedDashboard({
     { id: "compositions", label: "Compositions", icon: Layers },
     { id: "apps", label: "Apps", icon: Grid3x3 },
     { id: "publish", label: "Publish", icon: Send },
+    { id: "stores", label: "Stores", icon: Building2 },
   ];
 
   const footerNavItems = [
@@ -226,6 +230,7 @@ export default function EngagedDashboard({
                         {activeModule === "compositions" && "Combine layouts and playlists into screen compositions"}
                         {activeModule === "apps" && "Browse and add app integrations"}
                         {activeModule === "publish" && "Schedule and publish content"}
+                        {activeModule === "stores" && "Manage franchise locations and store networks"}
                         {activeModule === "myplan" && "View and manage your subscription"}
                         {activeModule === "settings" && "Configure application settings"}
                         {activeModule === "account" && "Manage your account"}
@@ -267,6 +272,8 @@ export default function EngagedDashboard({
                   {activeModule === "apps" && <AppsGallery />}
 
                   {activeModule === "publish" && <PublishTable />}
+
+                  {activeModule === "stores" && <StoresList />}
 
                   {activeModule === "myplan" && <MyPlan />}
 

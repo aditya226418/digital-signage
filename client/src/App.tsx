@@ -13,6 +13,7 @@ const moduleRoutes = new Set([
   "compositions",
   "apps",
   "publish",
+  "stores",
   "myplan",
   "settings",
   "account",
@@ -22,6 +23,17 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Dashboard} />
+      <Route path="/:module/:id">
+        {(params) => {
+          const moduleParam = params.module;
+
+          if (moduleParam && moduleRoutes.has(moduleParam)) {
+            return <Dashboard />;
+          }
+
+          return <NotFound />;
+        }}
+      </Route>
       <Route path="/:module">
         {(params) => {
           const moduleParam = params.module;
