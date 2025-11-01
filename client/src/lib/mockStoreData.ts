@@ -119,7 +119,7 @@ export const mockOwners: StoreOwner[] = [
 export const mockStores: Store[] = [
   {
     id: "store-001",
-    name: "McDonald's Mumbai Kurla",
+    name: "McDonald's Kurla",
     region: "West Zone",
     city: "Mumbai",
     timezone: "Asia/Kolkata",
@@ -136,7 +136,7 @@ export const mockStores: Store[] = [
   },
   {
     id: "store-002",
-    name: "McDonald's Bangalore Indiranagar",
+    name: "McDonald's Indiranagar",
     region: "South Zone",
     city: "Bangalore",
     timezone: "Asia/Kolkata",
@@ -153,7 +153,7 @@ export const mockStores: Store[] = [
   },
   {
     id: "store-003",
-    name: "McDonald's Delhi Connaught Place",
+    name: "McDonald's Connaught Place",
     region: "North Zone",
     city: "Delhi",
     timezone: "Asia/Kolkata",
@@ -170,7 +170,7 @@ export const mockStores: Store[] = [
   },
   {
     id: "store-004",
-    name: "McDonald's Pune Viman Nagar",
+    name: "McDonald's Viman Nagar",
     region: "West Zone",
     city: "Pune",
     timezone: "Asia/Kolkata",
@@ -187,7 +187,7 @@ export const mockStores: Store[] = [
   },
   {
     id: "store-005",
-    name: "McDonald's Hyderabad Banjara Hills",
+    name: "McDonald's Banjara Hills",
     region: "South Zone",
     city: "Hyderabad",
     timezone: "Asia/Kolkata",
@@ -204,7 +204,7 @@ export const mockStores: Store[] = [
   },
   {
     id: "store-006",
-    name: "McDonald's Mumbai Bandra",
+    name: "McDonald's Bandra",
     region: "West Zone",
     city: "Mumbai",
     timezone: "Asia/Kolkata",
@@ -221,7 +221,7 @@ export const mockStores: Store[] = [
   },
   {
     id: "store-007",
-    name: "McDonald's Mumbai Andheri",
+    name: "McDonald's Andheri",
     region: "West Zone",
     city: "Mumbai",
     timezone: "Asia/Kolkata",
@@ -238,7 +238,7 @@ export const mockStores: Store[] = [
   },
   {
     id: "store-008",
-    name: "McDonald's Bangalore Whitefield",
+    name: "McDonald's Whitefield",
     region: "South Zone",
     city: "Bangalore",
     timezone: "Asia/Kolkata",
@@ -255,7 +255,7 @@ export const mockStores: Store[] = [
   },
   {
     id: "store-009",
-    name: "McDonald's Pune Koregaon Park",
+    name: "McDonald's Koregaon Park",
     region: "West Zone",
     city: "Pune",
     timezone: "Asia/Kolkata",
@@ -272,7 +272,7 @@ export const mockStores: Store[] = [
   },
   {
     id: "store-010",
-    name: "McDonald's Bangalore Koramangala",
+    name: "McDonald's Koramangala",
     region: "South Zone",
     city: "Bangalore",
     timezone: "Asia/Kolkata",
@@ -289,7 +289,7 @@ export const mockStores: Store[] = [
   },
   {
     id: "store-011",
-    name: "McDonald's Delhi Saket",
+    name: "McDonald's Saket",
     region: "North Zone",
     city: "Delhi",
     timezone: "Asia/Kolkata",
@@ -306,7 +306,7 @@ export const mockStores: Store[] = [
   },
   {
     id: "store-012",
-    name: "McDonald's Hyderabad Hitech City",
+    name: "McDonald's Hitech City",
     region: "South Zone",
     city: "Hyderabad",
     timezone: "Asia/Kolkata",
@@ -323,7 +323,7 @@ export const mockStores: Store[] = [
   },
   {
     id: "store-013",
-    name: "McDonald's Bangalore MG Road",
+    name: "McDonald's MG Road",
     region: "South Zone",
     city: "Bangalore",
     timezone: "Asia/Kolkata",
@@ -340,7 +340,7 @@ export const mockStores: Store[] = [
   },
   {
     id: "store-014",
-    name: "McDonald's Delhi Rajouri Garden",
+    name: "McDonald's Rajouri Garden",
     region: "North Zone",
     city: "Delhi",
     timezone: "Asia/Kolkata",
@@ -357,7 +357,7 @@ export const mockStores: Store[] = [
   },
   {
     id: "store-015",
-    name: "McDonald's Mumbai Lower Parel",
+    name: "McDonald's Lower Parel",
     region: "West Zone",
     city: "Mumbai",
     timezone: "Asia/Kolkata",
