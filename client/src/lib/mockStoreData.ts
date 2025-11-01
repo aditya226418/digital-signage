@@ -448,7 +448,8 @@ export const filterStores = (
   searchQuery: string,
   region?: string,
   owner?: string,
-  status?: string
+  status?: string,
+  city?: string
 ): Store[] => {
   return stores.filter(store => {
     const matchesSearch = !searchQuery || 
@@ -458,13 +459,18 @@ export const filterStores = (
     const matchesRegion = !region || region === "all" || store.region === region;
     const matchesOwner = !owner || owner === "all" || store.ownerId === owner;
     const matchesStatus = !status || status === "all" || store.status === status;
+    const matchesCity = !city || city === "all" || store.city === city;
 
-    return matchesSearch && matchesRegion && matchesOwner && matchesStatus;
+    return matchesSearch && matchesRegion && matchesOwner && matchesStatus && matchesCity;
   });
 };
 
 export const getUniqueRegions = (stores: Store[]): string[] => {
   return Array.from(new Set(stores.map(store => store.region))).sort();
+};
+
+export const getUniqueCities = (stores: Store[]): string[] => {
+  return Array.from(new Set(stores.map(store => store.city))).sort();
 };
 
 export const getUniqueStatuses = (): string[] => {

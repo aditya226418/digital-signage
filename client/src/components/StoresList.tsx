@@ -31,6 +31,7 @@ import {
   mockOwners,
   filterStores,
   getUniqueRegions,
+  getUniqueCities,
   getUniqueStatuses,
   type Store,
 } from "@/lib/mockStoreData";
@@ -46,6 +47,7 @@ export default function StoresList() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRegion, setSelectedRegion] = useState<string>("all");
+  const [selectedCity, setSelectedCity] = useState<string>("all");
   const [selectedOwner, setSelectedOwner] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
@@ -72,7 +74,8 @@ export default function StoresList() {
     searchQuery,
     selectedRegion,
     selectedOwner,
-    selectedStatus
+    selectedStatus,
+    selectedCity
   );
 
   // Pagination
@@ -86,7 +89,7 @@ export default function StoresList() {
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, selectedRegion, selectedOwner, selectedStatus]);
+  }, [searchQuery, selectedRegion, selectedCity, selectedOwner, selectedStatus]);
 
   const handleStoreClick = (storeId: string) => {
     setLocation(`/stores/${storeId}`);
@@ -173,6 +176,21 @@ export default function StoresList() {
           </SelectContent>
         </Select>
 
+        <Select value={selectedCity} onValueChange={setSelectedCity}>
+          <SelectTrigger className="w-[180px]">
+            <MapPin className="mr-2 h-4 w-4" />
+            <SelectValue placeholder="All Cities" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Cities</SelectItem>
+            {getUniqueCities(mockStores).map((city) => (
+              <SelectItem key={city} value={city}>
+                {city}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
         <Select value={selectedOwner} onValueChange={setSelectedOwner}>
           <SelectTrigger className="w-[200px]">
             <User2 className="mr-2 h-4 w-4" />
@@ -203,12 +221,13 @@ export default function StoresList() {
           </SelectContent>
         </Select>
 
-        {(searchQuery || selectedRegion !== "all" || selectedOwner !== "all" || selectedStatus !== "all") && (
+        {(searchQuery || selectedRegion !== "all" || selectedCity !== "all" || selectedOwner !== "all" || selectedStatus !== "all") && (
           <Button
             variant="ghost"
             onClick={() => {
               setSearchQuery("");
               setSelectedRegion("all");
+              setSelectedCity("all");
               setSelectedOwner("all");
               setSelectedStatus("all");
             }}
