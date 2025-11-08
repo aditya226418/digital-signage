@@ -116,9 +116,11 @@ export default function PublishTable() {
         <div className="text-sm">
           <div className="flex items-center gap-1 font-medium">
             <Clock className="h-3 w-3" />
-            <span>{publish.duration} min</span>
+            <span>{publish.duration === -1 ? "Indefinite" : `${publish.duration} min`}</span>
           </div>
-          {publish.remainingTime !== undefined && publish.status === "active" && (
+          {publish.remainingTime !== undefined && 
+           publish.status === "active" && 
+           publish.duration !== -1 && (
             <div className="text-xs text-muted-foreground mt-1">
               {publish.remainingTime} min left
             </div>
