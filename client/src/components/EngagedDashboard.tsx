@@ -68,11 +68,11 @@ interface EngagedDashboardProps {
 const moduleIds = [
   "dashboard",
   "screens",
+  "stores",
   "media",
   "compositions",
   "apps",
   "publish",
-  "stores",
   "myplan",
   "settings",
   "account",
@@ -119,11 +119,11 @@ export default function EngagedDashboard({
   const mainNavItems = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
     { id: "screens", label: "Screens", icon: Monitor },
+    { id: "stores", label: "Stores", icon: Building2 },
     { id: "media", label: "Media", icon: Image },
     { id: "compositions", label: "Compositions", icon: Layers },
     { id: "apps", label: "Apps", icon: Grid3x3 },
     { id: "publish", label: "Publish", icon: Send },
-    { id: "stores", label: "Stores", icon: Building2 },
   ];
 
   const footerNavItems = [
