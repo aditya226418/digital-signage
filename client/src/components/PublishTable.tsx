@@ -1,6 +1,8 @@
-import { MoreVertical, Play, Pause, Calendar, Edit, Trash2, Send } from "lucide-react";
+import { useState } from "react";
+import { MoreVertical, Play, Pause, Calendar, Edit, Trash2, Send, X, Clock, Zap } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,120 +12,228 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import DataTableView from "./DataTableView";
-
-interface PublishSchedule {
-  id: string;
-  name: string;
-  composition: string;
-  screens: number;
-  screenNames: string;
-  status: "active" | "scheduled" | "paused" | "completed";
-  startDate: string;
-  endDate: string;
-  repeatType: "once" | "daily" | "weekly" | "monthly";
-  priority: "high" | "medium" | "low";
-  createdBy: string;
-}
-
-const mockPublishData: PublishSchedule[] = [
-  {
-    id: "1",
-    name: "Morning Welcome Campaign",
-    composition: "Welcome Playlist",
-    screens: 5,
-    screenNames: "Lobby Display, Reception Area, +3 more",
-    status: "active",
-    startDate: "2024-03-15 08:00",
-    endDate: "2024-03-15 12:00",
-    repeatType: "daily",
-    priority: "high",
-    createdBy: "John Doe",
-  },
-  {
-    id: "2",
-    name: "Product Showcase - Afternoon",
-    composition: "Product Showcase",
-    screens: 3,
-    screenNames: "Conference Room A, Cafeteria Screen, Training Room",
-    status: "active",
-    startDate: "2024-03-15 12:00",
-    endDate: "2024-03-15 18:00",
-    repeatType: "daily",
-    priority: "medium",
-    createdBy: "Sarah Smith",
-  },
-  {
-    id: "3",
-    name: "Weekend Special Promo",
-    composition: "Promotional Content",
-    screens: 7,
-    screenNames: "All Screens",
-    status: "scheduled",
-    startDate: "2024-03-16 00:00",
-    endDate: "2024-03-17 23:59",
-    repeatType: "weekly",
-    priority: "high",
-    createdBy: "Mike Johnson",
-  },
-  {
-    id: "4",
-    name: "Training Session Materials",
-    composition: "Training Materials",
-    screens: 2,
-    screenNames: "Training Room, Conference Room A",
-    status: "paused",
-    startDate: "2024-03-14 14:00",
-    endDate: "2024-03-14 17:00",
-    repeatType: "once",
-    priority: "low",
-    createdBy: "John Doe",
-  },
-  {
-    id: "5",
-    name: "Company News - March",
-    composition: "Company News",
-    screens: 8,
-    screenNames: "All Screens",
-    status: "active",
-    startDate: "2024-03-01 00:00",
-    endDate: "2024-03-31 23:59",
-    repeatType: "monthly",
-    priority: "medium",
-    createdBy: "Sarah Smith",
-  },
-  {
-    id: "6",
-    name: "Lunch Menu Display",
-    composition: "Menu Board",
-    screens: 1,
-    screenNames: "Cafeteria Screen",
-    status: "completed",
-    startDate: "2024-03-10 11:00",
-    endDate: "2024-03-10 14:00",
-    repeatType: "daily",
-    priority: "low",
-    createdBy: "Mike Johnson",
-  },
-];
+import PublishModeSelector from "./PublishModeSelector";
+import PublishDirectModal from "./PublishDirectModal";
+import CreateScheduleWizard from "./CreateScheduleWizard";
+import { usePublishStore } from "@/hooks/usePublishStore";
+import { DirectPublish, PlannedSchedule } from "@/lib/mockPublishData";
+import { toast } from "sonner";
 
 export default function PublishTable() {
-  const columns = [
+  const [activeTab, setActiveTab] = useState("direct");
+  const [showModeSelector, setShowModeSelector] = useState(false);
+  const [showDirectModal, setShowDirectModal] = useState(false);
+  const [showPlannedModal, setShowPlannedModal] = useState(false);
+
+  const {
+    directPublishes,
+    plannedSchedules,
+    removeDirectPublish,
+    pauseDirectPublish,
+    resumeDirectPublish,
+    removePlannedSchedule,
+    pausePlannedSchedule,
+    resumePlannedSchedule,
+  } = usePublishStore();
+
+  const handleStartPublish = () => {
+    setShowModeSelector(true);
+  };
+
+  const handleSelectDirect = () => {
+    setShowDirectModal(true);
+  };
+
+  const handleSelectPlanned = () => {
+    setShowPlannedModal(true);
+  };
+
+  // Direct Publishing Columns
+  const directColumns = [
     {
-      key: "name",
-      label: "Campaign Name",
-      render: (schedule: PublishSchedule) => (
+      key: "content",
+      label: "Content",
+      render: (publish: DirectPublish) => (
         <div>
-          <div className="font-medium">{schedule.name}</div>
-          <div className="text-xs text-muted-foreground">{schedule.composition}</div>
+          <div className="font-medium flex items-center gap-2">
+            <Zap className="h-4 w-4 text-primary" />
+            {publish.contentName}
+          </div>
+          <div className="text-xs text-muted-foreground capitalize">{publish.contentType}</div>
         </div>
       ),
     },
     {
       key: "screens",
-      label: "Screens",
-      render: (schedule: PublishSchedule) => (
+      label: "Target Screens",
+      render: (publish: DirectPublish) => (
         <div>
-          <div className="font-medium">{schedule.screens} screens</div>
+          <div className="font-medium">{publish.targetScreens.length} screens</div>
+          <div className="text-xs text-muted-foreground truncate max-w-[200px]">
+            {publish.screenNames}
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: "status",
+      label: "Status",
+      render: (publish: DirectPublish) => {
+        const statusConfig = {
+          active: {
+            color: "bg-green-500/10 text-green-700 dark:text-green-400",
+            dot: "bg-green-500 animate-pulse",
+            label: "Active",
+          },
+          paused: {
+            color: "bg-orange-500/10 text-orange-700 dark:text-orange-400",
+            dot: "bg-orange-500",
+            label: "Paused",
+          },
+          completed: {
+            color: "bg-gray-500/10 text-gray-700 dark:text-gray-400",
+            dot: "bg-gray-500",
+            label: "Completed",
+          },
+        };
+
+        const config = statusConfig[publish.status];
+
+        return (
+          <Badge variant="secondary" className={config.color}>
+            <span className={`mr-1.5 h-1.5 w-1.5 rounded-full ${config.dot}`} />
+            {config.label}
+          </Badge>
+        );
+      },
+    },
+    {
+      key: "duration",
+      label: "Duration",
+      render: (publish: DirectPublish) => (
+        <div className="text-sm">
+          <div className="flex items-center gap-1 font-medium">
+            <Clock className="h-3 w-3" />
+            <span>{publish.duration} min</span>
+          </div>
+          {publish.remainingTime !== undefined && publish.status === "active" && (
+            <div className="text-xs text-muted-foreground mt-1">
+              {publish.remainingTime} min left
+            </div>
+          )}
+        </div>
+      ),
+    },
+    {
+      key: "options",
+      label: "Options",
+      render: (publish: DirectPublish) => (
+        <div className="flex gap-1 flex-wrap">
+          {publish.override && (
+            <Badge variant="outline" className="text-xs">
+              Override
+            </Badge>
+          )}
+          {publish.isDefault && (
+            <Badge variant="outline" className="text-xs">
+              Default
+            </Badge>
+          )}
+        </div>
+      ),
+    },
+    {
+      key: "publishedBy",
+      label: "Published By",
+      render: (publish: DirectPublish) => (
+        <div className="text-sm text-muted-foreground">{publish.publishedBy}</div>
+      ),
+    },
+    {
+      key: "actions",
+      label: "Actions",
+      render: (publish: DirectPublish) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 transition-all duration-200 hover:bg-accent"
+            >
+              <MoreVertical className="h-4 w-4" />
+              <span className="sr-only">Open menu</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {publish.status === "paused" ? (
+              <DropdownMenuItem
+                className="gap-2 cursor-pointer"
+                onClick={() => {
+                  resumeDirectPublish(publish.id);
+                  toast.success("Quickplay resumed");
+                }}
+              >
+                <Play className="h-4 w-4" />
+                Resume
+              </DropdownMenuItem>
+            ) : publish.status === "active" ? (
+              <DropdownMenuItem
+                className="gap-2 cursor-pointer"
+                onClick={() => {
+                  pauseDirectPublish(publish.id);
+                  toast.info("Quickplay paused");
+                }}
+              >
+                <Pause className="h-4 w-4" />
+                Pause
+              </DropdownMenuItem>
+            ) : null}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="gap-2 cursor-pointer text-destructive focus:text-destructive"
+              onClick={() => {
+                removeDirectPublish(publish.id);
+                toast.success("Quickplay cancelled");
+              }}
+            >
+              <X className="h-4 w-4" />
+              Cancel
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ),
+    },
+  ];
+
+  // Planned Publishing Columns
+  const plannedColumns = [
+    {
+      key: "name",
+      label: "Schedule Name",
+      render: (schedule: PlannedSchedule) => (
+        <div>
+          <div className="font-medium">{schedule.name}</div>
+          <div className="text-xs text-muted-foreground">{schedule.contentName}</div>
+        </div>
+      ),
+    },
+    {
+      key: "type",
+      label: "Type",
+      render: (schedule: PlannedSchedule) => (
+        <Badge variant="outline" className="capitalize">
+          {schedule.type === "daySequence" ? "Day Sequence" : schedule.type}
+        </Badge>
+      ),
+    },
+    {
+      key: "screens",
+      label: "Screens",
+      render: (schedule: PlannedSchedule) => (
+        <div>
+          <div className="font-medium">{schedule.targetScreens.length} screens</div>
           <div className="text-xs text-muted-foreground truncate max-w-[200px]">
             {schedule.screenNames}
           </div>
@@ -133,7 +243,7 @@ export default function PublishTable() {
     {
       key: "status",
       label: "Status",
-      render: (schedule: PublishSchedule) => {
+      render: (schedule: PlannedSchedule) => {
         const statusConfig = {
           active: {
             color: "bg-green-500/10 text-green-700 dark:text-green-400",
@@ -155,6 +265,11 @@ export default function PublishTable() {
             dot: "bg-gray-500",
             label: "Completed",
           },
+          pending_approval: {
+            color: "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400",
+            dot: "bg-yellow-500",
+            label: "Pending Approval",
+          },
         };
 
         const config = statusConfig[schedule.status];
@@ -170,7 +285,7 @@ export default function PublishTable() {
     {
       key: "schedule",
       label: "Schedule",
-      render: (schedule: PublishSchedule) => (
+      render: (schedule: PlannedSchedule) => (
         <div className="text-sm">
           <div className="flex items-center gap-1 text-muted-foreground">
             <Calendar className="h-3 w-3" />
@@ -183,18 +298,18 @@ export default function PublishTable() {
       ),
     },
     {
-      key: "repeatType",
-      label: "Repeat",
-      render: (schedule: PublishSchedule) => (
+      key: "recurrence",
+      label: "Recurrence",
+      render: (schedule: PlannedSchedule) => (
         <Badge variant="outline" className="capitalize">
-          {schedule.repeatType}
+          {schedule.recurrence}
         </Badge>
       ),
     },
     {
       key: "priority",
       label: "Priority",
-      render: (schedule: PublishSchedule) => {
+      render: (schedule: PlannedSchedule) => {
         const priorityConfig = {
           high: "text-red-600 dark:text-red-400",
           medium: "text-yellow-600 dark:text-yellow-400",
@@ -209,16 +324,9 @@ export default function PublishTable() {
       },
     },
     {
-      key: "createdBy",
-      label: "Created By",
-      render: (schedule: PublishSchedule) => (
-        <div className="text-sm text-muted-foreground">{schedule.createdBy}</div>
-      ),
-    },
-    {
       key: "actions",
       label: "Actions",
-      render: (schedule: PublishSchedule) => (
+      render: (schedule: PlannedSchedule) => (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -234,12 +342,24 @@ export default function PublishTable() {
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
             {schedule.status === "paused" ? (
-              <DropdownMenuItem className="gap-2 cursor-pointer">
+              <DropdownMenuItem
+                className="gap-2 cursor-pointer"
+                onClick={() => {
+                  resumePlannedSchedule(schedule.id);
+                  toast.success("Schedule resumed");
+                }}
+              >
                 <Play className="h-4 w-4" />
                 Resume
               </DropdownMenuItem>
-            ) : schedule.status === "active" ? (
-              <DropdownMenuItem className="gap-2 cursor-pointer">
+            ) : schedule.status === "active" || schedule.status === "scheduled" ? (
+              <DropdownMenuItem
+                className="gap-2 cursor-pointer"
+                onClick={() => {
+                  pausePlannedSchedule(schedule.id);
+                  toast.info("Schedule paused");
+                }}
+              >
                 <Pause className="h-4 w-4" />
                 Pause
               </DropdownMenuItem>
@@ -253,7 +373,13 @@ export default function PublishTable() {
               Reschedule
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="gap-2 cursor-pointer text-destructive focus:text-destructive">
+            <DropdownMenuItem
+              className="gap-2 cursor-pointer text-destructive focus:text-destructive"
+              onClick={() => {
+                removePlannedSchedule(schedule.id);
+                toast.success("Schedule deleted");
+              }}
+            >
               <Trash2 className="h-4 w-4" />
               Delete
             </DropdownMenuItem>
@@ -263,33 +389,98 @@ export default function PublishTable() {
     },
   ];
 
-  const filterOptions = [
+  const directFilterOptions = [
+    { key: "status", label: "Active", value: "active" },
+    { key: "status", label: "Paused", value: "paused" },
+    { key: "status", label: "Completed", value: "completed" },
+    { key: "contentType", label: "Media", value: "media" },
+    { key: "contentType", label: "Composition", value: "composition" },
+    { key: "contentType", label: "Campaign", value: "campaign" },
+  ];
+
+  const plannedFilterOptions = [
     { key: "status", label: "Active", value: "active" },
     { key: "status", label: "Scheduled", value: "scheduled" },
     { key: "status", label: "Paused", value: "paused" },
     { key: "status", label: "Completed", value: "completed" },
+    { key: "status", label: "Pending Approval", value: "pending_approval" },
+    { key: "type", label: "Simple", value: "simple" },
+    { key: "type", label: "Day Sequence", value: "daySequence" },
+    { key: "type", label: "Campaign", value: "campaign" },
     { key: "priority", label: "High Priority", value: "high" },
     { key: "priority", label: "Medium Priority", value: "medium" },
     { key: "priority", label: "Low Priority", value: "low" },
-    { key: "repeatType", label: "Once", value: "once" },
-    { key: "repeatType", label: "Daily", value: "daily" },
-    { key: "repeatType", label: "Weekly", value: "weekly" },
-    { key: "repeatType", label: "Monthly", value: "monthly" },
+    { key: "recurrence", label: "Once", value: "once" },
+    { key: "recurrence", label: "Daily", value: "daily" },
+    { key: "recurrence", label: "Weekly", value: "weekly" },
+    { key: "recurrence", label: "Monthly", value: "monthly" },
   ];
 
   return (
-    <DataTableView
-      data={mockPublishData}
-      columns={columns}
-      searchPlaceholder="Search campaigns, compositions, or screens..."
-      filterOptions={filterOptions}
-      actions={
-        <Button className="gap-2 transition-all duration-200 hover:shadow-md">
+    <>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <div className="flex items-center justify-between mb-4">
+          <TabsList>
+            <TabsTrigger value="direct" className="gap-2">
+              <Zap className="h-4 w-4" />
+              Direct
+              {directPublishes.filter((p) => p.status === "active").length > 0 && (
+                <Badge variant="secondary" className="ml-1 bg-green-500/10 text-green-700 dark:text-green-400">
+                  {directPublishes.filter((p) => p.status === "active").length}
+                </Badge>
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="planned" className="gap-2">
+              <Calendar className="h-4 w-4" />
+              Planned
+              {plannedSchedules.filter((s) => s.status === "active" || s.status === "scheduled").length > 0 && (
+                <Badge variant="secondary" className="ml-1">
+                  {plannedSchedules.filter((s) => s.status === "active" || s.status === "scheduled").length}
+                </Badge>
+              )}
+            </TabsTrigger>
+          </TabsList>
+
+          <Button
+            onClick={handleStartPublish}
+            className="gap-2 transition-all duration-200 hover:shadow-md"
+          >
           <Send className="h-4 w-4" />
-          New Campaign
+            Start Publish
         </Button>
-      }
-    />
+        </div>
+
+        <TabsContent value="direct" className="mt-0">
+          <DataTableView
+            data={directPublishes}
+            columns={directColumns}
+            searchPlaceholder="Search quickplays, content, or screens..."
+            filterOptions={directFilterOptions}
+            showHeader={false}
+          />
+        </TabsContent>
+
+        <TabsContent value="planned" className="mt-0">
+          <DataTableView
+            data={plannedSchedules}
+            columns={plannedColumns}
+            searchPlaceholder="Search schedules, content, or screens..."
+            filterOptions={plannedFilterOptions}
+            showHeader={false}
+          />
+        </TabsContent>
+      </Tabs>
+
+      <PublishModeSelector
+        open={showModeSelector}
+        onOpenChange={setShowModeSelector}
+        onSelectDirect={handleSelectDirect}
+        onSelectPlanned={handleSelectPlanned}
+      />
+
+      <PublishDirectModal open={showDirectModal} onOpenChange={setShowDirectModal} />
+
+      <CreateScheduleWizard open={showPlannedModal} onOpenChange={setShowPlannedModal} />
+    </>
   );
 }
-
