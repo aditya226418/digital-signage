@@ -1,4 +1,4 @@
-import { Calendar, Monitor, Repeat, Clock, Sparkles, PlaySquare } from "lucide-react";
+import { Calendar, Monitor, Repeat, Clock, PlaySquare } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -11,11 +11,9 @@ interface SchedulePreviewProps {
   endDate: string;
   recurrence: "once" | "daily" | "weekly" | "monthly";
   priority: "high" | "medium" | "low";
-  scheduleType: "simple" | "daySequence" | "campaign";
+  scheduleType: "simple" | "daySequence";
   contentId?: string;
   daySequenceSlots?: TimeSlot[];
-  campaignCompositions?: string[];
-  rotationType?: "sequential" | "random" | "weighted";
 }
 
 export default function SchedulePreview({
@@ -28,8 +26,6 @@ export default function SchedulePreview({
   scheduleType,
   contentId,
   daySequenceSlots = [],
-  campaignCompositions = [],
-  rotationType,
 }: SchedulePreviewProps) {
   const getScreenNames = () => {
     const screens = mockScreens.filter((s) => targetScreenIds.includes(s.id));
@@ -191,41 +187,6 @@ export default function SchedulePreview({
                     {daySequenceSlots.length > 3 && (
                       <p className="text-xs text-muted-foreground">
                         +{daySequenceSlots.length - 3} more slots
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </>
-            )}
-
-            {scheduleType === "campaign" && campaignCompositions.length > 0 && (
-              <>
-                <Separator />
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium flex items-center gap-2">
-                      <Sparkles className="h-3 w-3" />
-                      Campaign
-                    </span>
-                    <Badge variant="outline" className="capitalize text-xs">
-                      {rotationType}
-                    </Badge>
-                  </div>
-                  <div className="space-y-1 pl-5">
-                    <p className="text-xs text-muted-foreground">
-                      {campaignCompositions.length} compositions in rotation
-                    </p>
-                    {campaignCompositions.slice(0, 3).map((compId) => {
-                      const comp = mockCompositions.find((c) => c.id === compId);
-                      return (
-                        <div key={compId} className="text-xs text-muted-foreground">
-                          • {comp?.name || "Unknown"}
-                        </div>
-                      );
-                    })}
-                    {campaignCompositions.length > 3 && (
-                      <p className="text-xs text-muted-foreground">
-                        +{campaignCompositions.length - 3} more
                       </p>
                     )}
                   </div>

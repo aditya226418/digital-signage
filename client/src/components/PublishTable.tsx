@@ -24,6 +24,7 @@ export default function PublishTable() {
   const [showModeSelector, setShowModeSelector] = useState(false);
   const [showDirectModal, setShowDirectModal] = useState(false);
   const [showPlannedModal, setShowPlannedModal] = useState(false);
+  const [plannedScheduleType, setPlannedScheduleType] = useState<"simple" | "daySequence">("simple");
 
   const {
     directPublishes,
@@ -44,7 +45,8 @@ export default function PublishTable() {
     setShowDirectModal(true);
   };
 
-  const handleSelectPlanned = () => {
+  const handleSelectPlanned = (type: "simple" | "daySequence") => {
+    setPlannedScheduleType(type);
     setShowPlannedModal(true);
   };
 
@@ -406,7 +408,6 @@ export default function PublishTable() {
     { key: "status", label: "Pending Approval", value: "pending_approval" },
     { key: "type", label: "Simple", value: "simple" },
     { key: "type", label: "Day Sequence", value: "daySequence" },
-    { key: "type", label: "Campaign", value: "campaign" },
     { key: "priority", label: "High Priority", value: "high" },
     { key: "priority", label: "Medium Priority", value: "medium" },
     { key: "priority", label: "Low Priority", value: "low" },
@@ -480,7 +481,11 @@ export default function PublishTable() {
 
       <PublishDirectModal open={showDirectModal} onOpenChange={setShowDirectModal} />
 
-      <CreateScheduleWizard open={showPlannedModal} onOpenChange={setShowPlannedModal} />
+      <CreateScheduleWizard 
+        open={showPlannedModal} 
+        onOpenChange={setShowPlannedModal}
+        initialType={plannedScheduleType}
+      />
     </>
   );
 }

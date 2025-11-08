@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Calendar, ArrowRight, ArrowLeft, Check, Info } from "lucide-react";
 import {
   Dialog,
@@ -22,7 +22,6 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TargetPicker from "./TargetPicker";
 import DaySequenceEditor from "./DaySequenceEditor";
-import CampaignBuilder from "./CampaignBuilder";
 import SchedulePreview from "./SchedulePreview";
 import ApprovalModal from "./ApprovalModal";
 import { usePublishStore } from "@/hooks/usePublishStore";
@@ -34,11 +33,19 @@ import { motion, AnimatePresence } from "framer-motion";
 interface CreateScheduleWizardProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  initialType?: "simple" | "daySequence";
 }
 
-export default function CreateScheduleWizard({ open, onOpenChange }: CreateScheduleWizardProps) {
+export default function CreateScheduleWizard({ open, onOpenChange, initialType = "simple" }: CreateScheduleWizardProps) {
   const [step, setStep] = useState(1);
-  const [scheduleType, setScheduleType] = useState<"simple" | "daySequence" | "campaign">("simple");
+  const [scheduleType, setScheduleType] = useState<"simple" | "daySequence">(initialType);
+
+  // Sync scheduleType with initialType when dialog opens
+  useEffect(() => {
+    if (open) {
+      setScheduleType(initialType);
+    }
+  }, [open, initialType]);
   
   // Step 1: Basic Info
   const [name, setName] = useState("");
@@ -54,11 +61,6 @@ export default function CreateScheduleWizard({ open, onOpenChange }: CreateSched
   // Step 2: Day Sequence
   const [daySequenceSlots, setDaySequenceSlots] = useState<TimeSlot[]>([]);
 
-  // Step 2: Campaign
-  const [campaignCompositions, setCampaignCompositions] = useState<string[]>([]);
-  const [rotationType, setRotationType] = useState<"sequential" | "random" | "weighted">("sequential");
-  const [weights, setWeights] = useState<Record<string, number>>({});
-
   const [showApprovalModal, setShowApprovalModal] = useState(false);
   const [pendingSchedule, setPendingSchedule] = useState<PlannedSchedule | null>(null);
 
@@ -67,7 +69,7 @@ export default function CreateScheduleWizard({ open, onOpenChange }: CreateSched
 
   const resetForm = () => {
     setStep(1);
-    setScheduleType("simple");
+    setScheduleType(initialType);
     setName("");
     setSelectedScreenIds([]);
     setStartDate("");
@@ -76,9 +78,6 @@ export default function CreateScheduleWizard({ open, onOpenChange }: CreateSched
     setPriority("medium");
     setSelectedCompositionId("");
     setDaySequenceSlots([]);
-    setCampaignCompositions([]);
-    setRotationType("sequential");
-    setWeights({});
   };
 
   const handleClose = () => {
@@ -96,14 +95,6 @@ export default function CreateScheduleWizard({ open, onOpenChange }: CreateSched
   const canProceedStep2 = () => {
     if (scheduleType === "simple") return selectedCompositionId !== "";
     if (scheduleType === "daySequence") return daySequenceSlots.length > 0;
-    if (scheduleType === "campaign") {
-      if (campaignCompositions.length < 2) return false;
-      if (rotationType === "weighted") {
-        const totalWeight = Object.values(weights).reduce((sum, w) => sum + w, 0);
-        return totalWeight === 100;
-      }
-      return true;
-    }
     return false;
   };
 
@@ -120,8 +111,6 @@ export default function CreateScheduleWizard({ open, onOpenChange }: CreateSched
       return mockCompositions.find((c) => c.id === selectedCompositionId)?.name || "";
     } else if (scheduleType === "daySequence") {
       return `${name} (Day Sequence)`;
-    } else if (scheduleType === "campaign") {
-      return `${name} (Campaign)`;
     }
     return name;
   };
@@ -151,14 +140,6 @@ export default function CreateScheduleWizard({ open, onOpenChange }: CreateSched
         name: `${name} - Day Sequence`,
         slots: daySequenceSlots,
       };
-    } else if (scheduleType === "campaign") {
-      newSchedule.campaign = {
-        id: `campaign-${Date.now()}`,
-        name: `${name} - Campaign`,
-        compositions: campaignCompositions,
-        rotationType,
-        weights: rotationType === "weighted" ? weights : undefined,
-      };
     }
 
     if (requiresApproval()) {
@@ -184,18 +165,14 @@ export default function CreateScheduleWizard({ open, onOpenChange }: CreateSched
 
   const stepTitles = [
     "Basic Information",
-    scheduleType === "simple"
-      ? "Select Content"
-      : scheduleType === "daySequence"
-      ? "Day Sequence"
-      : "Campaign Builder",
+    scheduleType === "simple" ? "Select Content" : "Day Sequence",
     "Review & Publish",
   ];
 
   return (
     <>
       <Dialog open={open} onOpenChange={handleClose}>
-        <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-[1000px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Calendar className="h-5 w-5 text-primary" />
@@ -307,14 +284,8 @@ export default function CreateScheduleWizard({ open, onOpenChange }: CreateSched
 
               {step === 2 && (
                 <div className="space-y-4">
-                  <Tabs value={scheduleType} onValueChange={(value: any) => setScheduleType(value)}>
-                    <TabsList className="grid w-full grid-cols-3">
-                      <TabsTrigger value="simple">Simple</TabsTrigger>
-                      <TabsTrigger value="daySequence">Day Sequence</TabsTrigger>
-                      <TabsTrigger value="campaign">Campaign</TabsTrigger>
-                    </TabsList>
-
-                    <TabsContent value="simple" className="space-y-4 mt-4">
+                  {scheduleType === "simple" ? (
+                    <div className="space-y-4">
                       <div>
                         <h3 className="text-sm font-semibold mb-2">Select Composition</h3>
                         <p className="text-sm text-muted-foreground mb-4">
@@ -336,23 +307,10 @@ export default function CreateScheduleWizard({ open, onOpenChange }: CreateSched
                           </SelectContent>
                         </Select>
                       </div>
-                    </TabsContent>
-
-                    <TabsContent value="daySequence" className="mt-4">
-                      <DaySequenceEditor slots={daySequenceSlots} onSlotsChange={setDaySequenceSlots} />
-                    </TabsContent>
-
-                    <TabsContent value="campaign" className="mt-4">
-                      <CampaignBuilder
-                        compositionIds={campaignCompositions}
-                        rotationType={rotationType}
-                        weights={weights}
-                        onCompositionsChange={setCampaignCompositions}
-                        onRotationTypeChange={setRotationType}
-                        onWeightsChange={setWeights}
-                      />
-                    </TabsContent>
-                  </Tabs>
+                    </div>
+                  ) : (
+                    <DaySequenceEditor slots={daySequenceSlots} onSlotsChange={setDaySequenceSlots} />
+                  )}
                 </div>
               )}
 
@@ -367,8 +325,6 @@ export default function CreateScheduleWizard({ open, onOpenChange }: CreateSched
                   scheduleType={scheduleType}
                   contentId={scheduleType === "simple" ? selectedCompositionId : undefined}
                   daySequenceSlots={scheduleType === "daySequence" ? daySequenceSlots : undefined}
-                  campaignCompositions={scheduleType === "campaign" ? campaignCompositions : undefined}
-                  rotationType={scheduleType === "campaign" ? rotationType : undefined}
                 />
               )}
             </motion.div>

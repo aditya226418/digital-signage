@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Zap, Calendar, Info } from "lucide-react";
+import { Zap, Calendar, Clock, Info } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -17,7 +17,7 @@ interface PublishModeSelectorProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSelectDirect: () => void;
-  onSelectPlanned: () => void;
+  onSelectPlanned: (type: "simple" | "daySequence") => void;
 }
 
 export default function PublishModeSelector({
@@ -34,14 +34,19 @@ export default function PublishModeSelector({
     onOpenChange(false);
   };
 
-  const handleSelectPlanned = () => {
-    onSelectPlanned();
+  const handleSelectSimple = () => {
+    onSelectPlanned("simple");
+    onOpenChange(false);
+  };
+
+  const handleSelectDaySequence = () => {
+    onSelectPlanned("daySequence");
     onOpenChange(false);
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[700px]">
+      <DialogContent className="sm:max-w-[900px]">
         <DialogHeader>
           <DialogTitle className="text-2xl">Start Publishing</DialogTitle>
           <DialogDescription>
@@ -62,7 +67,7 @@ export default function PublishModeSelector({
           </motion.div>
         )}
 
-        <div className="grid gap-4 py-4 sm:grid-cols-2">
+        <div className="grid gap-4 py-4 sm:grid-cols-3">
           {/* Direct Publishing Card */}
           <motion.div
             whileHover={{ scale: 1.02 }}
@@ -95,7 +100,7 @@ export default function PublishModeSelector({
                 </div>
 
                 <div className="space-y-2">
-                  <CardTitle className="text-xl">Now (Direct)</CardTitle>
+                  <CardTitle className="text-xl">Now (Direct- Play)</CardTitle>
                   <CardDescription className="text-sm leading-relaxed">
                     Show something immediately. Push content to screens right now with quick
                     configuration options.
@@ -133,26 +138,26 @@ export default function PublishModeSelector({
             </Card>
           </motion.div>
 
-          {/* Planned Publishing Card */}
+          {/* Simple Schedule Card */}
           <motion.div
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            onHoverStart={() => setHoveredCard("planned")}
+            onHoverStart={() => setHoveredCard("simple")}
             onHoverEnd={() => setHoveredCard(null)}
           >
             <Card
               className={`cursor-pointer transition-all duration-200 ${
-                hoveredCard === "planned"
+                hoveredCard === "simple"
                   ? "border-primary shadow-lg"
                   : "border-border/40 hover:border-primary/50"
               }`}
-              onClick={handleSelectPlanned}
+              onClick={handleSelectSimple}
             >
               <CardHeader className="space-y-4">
                 <div className="flex items-start justify-between">
                   <div
                     className={`flex h-12 w-12 items-center justify-center rounded-xl transition-colors duration-200 ${
-                      hoveredCard === "planned"
+                      hoveredCard === "simple"
                         ? "bg-primary text-primary-foreground"
                         : "bg-primary/10 text-primary"
                     }`}
@@ -165,10 +170,9 @@ export default function PublishModeSelector({
                 </div>
 
                 <div className="space-y-2">
-                  <CardTitle className="text-xl">Plan (Planned)</CardTitle>
+                  <CardTitle className="text-xl">Schedule</CardTitle>
                   <CardDescription className="text-sm leading-relaxed">
-                    Plan and automate playback. Create schedules, day sequences, and campaigns
-                    for automated content rotation.
+                    Schedule  content with start/end times. Perfect for timed campaigns and recurring content.
                   </CardDescription>
                 </div>
 
@@ -183,21 +187,90 @@ export default function PublishModeSelector({
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-primary mt-0.5">•</span>
-                      <span>Time-based content schedules</span>
+                      <span>Timed promotions</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-primary mt-0.5">•</span>
-                      <span>Multi-composition rotations</span>
+                      <span>Single content loops</span>
                     </li>
                   </ul>
                 </div>
 
                 <Button
                   className="w-full gap-2 transition-all duration-200"
-                  variant={hoveredCard === "planned" ? "default" : "outline"}
+                  variant={hoveredCard === "simple" ? "default" : "outline"}
                 >
                   <Calendar className="h-4 w-4" />
-                  Continue with Planned
+                  Continue with Schedule
+                </Button>
+              </CardHeader>
+            </Card>
+          </motion.div>
+
+          {/* Day Sequence Card */}
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onHoverStart={() => setHoveredCard("daySequence")}
+            onHoverEnd={() => setHoveredCard(null)}
+          >
+            <Card
+              className={`cursor-pointer transition-all duration-200 ${
+                hoveredCard === "daySequence"
+                  ? "border-primary shadow-lg"
+                  : "border-border/40 hover:border-primary/50"
+              }`}
+              onClick={handleSelectDaySequence}
+            >
+              <CardHeader className="space-y-4">
+                <div className="flex items-start justify-between">
+                  <div
+                    className={`flex h-12 w-12 items-center justify-center rounded-xl transition-colors duration-200 ${
+                      hoveredCard === "daySequence"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-primary/10 text-primary"
+                    }`}
+                  >
+                    <Clock className="h-6 w-6" />
+                  </div>
+                  <Badge variant="secondary" className="text-xs">
+                    Advanced
+                  </Badge>
+                </div>
+
+                <div className="space-y-2">
+                  <CardTitle className="text-xl">Day Sequence</CardTitle>
+                  <CardDescription className="text-sm leading-relaxed">
+                    Create a 24-hour timeline with different content at specific times throughout the day.
+                  </CardDescription>
+                </div>
+
+                <div className="space-y-2 pt-2">
+                  <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                    Best for:
+                  </h4>
+                  <ul className="space-y-1 text-sm text-muted-foreground">
+                    <li className="flex items-start gap-2">
+                      <span className="text-primary mt-0.5">•</span>
+                      <span>Time-based schedules</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-primary mt-0.5">•</span>
+                      <span>Daily content rotation</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-primary mt-0.5">•</span>
+                      <span>Multiple content slots</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <Button
+                  className="w-full gap-2 transition-all duration-200"
+                  variant={hoveredCard === "daySequence" ? "default" : "outline"}
+                >
+                  <Clock className="h-4 w-4" />
+                  Continue with Day Sequence
                 </Button>
               </CardHeader>
             </Card>
