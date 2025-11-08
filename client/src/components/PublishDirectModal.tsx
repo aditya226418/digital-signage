@@ -35,6 +35,7 @@ export default function PublishDirectModal({ open, onOpenChange }: PublishDirect
   const [selectedContentId, setSelectedContentId] = useState<string | null>(null);
   const [selectedContentType, setSelectedContentType] = useState<"media" | "composition" | "campaign" | null>(null);
   const [duration, setDuration] = useState("30");
+  const [playIndefinitely, setPlayIndefinitely] = useState(false);
   const [override, setOverride] = useState(false);
   const [makeDefault, setMakeDefault] = useState(false);
   const [showApprovalModal, setShowApprovalModal] = useState(false);
@@ -48,6 +49,7 @@ export default function PublishDirectModal({ open, onOpenChange }: PublishDirect
     setSelectedContentId(null);
     setSelectedContentType(null);
     setDuration("30");
+    setPlayIndefinitely(false);
     setOverride(false);
     setMakeDefault(false);
   };
@@ -59,7 +61,7 @@ export default function PublishDirectModal({ open, onOpenChange }: PublishDirect
 
   const canProceedStep1 = selectedScreenIds.length > 0;
   const canProceedStep2 = selectedContentId !== null && selectedContentType !== null;
-  const canPublish = duration && parseInt(duration) > 0;
+  const canPublish = playIndefinitely || (duration && parseInt(duration) > 0);
 
   const getContentName = () => {
     if (!selectedContentId || !selectedContentType) return "";
@@ -85,6 +87,8 @@ export default function PublishDirectModal({ open, onOpenChange }: PublishDirect
   const handlePublish = () => {
     if (!selectedContentId || !selectedContentType) return;
 
+    const actualDuration = playIndefinitely ? -1 : parseInt(duration);
+    
     const newPublish: DirectPublish = {
       id: `quick-${Date.now()}`,
       name: `Direct: ${getContentName()}`,
@@ -95,8 +99,8 @@ export default function PublishDirectModal({ open, onOpenChange }: PublishDirect
       screenNames: getScreenNames(),
       status: "active",
       startTime: new Date().toISOString(),
-      duration: parseInt(duration),
-      remainingTime: parseInt(duration),
+      duration: actualDuration,
+      remainingTime: actualDuration,
       override,
       isDefault: makeDefault,
       publishedBy: "Current User",
@@ -203,8 +207,26 @@ export default function PublishDirectModal({ open, onOpenChange }: PublishDirect
                   </div>
 
                   <div className="space-y-4 rounded-lg border border-border/40 bg-muted/20 p-4">
+                    <div className="flex items-start space-x-3">
+                      <Checkbox
+                        id="playIndefinitely"
+                        checked={playIndefinitely}
+                        onCheckedChange={(checked) => setPlayIndefinitely(checked as boolean)}
+                      />
+                      <div className="space-y-1 leading-none">
+                        <Label htmlFor="playIndefinitely" className="cursor-pointer font-medium">
+                          Play indefinitely
+                        </Label>
+                        <p className="text-xs text-muted-foreground">
+                          Content will continue playing until manually stopped
+                        </p>
+                      </div>
+                    </div>
+
                     <div className="space-y-2">
-                      <Label htmlFor="duration">Duration (minutes)</Label>
+                      <Label htmlFor="duration" className={playIndefinitely ? "text-muted-foreground" : ""}>
+                        Duration (minutes)
+                      </Label>
                       <Input
                         id="duration"
                         type="number"
@@ -212,6 +234,7 @@ export default function PublishDirectModal({ open, onOpenChange }: PublishDirect
                         value={duration}
                         onChange={(e) => setDuration(e.target.value)}
                         placeholder="Enter duration in minutes"
+                        disabled={playIndefinitely}
                       />
                       <p className="text-xs text-muted-foreground">
                         How long should this content play before reverting
@@ -264,11 +287,14 @@ export default function PublishDirectModal({ open, onOpenChange }: PublishDirect
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Duration:</span>
-                        <span className="font-medium">{duration} minutes</span>
+                        <span className="font-medium">
+                          {playIndefinitely ? "Indefinite" : `${duration} minutes`}
+                        </span>
                       </div>
                       <div className="flex gap-2 pt-2 flex-wrap">
                         {override && <Badge variant="secondary">Override</Badge>}
                         {makeDefault && <Badge variant="secondary">Make Default</Badge>}
+                        {playIndefinitely && <Badge variant="secondary">Indefinite</Badge>}
                       </div>
                     </div>
                   </div>
