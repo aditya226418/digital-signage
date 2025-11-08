@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -55,8 +56,9 @@ export default function CreateScheduleWizard({ open, onOpenChange, initialType =
   const [recurrence, setRecurrence] = useState<"once" | "daily" | "weekly" | "monthly">("daily");
   const [priority, setPriority] = useState<"high" | "medium" | "low">("medium");
 
-  // Step 2: Simple composition
-  const [selectedCompositionId, setSelectedCompositionId] = useState("");
+  // Step 2: Simple composition (single or playlist)
+  const [selectedCompositionIds, setSelectedCompositionIds] = useState<string[]>([]);
+  const [isPlaylistMode, setIsPlaylistMode] = useState(false);
 
   // Step 2: Day Sequence
   const [daySequenceSlots, setDaySequenceSlots] = useState<TimeSlot[]>([]);
@@ -76,7 +78,8 @@ export default function CreateScheduleWizard({ open, onOpenChange, initialType =
     setEndDate("");
     setRecurrence("daily");
     setPriority("medium");
-    setSelectedCompositionId("");
+    setSelectedCompositionIds([]);
+    setIsPlaylistMode(false);
     setDaySequenceSlots([]);
   };
 
@@ -93,7 +96,7 @@ export default function CreateScheduleWizard({ open, onOpenChange, initialType =
     new Date(startDate) < new Date(endDate);
 
   const canProceedStep2 = () => {
-    if (scheduleType === "simple") return selectedCompositionId !== "";
+    if (scheduleType === "simple") return selectedCompositionIds.length > 0;
     if (scheduleType === "daySequence") return daySequenceSlots.length > 0;
     return false;
   };
@@ -108,7 +111,12 @@ export default function CreateScheduleWizard({ open, onOpenChange, initialType =
 
   const getContentName = () => {
     if (scheduleType === "simple") {
-      return mockCompositions.find((c) => c.id === selectedCompositionId)?.name || "";
+      if (selectedCompositionIds.length === 1) {
+        return mockCompositions.find((c) => c.id === selectedCompositionIds[0])?.name || "";
+      } else if (selectedCompositionIds.length > 1) {
+        return `${name} (Playlist - ${selectedCompositionIds.length} items)`;
+      }
+      return "";
     } else if (scheduleType === "daySequence") {
       return `${name} (Day Sequence)`;
     }
@@ -127,13 +135,20 @@ export default function CreateScheduleWizard({ open, onOpenChange, initialType =
       endDate,
       recurrence,
       priority,
-      contentId: scheduleType === "simple" ? selectedCompositionId : `${scheduleType}-${Date.now()}`,
+      contentId: scheduleType === "simple" 
+        ? (selectedCompositionIds.length > 0 ? selectedCompositionIds[0] : "") 
+        : `${scheduleType}-${Date.now()}`,
       contentName: getContentName(),
       createdBy: "Current User",
       createdAt: new Date().toISOString(),
     };
 
     // Add type-specific data
+    if (scheduleType === "simple" && selectedCompositionIds.length > 1) {
+      // Store all composition IDs for playlist mode
+      (newSchedule as any).contentIds = selectedCompositionIds;
+    }
+    
     if (scheduleType === "daySequence") {
       newSchedule.daySequence = {
         id: `dayseq-${Date.now()}`,
@@ -287,25 +302,142 @@ export default function CreateScheduleWizard({ open, onOpenChange, initialType =
                   {scheduleType === "simple" ? (
                     <div className="space-y-4">
                       <div>
-                        <h3 className="text-sm font-semibold mb-2">Select Composition</h3>
+                        <h3 className="text-sm font-semibold mb-2">Select Content</h3>
                         <p className="text-sm text-muted-foreground mb-4">
-                          Choose a single composition to play during the schedule
+                          Choose one or more compositions to play during the schedule
                         </p>
                       </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="composition">Composition *</Label>
-                        <Select value={selectedCompositionId} onValueChange={setSelectedCompositionId}>
-                          <SelectTrigger id="composition">
-                            <SelectValue placeholder="Select a composition" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {mockCompositions.map((comp) => (
-                              <SelectItem key={comp.id} value={comp.id}>
-                                {comp.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+
+                      <Tabs value={isPlaylistMode ? "playlist" : "single"} onValueChange={(v) => {
+                        setIsPlaylistMode(v === "playlist");
+                        setSelectedCompositionIds([]);
+                      }}>
+                        <TabsList className="grid w-full grid-cols-2">
+                          <TabsTrigger value="single">Single Composition</TabsTrigger>
+                          <TabsTrigger value="playlist">Playlist</TabsTrigger>
+                        </TabsList>
+
+                        <TabsContent value="single" className="space-y-4 mt-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="composition">Composition *</Label>
+                            <Select 
+                              value={selectedCompositionIds[0] || ""} 
+                              onValueChange={(value) => setSelectedCompositionIds([value])}
+                            >
+                              <SelectTrigger id="composition">
+                                <SelectValue placeholder="Select a composition" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {mockCompositions.map((comp) => (
+                                  <SelectItem key={comp.id} value={comp.id}>
+                                    {comp.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <p className="text-xs text-muted-foreground">
+                              The selected composition will loop during the scheduled time window.
+                            </p>
+                          </div>
+                        </TabsContent>
+
+                        <TabsContent value="playlist" className="space-y-4 mt-4">
+                          <div className="space-y-2">
+                            <Label>Select Compositions *</Label>
+                            <div className="border rounded-lg p-4 space-y-2 max-h-[400px] overflow-y-auto">
+                              {mockCompositions.map((comp) => {
+                                const isSelected = selectedCompositionIds.includes(comp.id);
+                                const position = selectedCompositionIds.indexOf(comp.id);
+                                
+                                return (
+                                  <div
+                                    key={comp.id}
+                                    className={`flex items-center justify-between p-3 rounded-lg border transition-all cursor-pointer hover:bg-accent ${
+                                      isSelected ? "border-primary bg-primary/5" : "border-border"
+                                    }`}
+                                    onClick={() => {
+                                      if (isSelected) {
+                                        setSelectedCompositionIds(selectedCompositionIds.filter((id) => id !== comp.id));
+                                      } else {
+                                        setSelectedCompositionIds([...selectedCompositionIds, comp.id]);
+                                      }
+                                    }}
+                                  >
+                                    <div className="flex items-center gap-3">
+                                      <input
+                                        type="checkbox"
+                                        checked={isSelected}
+                                        onChange={() => {}}
+                                        className="h-4 w-4"
+                                      />
+                                      <div>
+                                        <p className="font-medium text-sm">{comp.name}</p>
+                                        <p className="text-xs text-muted-foreground">
+                                          {comp.type} • Duration: {comp.duration}s
+                                        </p>
+                                      </div>
+                                    </div>
+                                    {isSelected && (
+                                      <Badge variant="secondary">
+                                        #{position + 1}
+                                      </Badge>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                              Selected compositions will play in order as a playlist, then loop.
+                              {selectedCompositionIds.length > 0 && ` (${selectedCompositionIds.length} selected)`}
+                            </p>
+                          </div>
+
+                          {selectedCompositionIds.length > 0 && (
+                            <div className="space-y-2">
+                              <Label>Playlist Order</Label>
+                              <div className="border rounded-lg p-3 space-y-2">
+                                {selectedCompositionIds.map((id, index) => {
+                                  const comp = mockCompositions.find((c) => c.id === id);
+                                  if (!comp) return null;
+                                  
+                                  return (
+                                    <div
+                                      key={id}
+                                      className="flex items-center gap-3 p-2 bg-accent rounded-lg"
+                                    >
+                                      <span className="text-sm font-semibold text-muted-foreground w-6">
+                                        {index + 1}.
+                                      </span>
+                                      <span className="text-sm flex-1">{comp.name}</span>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setSelectedCompositionIds(selectedCompositionIds.filter((cid) => cid !== id));
+                                        }}
+                                      >
+                                        Remove
+                                      </Button>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
+                        </TabsContent>
+                      </Tabs>
+
+                      <div className="flex items-start gap-2 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/30 p-3">
+                        <Info className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
+                        <div className="text-xs text-blue-900 dark:text-blue-100">
+                          <p className="font-semibold mb-1">How scheduling works:</p>
+                          <ul className="space-y-1 list-disc list-inside">
+                            <li><strong>Recurrence "Once":</strong> Content plays from start time until end time (or completion)</li>
+                            <li><strong>Recurrence "Daily":</strong> Content plays every day at the start time within the date range</li>
+                            <li><strong>Recurrence "Weekly/Monthly":</strong> Content plays at the same time on the specified interval</li>
+                          </ul>
+                        </div>
                       </div>
                     </div>
                   ) : (
@@ -323,7 +455,8 @@ export default function CreateScheduleWizard({ open, onOpenChange, initialType =
                   recurrence={recurrence}
                   priority={priority}
                   scheduleType={scheduleType}
-                  contentId={scheduleType === "simple" ? selectedCompositionId : undefined}
+                  contentId={scheduleType === "simple" && selectedCompositionIds.length === 1 ? selectedCompositionIds[0] : undefined}
+                  contentIds={scheduleType === "simple" && selectedCompositionIds.length > 1 ? selectedCompositionIds : undefined}
                   daySequenceSlots={scheduleType === "daySequence" ? daySequenceSlots : undefined}
                 />
               )}

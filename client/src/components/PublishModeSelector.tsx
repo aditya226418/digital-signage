@@ -172,7 +172,7 @@ export default function PublishModeSelector({
                 <div className="space-y-2">
                   <CardTitle className="text-xl">Schedule</CardTitle>
                   <CardDescription className="text-sm leading-relaxed">
-                    Schedule  content with start/end times. Perfect for timed campaigns and recurring content.
+                    Schedule single or multiple compositions with start/end times and recurrence. 
                   </CardDescription>
                 </div>
 
@@ -183,15 +183,15 @@ export default function PublishModeSelector({
                   <ul className="space-y-1 text-sm text-muted-foreground">
                     <li className="flex items-start gap-2">
                       <span className="text-primary mt-0.5">•</span>
-                      <span>Recurring campaigns</span>
+                      <span>One-time future events</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-primary mt-0.5">•</span>
-                      <span>Timed promotions</span>
+                      <span>Daily/weekly/monthly campaigns</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-primary mt-0.5">•</span>
-                      <span>Single content loops</span>
+                      <span>Single or playlist content</span>
                     </li>
                   </ul>
                 </div>

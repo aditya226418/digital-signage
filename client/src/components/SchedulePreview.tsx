@@ -13,6 +13,7 @@ interface SchedulePreviewProps {
   priority: "high" | "medium" | "low";
   scheduleType: "simple" | "daySequence";
   contentId?: string;
+  contentIds?: string[]; // For playlist mode
   daySequenceSlots?: TimeSlot[];
 }
 
@@ -25,6 +26,7 @@ export default function SchedulePreview({
   priority,
   scheduleType,
   contentId,
+  contentIds,
   daySequenceSlots = [],
 }: SchedulePreviewProps) {
   const getScreenNames = () => {
@@ -154,12 +156,43 @@ export default function SchedulePreview({
               </Badge>
             </div>
 
-            {scheduleType === "simple" && contentId && (
+            {scheduleType === "simple" && contentId && !contentIds && (
               <>
                 <Separator />
                 <div className="flex justify-between items-start">
                   <span className="text-sm text-muted-foreground">Composition:</span>
                   <span className="text-sm font-medium text-right">{getContentName()}</span>
+                </div>
+              </>
+            )}
+
+            {scheduleType === "simple" && contentIds && contentIds.length > 0 && (
+              <>
+                <Separator />
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Mode:</span>
+                    <Badge variant="outline" className="bg-primary/5">
+                      Playlist ({contentIds.length} items)
+                    </Badge>
+                  </div>
+                  <div className="space-y-1 mt-2">
+                    <span className="text-sm font-medium">Playlist Order:</span>
+                    <div className="space-y-1 pl-4 mt-1">
+                      {contentIds.map((id, index) => {
+                        const comp = mockCompositions.find((c) => c.id === id);
+                        return (
+                          <div
+                            key={id}
+                            className="text-xs text-muted-foreground flex items-center gap-2"
+                          >
+                            <span className="font-semibold">{index + 1}.</span>
+                            <span>{comp?.name || "Unknown"}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
               </>
             )}
