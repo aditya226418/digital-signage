@@ -92,19 +92,19 @@ export default function OnboardingBooking() {
           <div className="p-4 space-y-3">
             {/* Icon and Title Row */}
             <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-sm">
-                <CalendarCheck className="h-5 w-5" />
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-sm">
+                <CalendarCheck className="h-4 w-4" />
               </div>
               <div className="flex-1 min-w-0">
                 <h3 className="text-sm font-semibold text-foreground leading-tight">
-                  Need help? Book your 1:1 session
+                  Get started with a free 1:1 session
                 </h3>
               </div>
             </div>
 
             {/* Description */}
             <p className="text-xs text-muted-foreground leading-relaxed pl-0.5">
-              Choose a convenient time to get started with Pickcel.
+              30-minute personalized onboarding with our team.
             </p>
 
             {/* CTA Button */}
