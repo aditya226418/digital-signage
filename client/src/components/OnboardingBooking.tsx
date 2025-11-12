@@ -119,21 +119,7 @@ export default function OnboardingBooking() {
         </Card>
       </motion.div>
 
-      {/* Icon Button for Collapsed Sidebar */}
-      <motion.div
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.3 }}
-        className="hidden group-data-[collapsible=icon]:flex justify-center"
-      >
-        <Button
-          size="icon"
-          className="h-10 w-10 bg-gradient-to-br from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-sm hover:shadow-md transition-all"
-          onClick={() => setIsModalOpen(true)}
-        >
-          <CalendarCheck className="h-5 w-5" />
-        </Button>
-      </motion.div>
+    
 
       {/* Booking Modal */}
       <Dialog open={isModalOpen} onOpenChange={handleCloseModal}>
