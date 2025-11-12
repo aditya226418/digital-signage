@@ -37,6 +37,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { useLocation } from "wouter";
+import OnboardingBooking from "./OnboardingBooking";
 
 interface Screen {
   id: string;
@@ -194,6 +195,9 @@ export default function EngagedDashboard({
         </SidebarContent>
 
         <SidebarFooter className="border-t border-border/40 bg-gradient-to-t from-primary/5 to-transparent shrink-0">
+          <div className="px-3 py-3">
+            <OnboardingBooking />
+          </div>
           <div className="px-3 py-2 group-data-[collapsible=icon]:hidden">
             <p className="text-xs text-muted-foreground">
               © 2025 Pickel
