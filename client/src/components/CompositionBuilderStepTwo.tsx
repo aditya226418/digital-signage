@@ -596,8 +596,8 @@ function MediaPickerPopover({
       </PopoverTrigger>
       <PopoverContent 
         className="w-[700px] p-0" 
-        align="end" 
-        side="left"
+        align="start" 
+        side="bottom"
         sideOffset={10}
       >
         <div className="p-3 border-b bg-neutral-50">
@@ -879,10 +879,10 @@ export default function CompositionBuilderStepTwo({
           </div>
         </div>
 
-        {/* Side-by-side layout: Zone Selector (70%) + Filmstrip (30%) */}
+        {/* Side-by-side layout: Zone Selector (40%) + Filmstrip (60%) */}
         <div className="flex gap-3">
-          {/* Left: Mock Screen with Zones - 70% */}
-          <div className="flex-[0_0_70%]">
+          {/* Left: Mock Screen with Zones - 40% */}
+          <div className="flex-[0_0_40%]">
             <div className="bg-gradient-to-br from-neutral-50 to-white rounded-lg shadow-sm border border-neutral-200 p-2.5">
               <div className="mb-2 flex items-center justify-between">
                 <div className="text-[10px] font-semibold text-neutral-600">
@@ -909,7 +909,7 @@ export default function CompositionBuilderStepTwo({
             </div>
           </div>
 
-          {/* Right: Vertical Filmstrip - 30% */}
+          {/* Right: Vertical Filmstrip - 60% */}
           <AnimatePresence mode="wait">
             {activeZone && (
               <motion.div
@@ -917,7 +917,7 @@ export default function CompositionBuilderStepTwo({
                 initial={{ opacity: 0, x: 10 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 10 }}
-                className="flex-[0_0_30%] bg-white rounded-lg shadow-sm border border-neutral-200 p-2.5 flex flex-col min-h-[500px]"
+                className="flex-[0_0_60%] bg-white rounded-lg shadow-sm border border-neutral-200 p-2.5 flex flex-col min-h-[500px]"
               >
                 {/* Filmstrip Header */}
                 <div className="flex-shrink-0 mb-2 pb-2 border-b border-neutral-200">
