@@ -1,0 +1,83 @@
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                    FULL-SCREEN MODAL LAYOUT STRUCTURE                          ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│ HEADER (Border Bottom)                                                          │
+│ Title + Description                                                             │
+└─────────────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────┬────────────────────────────────────────────────────────────────┐
+│  LEFT SIDEBAR    │  MAIN CONTENT AREA                                             │
+│  (w-64)          │  (Flexible, grows to fill)                                     │
+├──────────────────┤────────────────────────────────────────────────────────────────┤
+│                  │                                                                │
+│  PROGRESS        │  STEP 1 / 2 / 3                                               │
+│  ─────────────   │  ────────────────────────────────────────────────────────────  │
+│  [✓] Step 1      │  Dynamic content based on current step                        │
+│  [●] Step 2      │  • Animated transitions between steps                         │
+│  [ ] Step 3      │  • Content scales to available space                          │
+│                  │                                                                │
+│  SUMMARY CARD    │  STEP 1 (CreateScheduleWizard Example):                      │
+│  ─────────────   │  ┌────────────┬────────────┬────────────┐                    │
+│  Name: [value]   │  │ Basic Info │ Dates      │ Screens    │                    │
+│  Screens: 5      │  │ • Name     │ • Start    │ • Screen   │                    │
+│  Recurrence:     │  │ • Schedule │ • End      │   Picker   │                    │
+│  Daily           │  │ • Priority │            │            │                    │
+│                  │  └────────────┴────────────┴────────────┘                    │
+│                  │                                                                │
+│                  │  STEP 3 (PublishDirectModal Example):                        │
+│                  │  ┌────────────────────┬────────────────────┐                 │
+│                  │  │ Playback Settings  │ Behavior Options   │                 │
+│                  │  │ • Play Indefinitely│ • Override Content │                 │
+│                  │  │ • Duration         │ • Make Default     │                 │
+│                  │  └────────────────────┴────────────────────┘                 │
+│                  │  ┌────────────────────────────────────────┐                  │
+│                  │  │ Summary (spanning full width)          │                  │
+│                  │  └────────────────────────────────────────┘                  │
+│                  │                                                                │
+└──────────────────┴────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│ FOOTER (Border Top)                                                             │
+│ [Back] [Next] or [Submit for Approval]                                         │
+└─────────────────────────────────────────────────────────────────────────────────┘
+
+
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                          STEP INDICATOR STATES                                  ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+Completed Steps:     [✓] Green circle with checkmark (opacity-60)
+Current Step:        [●] Primary color circle with step number
+Future Steps:        [ ] Muted circle with step number (opacity-40)
+
+Users can click on completed steps to navigate backward.
+
+
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                      RESPONSIVE OVERFLOW HANDLING                              ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+Sidebar:          overflow-y-auto (scrolls vertically if needed)
+Main Content:     overflow-y-auto (scrolls vertically if needed)
+Container:        overflow-hidden (prevents outer scroll)
+
+This ensures both areas scroll independently without creating nested scrollbars.
+
+
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                            KEY ADVANTAGES                                       ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+✅ Full-screen utilization for modern widescreen displays
+✅ Progress sidebar always visible and accessible
+✅ Summary information displayed without scrolling
+✅ Multi-column layouts reduce form length
+✅ Better organized content sections
+✅ Smooth step transitions with animations
+✅ Backward navigation support through sidebar
+✅ Professional, modern UI appearance
+✅ Improved visual hierarchy
+✅ Efficient use of horizontal space
+
