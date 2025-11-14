@@ -53,8 +53,12 @@ export interface TimeSlot {
   id: string;
   startTime: string; // HH:MM format
   endTime: string; // HH:MM format
-  compositionId: string;
-  compositionName: string;
+  contentType: "media" | "composition";
+  contentId: string;
+  contentName: string;
+  // Legacy fields for backward compatibility
+  compositionId?: string;
+  compositionName?: string;
 }
 
 export interface DaySequence {
