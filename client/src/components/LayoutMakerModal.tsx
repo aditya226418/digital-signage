@@ -20,8 +20,12 @@ import {
   Layers,
   Move,
   Sparkles,
+  Copy,
+  ChevronLeft,
+  ChevronRight,
+  FileText,
 } from "lucide-react";
-import { LayoutTemplate, LayoutZone } from "@/lib/mockCompositionData";
+import { LayoutTemplate, LayoutZone, LayoutSlide } from "@/lib/mockCompositionData";
 
 interface LayoutMakerModalProps {
   isOpen: boolean;
@@ -32,40 +36,127 @@ interface LayoutMakerModalProps {
 export default function LayoutMakerModal({ isOpen, onClose, onSave }: LayoutMakerModalProps) {
   const [layoutName, setLayoutName] = useState("Custom Layout");
   const [layoutDescription, setLayoutDescription] = useState("My custom layout");
-  const [zones, setZones] = useState<LayoutZone[]>([]);
+  const [slides, setSlides] = useState<LayoutSlide[]>([
+    {
+      id: `slide-${Date.now()}`,
+      name: "Slide 1",
+      zones: [],
+    },
+  ]);
+  const [activeSlideId, setActiveSlideId] = useState<string | null>(null);
   const [activeZoneId, setActiveZoneId] = useState<string | null>(null);
   const [isResizing, setIsResizing] = useState(false);
   const [resizeHandle, setResizeHandle] = useState<string | null>(null);
   const [isHoveringHandle, setIsHoveringHandle] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Initialize activeSlideId on mount
+  useEffect(() => {
+    if (slides.length > 0 && !activeSlideId) {
+      setActiveSlideId(slides[0].id);
+    }
+  }, [slides, activeSlideId]);
+
+  // Get active slide
+  const activeSlide = slides.find(s => s.id === activeSlideId) || slides[0];
+  
+  // Zones are derived from active slide
+  const zones = activeSlide?.zones || [];
+  
+  // Update zones - sync back to active slide
+  const updateZones = useCallback((newZones: LayoutZone[]) => {
+    if (!activeSlideId) return;
+    setSlides(prevSlides =>
+      prevSlides.map(slide =>
+        slide.id === activeSlideId ? { ...slide, zones: newZones } : slide
+      )
+    );
+  }, [activeSlideId]);
+
+  // Slide management functions
+  const addSlide = () => {
+    const newSlideNumber = slides.length + 1;
+    const newSlide: LayoutSlide = {
+      id: `slide-${Date.now()}`,
+      name: `Slide ${newSlideNumber}`,
+      zones: [],
+    };
+    setSlides([...slides, newSlide]);
+    setActiveSlideId(newSlide.id);
+    setActiveZoneId(null);
+  };
+
+  const deleteSlide = (slideId: string) => {
+    if (slides.length <= 1) return; // Must have at least one slide
+    const newSlides = slides.filter(s => s.id !== slideId);
+    setSlides(newSlides);
+    if (activeSlideId === slideId) {
+      // Switch to first slide if deleting active one
+      setActiveSlideId(newSlides[0]?.id || null);
+      setActiveZoneId(null);
+    }
+  };
+
+  const duplicateSlide = (slideId: string) => {
+    const slideToDuplicate = slides.find(s => s.id === slideId);
+    if (!slideToDuplicate) return;
+    
+    const newSlide: LayoutSlide = {
+      id: `slide-${Date.now()}`,
+      name: `${slideToDuplicate.name} (Copy)`,
+      zones: slideToDuplicate.zones.map(zone => ({
+        ...zone,
+        id: `zone-${Date.now()}-${Math.random()}`,
+      })),
+    };
+    
+    const slideIndex = slides.findIndex(s => s.id === slideId);
+    const newSlides = [...slides];
+    newSlides.splice(slideIndex + 1, 0, newSlide);
+    setSlides(newSlides);
+    setActiveSlideId(newSlide.id);
+    setActiveZoneId(null);
+  };
+
+  const setActiveSlide = (slideId: string) => {
+    setActiveSlideId(slideId);
+    setActiveZoneId(null); // Reset active zone when switching slides
+  };
+
+  const updateSlideName = (slideId: string, name: string) => {
+    setSlides(prevSlides =>
+      prevSlides.map(slide =>
+        slide.id === slideId ? { ...slide, name } : slide
+      )
+    );
+  };
+
   const addZone = () => {
     const newZoneNumber = zones.length + 1;
     const newZone: LayoutZone = {
-      id: `custom-zone-${Date.now()}`,
+      id: `slide-${activeSlideId}-zone-${Date.now()}`,
       name: `Zone ${newZoneNumber}`,
       x: 10 + (newZoneNumber * 5) % 40,
       y: 10 + (newZoneNumber * 5) % 40,
       width: 40,
       height: 40,
     };
-    setZones([...zones, newZone]);
+    updateZones([...zones, newZone]);
   };
 
   const deleteZone = (zoneId: string) => {
-    setZones(zones.filter(z => z.id !== zoneId));
+    updateZones(zones.filter(z => z.id !== zoneId));
     if (activeZoneId === zoneId) {
       setActiveZoneId(null);
     }
   };
 
   const handleZoneResize = useCallback((zoneId: string, updates: Partial<LayoutZone>) => {
-    setZones(prevZones =>
-      prevZones.map(z =>
-        z.id === zoneId ? { ...z, ...updates } : z
-      )
+    const newZones = zones.map(z =>
+      z.id === zoneId ? { ...z, ...updates } : z
     );
-  }, []);
+    updateZones(newZones);
+  }, [zones, updateZones]);
 
   const handleResizeStart = useCallback((e: React.MouseEvent, handle: string, zoneId: string) => {
     e.stopPropagation();
@@ -137,7 +228,7 @@ export default function LayoutMakerModal({ isOpen, onClose, onSave }: LayoutMake
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [isResizing, resizeHandle, activeZoneId, zones, handleZoneResize]);
+  }, [isResizing, resizeHandle, activeZoneId, zones, handleZoneResize, activeSlideId]);
 
   const addQuickLayout = (type: 'vertical' | 'horizontal' | 'grid2x2' | 'grid3x3') => {
     let newZones: LayoutZone[] = [];
@@ -145,22 +236,22 @@ export default function LayoutMakerModal({ isOpen, onClose, onSave }: LayoutMake
     switch (type) {
       case 'vertical':
         newZones = [
-          { id: 'zone-1', name: 'Left Panel', x: 0, y: 0, width: 50, height: 100 },
-          { id: 'zone-2', name: 'Right Panel', x: 50, y: 0, width: 50, height: 100 },
+          { id: `slide-${activeSlideId}-zone-${Date.now()}-1`, name: 'Left Panel', x: 0, y: 0, width: 50, height: 100 },
+          { id: `slide-${activeSlideId}-zone-${Date.now()}-2`, name: 'Right Panel', x: 50, y: 0, width: 50, height: 100 },
         ];
         break;
       case 'horizontal':
         newZones = [
-          { id: 'zone-1', name: 'Top Panel', x: 0, y: 0, width: 100, height: 50 },
-          { id: 'zone-2', name: 'Bottom Panel', x: 0, y: 50, width: 100, height: 50 },
+          { id: `slide-${activeSlideId}-zone-${Date.now()}-1`, name: 'Top Panel', x: 0, y: 0, width: 100, height: 50 },
+          { id: `slide-${activeSlideId}-zone-${Date.now()}-2`, name: 'Bottom Panel', x: 0, y: 50, width: 100, height: 50 },
         ];
         break;
       case 'grid2x2':
         newZones = [
-          { id: 'zone-1', name: 'Top Left', x: 0, y: 0, width: 50, height: 50 },
-          { id: 'zone-2', name: 'Top Right', x: 50, y: 0, width: 50, height: 50 },
-          { id: 'zone-3', name: 'Bottom Left', x: 0, y: 50, width: 50, height: 50 },
-          { id: 'zone-4', name: 'Bottom Right', x: 50, y: 50, width: 50, height: 50 },
+          { id: `slide-${activeSlideId}-zone-${Date.now()}-1`, name: 'Top Left', x: 0, y: 0, width: 50, height: 50 },
+          { id: `slide-${activeSlideId}-zone-${Date.now()}-2`, name: 'Top Right', x: 50, y: 0, width: 50, height: 50 },
+          { id: `slide-${activeSlideId}-zone-${Date.now()}-3`, name: 'Bottom Left', x: 0, y: 50, width: 50, height: 50 },
+          { id: `slide-${activeSlideId}-zone-${Date.now()}-4`, name: 'Bottom Right', x: 50, y: 50, width: 50, height: 50 },
         ];
         break;
       case 'grid3x3':
@@ -168,7 +259,7 @@ export default function LayoutMakerModal({ isOpen, onClose, onSave }: LayoutMake
         for (let row = 0; row < 3; row++) {
           for (let col = 0; col < 3; col++) {
             newZones.push({
-              id: `zone-${row * 3 + col + 1}`,
+              id: `slide-${activeSlideId}-zone-${Date.now()}-${row * 3 + col + 1}`,
               name: `Zone ${row * 3 + col + 1}`,
               x: col * 33.33,
               y: row * 33.33,
@@ -180,31 +271,53 @@ export default function LayoutMakerModal({ isOpen, onClose, onSave }: LayoutMake
         break;
     }
 
-    setZones(newZones);
+    updateZones(newZones);
     setActiveZoneId(null);
   };
 
   const handleSave = () => {
+    // Validate that all slides have at least one zone
+    const hasEmptySlides = slides.some(slide => slide.zones.length === 0);
+    if (hasEmptySlides) {
+      // Could show an error message here
+      return;
+    }
+
     const customLayout: LayoutTemplate = {
       id: `custom-${Date.now()}`,
       name: layoutName,
       description: layoutDescription,
-      zones: zones.map((zone, index) => ({
-        ...zone,
-        name: zone.name || `Zone ${index + 1}`,
-      })),
       resolution: "1920x1080",
       type: "multi-zone",
+      // If only one slide, save as backward-compatible format (zones directly)
+      // If multiple slides, save with slides array
+      ...(slides.length === 1
+        ? {
+            zones: slides[0].zones.map((zone, index) => ({
+              ...zone,
+              name: zone.name || `Zone ${index + 1}`,
+            })),
+          }
+        : {
+            zones: [], // Empty for backward compatibility
+            slides: slides.map(slide => ({
+              ...slide,
+              zones: slide.zones.map((zone, index) => ({
+                ...zone,
+                name: zone.name || `Zone ${index + 1}`,
+              })),
+            })),
+          }),
     };
     onSave(customLayout);
     onClose();
   };
 
-  const isOverlapping = () => {
-    for (let i = 0; i < zones.length; i++) {
-      for (let j = i + 1; j < zones.length; j++) {
-        const z1 = zones[i];
-        const z2 = zones[j];
+  const isOverlapping = (zonesToCheck: LayoutZone[]) => {
+    for (let i = 0; i < zonesToCheck.length; i++) {
+      for (let j = i + 1; j < zonesToCheck.length; j++) {
+        const z1 = zonesToCheck[i];
+        const z2 = zonesToCheck[j];
         if (!(z1.x + z1.width <= z2.x || z2.x + z2.width <= z1.x ||
               z1.y + z1.height <= z2.y || z2.y + z2.height <= z1.y)) {
           return true;
@@ -214,7 +327,7 @@ export default function LayoutMakerModal({ isOpen, onClose, onSave }: LayoutMake
     return false;
   };
 
-  const hasOverlap = isOverlapping();
+  const hasOverlap = isOverlapping(zones);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -230,10 +343,92 @@ export default function LayoutMakerModal({ isOpen, onClose, onSave }: LayoutMake
           {/* Left Panel - Controls */}
           <div className="w-80 border-r bg-neutral-50/50 flex flex-col">
             <ScrollArea className="flex-1 p-4">
+              {/* Slides Section */}
+              <div className="mb-6">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-semibold flex items-center gap-2">
+                    <Layers className="h-4 w-4" />
+                    Slides ({slides.length})
+                  </h3>
+                  <Button
+                    onClick={addSlide}
+                    size="sm"
+                    className="h-6 px-2 text-[10px] gap-1"
+                  >
+                    <Plus className="h-3 w-3" />
+                    Add
+                  </Button>
+                </div>
+                <div className="space-y-2">
+                  {slides.map((slide, index) => (
+                    <div
+                      key={slide.id}
+                      className={`p-2.5 rounded-lg border-2 transition-all ${
+                        activeSlideId === slide.id
+                          ? 'border-primary bg-primary/5'
+                          : 'border-neutral-200 bg-white hover:border-primary/50'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2 flex-1">
+                          <div className={`w-5 h-5 rounded text-[10px] font-bold flex items-center justify-center ${
+                            activeSlideId === slide.id
+                              ? 'bg-primary text-white'
+                              : 'bg-neutral-200 text-neutral-600'
+                          }`}>
+                            {index + 1}
+                          </div>
+                          <Input
+                            value={slide.name}
+                            onChange={(e) => updateSlideName(slide.id, e.target.value)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setActiveSlide(slide.id);
+                            }}
+                            className="h-6 text-[11px] font-semibold px-2 flex-1"
+                          />
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              duplicateSlide(slide.id);
+                            }}
+                            variant="ghost"
+                            size="sm"
+                            className="h-6 w-6 p-0 text-neutral-600 hover:text-primary hover:bg-primary/10"
+                            title="Duplicate slide"
+                          >
+                            <Copy className="h-3 w-3" />
+                          </Button>
+                          {slides.length > 1 && (
+                            <Button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteSlide(slide.id);
+                              }}
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                              title="Delete slide"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                      <div className="text-[10px] text-neutral-600">
+                        {slide.zones.length} {slide.zones.length === 1 ? 'zone' : 'zones'}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
               {/* Layout Info */}
               <div className="mb-6">
                 <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
-                  <Layers className="h-4 w-4" />
+                  <FileText className="h-4 w-4" />
                   Layout Info
                 </h3>
                 <div className="space-y-3">
@@ -351,9 +546,10 @@ export default function LayoutMakerModal({ isOpen, onClose, onSave }: LayoutMake
                           <Input
                             value={zone.name}
                             onChange={(e) => {
-                              setZones(zones.map(z =>
+                              const newZones = zones.map(z =>
                                 z.id === zone.id ? { ...z, name: e.target.value } : z
-                              ));
+                              );
+                              updateZones(newZones);
                             }}
                             onClick={(e) => e.stopPropagation()}
                             className="h-6 text-[11px] font-semibold px-2 flex-1"
@@ -398,14 +594,14 @@ export default function LayoutMakerModal({ isOpen, onClose, onSave }: LayoutMake
 
             {/* Footer Actions */}
             <div className="p-4 border-t bg-white">
-              {zones.length === 0 && (
+              {slides.some(s => s.zones.length === 0) && (
                 <div className="mb-3 p-2 bg-blue-50 border border-blue-200 rounded text-[10px] text-blue-800">
-                  ℹ️ Add at least one zone to save your layout
+                  ℹ️ Add at least one zone to each slide to save your layout
                 </div>
               )}
               {hasOverlap && zones.length > 0 && (
                 <div className="mb-3 p-2 bg-yellow-50 border border-yellow-200 rounded text-[10px] text-yellow-800">
-                  ⚠️ Warning: Zones are overlapping
+                  ⚠️ Warning: Zones are overlapping in current slide
                 </div>
               )}
               <div className="flex gap-2">
@@ -419,7 +615,7 @@ export default function LayoutMakerModal({ isOpen, onClose, onSave }: LayoutMake
                 <Button
                   onClick={handleSave}
                   className="flex-1 h-9 gap-2"
-                  disabled={zones.length === 0}
+                  disabled={slides.some(s => s.zones.length === 0)}
                 >
                   <Save className="h-4 w-4" />
                   Save Layout
@@ -431,8 +627,79 @@ export default function LayoutMakerModal({ isOpen, onClose, onSave }: LayoutMake
           {/* Right Panel - Canvas */}
           <div className="flex-1 p-6 overflow-auto">
             <div className="max-w-[900px] mx-auto">
+              {/* Slide Selector */}
               <div className="mb-4">
-                <h3 className="text-sm font-semibold mb-2">Layout Preview</h3>
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <h3 className="text-sm font-semibold mb-1">Layout Preview</h3>
+                    <p className="text-xs text-muted-foreground">
+                      Slide {activeSlideId ? slides.findIndex(s => s.id === activeSlideId) + 1 : 1} of {slides.length}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      onClick={() => {
+                        const currentIndex = slides.findIndex(s => s.id === activeSlideId);
+                        if (currentIndex > 0) {
+                          setActiveSlide(slides[currentIndex - 1].id);
+                        }
+                      }}
+                      variant="outline"
+                      size="sm"
+                      disabled={slides.findIndex(s => s.id === activeSlideId) === 0}
+                      className="h-8 w-8 p-0"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        const currentIndex = slides.findIndex(s => s.id === activeSlideId);
+                        if (currentIndex < slides.length - 1) {
+                          setActiveSlide(slides[currentIndex + 1].id);
+                        }
+                      }}
+                      variant="outline"
+                      size="sm"
+                      disabled={slides.findIndex(s => s.id === activeSlideId) === slides.length - 1}
+                      className="h-8 w-8 p-0"
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+                
+                {/* Slide Tabs */}
+                {slides.length > 1 && (
+                  <div className="flex items-center gap-2 overflow-x-auto pb-2 mb-3">
+                    {slides.map((slide, index) => (
+                      <button
+                        key={slide.id}
+                        onClick={() => setActiveSlide(slide.id)}
+                        className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${
+                          activeSlideId === slide.id
+                            ? 'bg-primary text-white shadow-sm'
+                            : 'bg-white border border-neutral-200 text-neutral-700 hover:border-primary/50'
+                        }`}
+                      >
+                        <span className="w-5 h-5 rounded bg-white/20 text-[10px] font-bold flex items-center justify-center">
+                          {index + 1}
+                        </span>
+                        <span className="max-w-[100px] truncate">{slide.name}</span>
+                        <span className="text-[10px] opacity-75">({slide.zones.length})</span>
+                      </button>
+                    ))}
+                    <Button
+                      onClick={addSlide}
+                      variant="outline"
+                      size="sm"
+                      className="h-8 w-8 p-0 flex-shrink-0"
+                      title="Add new slide"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
+                
                 <p className="text-xs text-muted-foreground">
                   Click and drag zones to move them. Drag edges to resize. Click a zone to select it.
                 </p>

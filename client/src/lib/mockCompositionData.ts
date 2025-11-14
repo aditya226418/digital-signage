@@ -7,11 +7,18 @@ export interface LayoutZone {
   height: number; // percentage
 }
 
+export interface LayoutSlide {
+  id: string;
+  name: string;
+  zones: LayoutZone[];
+}
+
 export interface LayoutTemplate {
   id: string;
   name: string;
   description: string;
-  zones: LayoutZone[];
+  zones: LayoutZone[]; // For backward compatibility - used when slides is undefined
+  slides?: LayoutSlide[]; // For multi-slide layouts
   resolution: string;
   type: "single" | "multi-zone" | "grid";
 }
