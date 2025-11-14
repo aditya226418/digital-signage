@@ -47,7 +47,7 @@ interface CreateScheduleWizardProps {
 export default function CreateScheduleWizard({ open, onOpenChange, initialType = "simple" }: CreateScheduleWizardProps) {
   const [step, setStep] = useState(1);
   const [scheduleType, setScheduleType] = useState<"simple" | "daySequence">(initialType);
-
+  
   // Step 1: Basic Info
   const [name, setName] = useState("");
   const [selectedScreenIds, setSelectedScreenIds] = useState<string[]>([]);
@@ -157,8 +157,8 @@ export default function CreateScheduleWizard({ open, onOpenChange, initialType =
       return mockMediaLibrary.find((m) => m.id === selectedContentId)?.name || "";
     } else if (selectedContentType === "composition") {
       return mockCompositions.find((c) => c.id === selectedContentId)?.name || "";
-    }
-    return "";
+      }
+      return "";
   };
 
   const handlePublish = () => {
@@ -196,7 +196,7 @@ export default function CreateScheduleWizard({ open, onOpenChange, initialType =
       createdBy: "Current User",
       createdAt: new Date().toISOString(),
     };
-    
+
     // Store weekday selection for weekly recurrence
     if (recurrence === "weekly" && selectedWeekdays.length > 0) {
       (newSchedule as any).weekdays = selectedWeekdays;
@@ -334,7 +334,7 @@ export default function CreateScheduleWizard({ open, onOpenChange, initialType =
         <DialogContent className="max-w-full h-screen max-h-screen flex flex-col">
           <DialogHeader className="border-b pb-4">
             <DialogTitle className="flex items-center gap-2 text-xl">
-              <Calendar className="h-6 w-6 text-primary" />
+              <CalendarIcon className="h-6 w-6 text-primary" />
               Create Planned Schedule
             </DialogTitle>
             <DialogDescription>
@@ -406,17 +406,17 @@ export default function CreateScheduleWizard({ open, onOpenChange, initialType =
                           Choose which screens should display your content
                         </p>
                       </div>
-                      
+
                       <div className="space-y-3">
                         <div className="relative">
                           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                          <Input
+                            <Input
                             placeholder="Search screens..."
                             value={screenSearchQuery}
                             onChange={(e) => setScreenSearchQuery(e.target.value)}
                             className="pl-9"
-                          />
-                        </div>
+                            />
+                          </div>
 
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           <Badge variant="secondary">
@@ -452,8 +452,8 @@ export default function CreateScheduleWizard({ open, onOpenChange, initialType =
                                       <div className="font-medium truncate">{screen.name}</div>
                                       <div className="text-xs text-muted-foreground truncate">
                                         {screen.location}
-                                      </div>
-                                    </div>
+                          </div>
+                        </div>
                                     <Badge
                                       variant={screen.status === "online" ? "default" : "secondary"}
                                       className={
@@ -521,11 +521,13 @@ export default function CreateScheduleWizard({ open, onOpenChange, initialType =
                                       {startDate ? format(startDate, "PPP") : "Pick a date"}
                                     </Button>
                                   </PopoverTrigger>
-                                  <PopoverContent className="w-auto p-0" align="start">
+                                  <PopoverContent className="w-auto p-0" align="start" side="bottom">
                                     <Calendar
                                       mode="single"
                                       selected={startDate}
-                                      onSelect={setStartDate}
+                                      onSelect={(date) => {
+                                        setStartDate(date);
+                                      }}
                                       disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
                                     />
                                   </PopoverContent>
@@ -555,11 +557,13 @@ export default function CreateScheduleWizard({ open, onOpenChange, initialType =
                                     {endDate ? format(endDate, "PPP") : "Pick a date (optional)"}
                                   </Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="start">
+                                <PopoverContent className="w-auto p-0" align="start" side="bottom">
                                   <Calendar
                                     mode="single"
                                     selected={endDate}
-                                    onSelect={setEndDate}
+                                    onSelect={(date) => {
+                                      setEndDate(date);
+                                    }}
                                     disabled={(date) => startDate ? date < startDate : date < new Date(new Date().setHours(0, 0, 0, 0))}
                                   />
                                 </PopoverContent>
@@ -573,8 +577,8 @@ export default function CreateScheduleWizard({ open, onOpenChange, initialType =
                               <p className="text-xs text-destructive">
                                 End date must be after start date.
                               </p>
-                            )}
-                          </div>
+                                        )}
+                                      </div>
 
                           {/* Recurrence Section */}
                           <div className="space-y-4 rounded-lg border border-border/40 bg-muted/20 p-4">
@@ -596,35 +600,35 @@ export default function CreateScheduleWizard({ open, onOpenChange, initialType =
                                   <SelectItem value="weekly">Weekly</SelectItem>
                                 </SelectContent>
                               </Select>
-                              <p className="text-xs text-muted-foreground">
+                                <p className="text-xs text-muted-foreground">
                                 The selected content will start at the chosen time on each recurrence day.
-                              </p>
-                            </div>
+                                </p>
+                              </div>
 
                             {recurrence === "weekly" && (
-                              <div className="space-y-2">
+                                <div className="space-y-2">
                                 <Label>Select Weekdays *</Label>
                                 <div className="flex gap-2 flex-wrap">
                                   {weekdayLabels.map((label, index) => (
-                                    <Button
+                                          <Button
                                       key={index}
                                       type="button"
                                       variant={selectedWeekdays.includes(index) ? "default" : "outline"}
-                                      size="sm"
+                                            size="sm"
                                       onClick={() => toggleWeekday(index)}
                                       className="h-9 w-9 p-0"
                                     >
                                       {label}
-                                    </Button>
+                                          </Button>
                                   ))}
-                                </div>
+                                        </div>
                                 {selectedWeekdays.length === 0 && (
                                   <p className="text-xs text-destructive">
                                     Please select at least one weekday.
                                   </p>
                                 )}
-                              </div>
-                            )}
+                                </div>
+                              )}
                           </div>
 
                           {/* Auto-Generated Summary */}
