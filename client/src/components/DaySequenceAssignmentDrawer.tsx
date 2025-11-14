@@ -686,7 +686,7 @@ export default function DaySequenceAssignmentDrawer({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:max-w-4xl flex flex-col p-0">
+      <SheetContent className="w-full sm:max-w-[630px] flex flex-col p-0">
         <div className="p-6 pb-4 border-b">
           <SheetHeader>
             <SheetTitle>Assign Day Sequence</SheetTitle>
