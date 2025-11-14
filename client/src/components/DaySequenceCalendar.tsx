@@ -85,7 +85,7 @@ export default function DaySequenceCalendar({
   const weekdayLabels = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       {/* Month Navigation */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -128,13 +128,13 @@ export default function DaySequenceCalendar({
       </div>
 
       {/* Calendar Grid */}
-      <div className="border rounded-lg p-4">
+      <div className="border rounded-lg overflow-hidden bg-card">
         {/* Weekday Headers */}
-        <div className="grid grid-cols-7 gap-1 mb-2">
+        <div className="grid grid-cols-7 border-b bg-muted/30">
           {weekdayLabels.map((day) => (
             <div
               key={day}
-              className="text-center text-xs font-semibold text-muted-foreground py-2"
+              className="text-center text-xs font-semibold text-muted-foreground py-3 border-r last:border-r-0"
             >
               {day}
             </div>
@@ -142,57 +142,71 @@ export default function DaySequenceCalendar({
         </div>
 
         {/* Calendar Days */}
-        <div className="grid grid-cols-7 gap-1">
-          {daysToShow.map((date, index) => {
-            const dateKey = formatDateKey(date);
-            const isCurrentMonth = isSameMonth(date, currentMonth);
-            const isSelected = selectedDays.has(dateKey);
-            const hasSequence = daySequences.has(dateKey);
-            const isCurrentDay = isToday(date);
-            const sequence = hasSequence ? daySequences.get(dateKey) : null;
-
+        <div className="divide-y">
+          {Array.from({ length: 6 }, (_, weekIndex) => {
+            const weekDays = daysToShow.slice(weekIndex * 7, (weekIndex + 1) * 7);
+            if (weekDays.length === 0) return null;
+            
             return (
-              <TooltipProvider key={index}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button
-                      type="button"
-                      onClick={(e) => onDaySelect(date, e)}
-                      className={cn(
-                        "relative h-12 rounded-md text-sm transition-colors",
-                        "hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1",
-                        !isCurrentMonth && "text-muted-foreground/40",
-                        isCurrentDay && !isSelected && "bg-accent font-semibold",
-                        isSelected && "bg-primary text-primary-foreground font-semibold",
-                        !isSelected && isCurrentMonth && "hover:bg-accent",
-                        hasSequence && !isSelected && "border-2 border-primary/50 bg-primary/5"
-                      )}
-                    >
-                      <span>{format(date, "d")}</span>
-                      {hasSequence && (
-                        <div className="absolute bottom-1 right-1 flex items-center justify-center gap-0.5">
-                          <Clock className="h-2.5 w-2.5 text-primary" />
-                          {sequence && sequence.slots.length > 0 && (
-                            <span className="text-[10px] font-medium text-primary">
-                              {sequence.slots.length}
+              <div key={weekIndex} className="grid grid-cols-7 divide-x last:divide-y-0">
+                {weekDays.map((date, dayIndex) => {
+                  const dateKey = formatDateKey(date);
+                  const isCurrentMonth = isSameMonth(date, currentMonth);
+                  const isSelected = selectedDays.has(dateKey);
+                  const hasSequence = daySequences.has(dateKey);
+                  const isCurrentDay = isToday(date);
+                  const sequence = hasSequence ? daySequences.get(dateKey) : null;
+
+                  return (
+                    <TooltipProvider key={dayIndex}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            type="button"
+                            onClick={(e) => onDaySelect(date, e)}
+                            className={cn(
+                              "relative h-14 flex flex-col items-center justify-center text-sm transition-all",
+                              "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-inset",
+                              !isCurrentMonth && "text-muted-foreground/30 bg-muted/20",
+                              isCurrentDay && !isSelected && "bg-accent/50 font-semibold hover:bg-accent/70",
+                              isSelected && "bg-primary text-primary-foreground font-semibold shadow-sm hover:bg-primary/90",
+                              !isSelected && isCurrentMonth && "hover:bg-accent/50",
+                              hasSequence && !isSelected && "border-l-2 border-l-primary bg-primary/5"
+                            )}
+                          >
+                            <span className={cn(
+                              "text-sm",
+                              isCurrentDay && !isSelected && "text-primary font-bold"
+                            )}>
+                              {format(date, "d")}
                             </span>
-                          )}
-                        </div>
-                      )}
-                    </button>
-                  </TooltipTrigger>
-                  {hasSequence && sequence && (
-                    <TooltipContent>
-                      <div className="space-y-1">
-                        <p className="font-semibold text-sm">{sequence.name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {sequence.slots.length} time slot{sequence.slots.length !== 1 ? "s" : ""}
-                        </p>
-                      </div>
-                    </TooltipContent>
-                  )}
-                </Tooltip>
-              </TooltipProvider>
+                            {hasSequence && (
+                              <div className="absolute bottom-1 right-1 flex items-center justify-center gap-0.5">
+                                <Clock className="h-2.5 w-2.5 text-primary" />
+                                {sequence && sequence.slots.length > 0 && (
+                                  <span className="text-[10px] font-medium text-primary">
+                                    {sequence.slots.length}
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                          </button>
+                        </TooltipTrigger>
+                        {hasSequence && sequence && (
+                          <TooltipContent>
+                            <div className="space-y-1">
+                              <p className="font-semibold text-sm">{sequence.name}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {sequence.slots.length} time slot{sequence.slots.length !== 1 ? "s" : ""}
+                              </p>
+                            </div>
+                          </TooltipContent>
+                        )}
+                      </Tooltip>
+                    </TooltipProvider>
+                  );
+                })}
+              </div>
             );
           })}
         </div>

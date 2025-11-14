@@ -182,10 +182,10 @@ export default function DaySequenceEditor({ slots, onSlotsChange }: DaySequenceE
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h3 className="text-base font-semibold mb-1">Day Sequence Schedule</h3>
+          <h3 className="text-base font-semibold mb-0.5">Day Sequence Schedule</h3>
           <p className="text-xs text-muted-foreground">
             Select days on the calendar and assign time-based sequences with content
           </p>
@@ -197,7 +197,7 @@ export default function DaySequenceEditor({ slots, onSlotsChange }: DaySequenceE
       </div>
 
       {/* Selection Shortcuts and CTA */}
-      <div className="flex items-center justify-between gap-4 flex-wrap">
+      <div className="flex items-center justify-between gap-4 flex-wrap min-h-[40px]">
         <DaySelectionShortcuts
           currentMonth={currentMonth}
           selectedDays={selectedDays}
@@ -206,13 +206,15 @@ export default function DaySequenceEditor({ slots, onSlotsChange }: DaySequenceE
           onSelectEntireMonth={handleSelectEntireMonth}
           onClearSelection={handleClearSelection}
         />
-        {selectedDays.size > 0 && (
-          <Button onClick={handleAddDaySequence} className="gap-2">
-            <Plus className="h-4 w-4" />
-            Add Day Sequence {selectedDays.size > 1 ? `(${selectedDays.size} days)` : ""}
-              </Button>
-        )}
-            </div>
+        <div className="min-w-[200px] h-[40px] flex items-center justify-end">
+          {selectedDays.size > 0 && (
+            <Button onClick={handleAddDaySequence} className="gap-2">
+              <Plus className="h-4 w-4" />
+              Add Day Sequence {selectedDays.size > 1 ? `(${selectedDays.size} days)` : ""}
+            </Button>
+          )}
+        </div>
+      </div>
 
       {/* Calendar */}
       <DaySequenceCalendar
