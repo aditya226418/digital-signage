@@ -6,6 +6,7 @@ export interface Screen {
   location: string;
   status: "online" | "offline";
   groupId?: string;
+  store?: string;
 }
 
 export interface ScreenGroup {
@@ -111,14 +112,40 @@ export interface ApprovalRequest {
 
 // Mock Screens
 export const mockScreens: Screen[] = [
-  { id: "screen-1", name: "Lobby Display", location: "Main Lobby", status: "online", groupId: "group-1" },
-  { id: "screen-2", name: "Reception Area", location: "Front Desk", status: "online", groupId: "group-1" },
-  { id: "screen-3", name: "Conference Room A", location: "2nd Floor", status: "online", groupId: "group-2" },
-  { id: "screen-4", name: "Cafeteria Screen", location: "Cafeteria", status: "online", groupId: "group-3" },
-  { id: "screen-5", name: "Training Room", location: "3rd Floor", status: "online", groupId: "group-2" },
-  { id: "screen-6", name: "Executive Floor", location: "5th Floor", status: "offline", groupId: "group-4" },
-  { id: "screen-7", name: "Retail Store - Front", location: "Store Front", status: "online" },
-  { id: "screen-8", name: "Retail Store - Back", location: "Store Back", status: "online" },
+  // MacD Kurla
+  { id: "screen-1", name: "Main Entrance Menu Board", location: "Entrance", status: "online", store: "MacD Kurla" },
+  { id: "screen-2", name: "Counter Menu Board 1", location: "Counter", status: "online", store: "MacD Kurla" },
+  { id: "screen-3", name: "Drive-Thru Menu Board", location: "Drive-Thru", status: "online", store: "MacD Kurla" },
+  
+  // MacD Indiranagar
+  { id: "screen-4", name: "Entrance Digital Board", location: "Entrance", status: "online", store: "MacD Indiranagar" },
+  { id: "screen-5", name: "Main Menu Board", location: "Counter", status: "online", store: "MacD Indiranagar" },
+  { id: "screen-6", name: "Dining Area Promo", location: "Dining Area", status: "offline", store: "MacD Indiranagar" },
+  
+  // MacD Bandra
+  { id: "screen-7", name: "Front Counter Display", location: "Main Counter", status: "online", store: "MacD Bandra" },
+  { id: "screen-8", name: "Drive-Thru Pre-Order", location: "Drive-Thru", status: "online", store: "MacD Bandra" },
+  { id: "screen-9", name: "McCafe Menu", location: "McCafe Counter", status: "online", store: "MacD Bandra" },
+  
+  // MacD Connaught Place
+  { id: "screen-10", name: "Order Kiosk 1", location: "Entrance Area", status: "online", store: "MacD Connaught Place" },
+  { id: "screen-11", name: "Order Kiosk 2", location: "Entrance Area", status: "online", store: "MacD Connaught Place" },
+  { id: "screen-12", name: "Kitchen Display", location: "Kitchen Area", status: "offline", store: "MacD Connaught Place" },
+  
+  // MacD Hitech City
+  { id: "screen-13", name: "Main Menu Board", location: "Counter", status: "online", store: "MacD Hitech City" },
+  { id: "screen-14", name: "Drive-Thru Menu", location: "Drive-Thru", status: "online", store: "MacD Hitech City" },
+  { id: "screen-15", name: "Kids Play Area", location: "Play Area", status: "online", store: "MacD Hitech City" },
+  
+  // MacD Koramangala
+  { id: "screen-16", name: "Dining Area Screen", location: "Seating Area 1", status: "offline", store: "MacD Koramangala" },
+  { id: "screen-17", name: "Counter Menu Board", location: "Counter", status: "online", store: "MacD Koramangala" },
+  { id: "screen-18", name: "Order Pickup Display", location: "Pickup Counter", status: "online", store: "MacD Koramangala" },
+  
+  // MacD Andheri
+  { id: "screen-19", name: "Entrance Menu Board", location: "Entrance", status: "online", store: "MacD Andheri" },
+  { id: "screen-20", name: "Counter Display 1", location: "Counter", status: "online", store: "MacD Andheri" },
+  { id: "screen-21", name: "Counter Display 2", location: "Counter", status: "online", store: "MacD Andheri" },
 ];
 
 // Mock Screen Groups

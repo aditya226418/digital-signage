@@ -69,6 +69,7 @@ export default function CreateScheduleWizard({ open, onOpenChange, initialType =
   const [showApprovalModal, setShowApprovalModal] = useState(false);
   const [pendingSchedule, setPendingSchedule] = useState<PlannedSchedule | null>(null);
   const [screenSearchQuery, setScreenSearchQuery] = useState("");
+  const [selectedStore, setSelectedStore] = useState<string>("all");
 
   const { addPlannedSchedule } = usePublishStore();
   const { requiresApproval } = useRoles();
@@ -114,6 +115,7 @@ export default function CreateScheduleWizard({ open, onOpenChange, initialType =
     setSelectedContentType(null);
     setDaySequenceSlots([]);
     setScreenSearchQuery("");
+    setSelectedStore("all");
   };
 
   const handleClose = () => {
@@ -137,10 +139,18 @@ export default function CreateScheduleWizard({ open, onOpenChange, initialType =
     return `${screens[0].name}, ${screens[1].name}, +${screens.length - 2} more`;
   };
 
-  const filteredScreens = mockScreens.filter((screen) =>
-    screen.name.toLowerCase().includes(screenSearchQuery.toLowerCase()) ||
-    screen.location.toLowerCase().includes(screenSearchQuery.toLowerCase())
-  );
+  // Get unique store names
+  const storeNames = Array.from(new Set(mockScreens.map((s) => s.store).filter((s): s is string => !!s))).sort();
+
+  const filteredScreens = mockScreens.filter((screen) => {
+    const matchesSearch = 
+      screen.name.toLowerCase().includes(screenSearchQuery.toLowerCase()) ||
+      screen.location.toLowerCase().includes(screenSearchQuery.toLowerCase());
+    
+    const matchesStore = selectedStore === "all" || screen.store === selectedStore;
+    
+    return matchesSearch && matchesStore;
+  });
 
   const toggleScreen = (screenId: string) => {
     if (selectedScreenIds.includes(screenId)) {
@@ -418,8 +428,21 @@ export default function CreateScheduleWizard({ open, onOpenChange, initialType =
                             />
                           </div>
 
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Badge variant="secondary">
+                        <div className="flex items-center gap-2">
+                          <Select value={selectedStore} onValueChange={setSelectedStore}>
+                            <SelectTrigger className="w-[200px]">
+                              <SelectValue placeholder="Filter by store" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">All Stores</SelectItem>
+                              {storeNames.map((store) => (
+                                <SelectItem key={store} value={store}>
+                                  {store}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <Badge variant="secondary" className="text-sm text-muted-foreground">
                             {selectedScreenIds.length} {selectedScreenIds.length === 1 ? "screen" : "screens"} selected
                           </Badge>
                         </div>

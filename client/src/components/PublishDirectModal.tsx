@@ -16,6 +16,13 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import ContentPicker from "./ContentPicker";
 import { usePublishStore } from "@/hooks/usePublishStore";
 import { useRoles } from "@/contexts/RolesContext";
@@ -41,6 +48,7 @@ export default function PublishDirectModal({ open, onOpenChange }: PublishDirect
   const [makeDefault, setMakeDefault] = useState(false);
   const [showApprovalModal, setShowApprovalModal] = useState(false);
   const [screenSearchQuery, setScreenSearchQuery] = useState("");
+  const [selectedStore, setSelectedStore] = useState<string>("all");
 
   const { addDirectPublish } = usePublishStore();
   const { requiresApproval } = useRoles();
@@ -55,6 +63,7 @@ export default function PublishDirectModal({ open, onOpenChange }: PublishDirect
     setOverride(false);
     setMakeDefault(false);
     setScreenSearchQuery("");
+    setSelectedStore("all");
   };
 
   const handleClose = () => {
@@ -126,10 +135,18 @@ export default function PublishDirectModal({ open, onOpenChange }: PublishDirect
     return secs > 0 ? `${minutes}m ${secs}s` : `${minutes}m`;
   };
 
-  const filteredScreens = mockScreens.filter((screen) =>
-    screen.name.toLowerCase().includes(screenSearchQuery.toLowerCase()) ||
-    screen.location.toLowerCase().includes(screenSearchQuery.toLowerCase())
-  );
+  // Get unique store names
+  const storeNames = Array.from(new Set(mockScreens.map((s) => s.store).filter((s): s is string => !!s))).sort();
+
+  const filteredScreens = mockScreens.filter((screen) => {
+    const matchesSearch = 
+      screen.name.toLowerCase().includes(screenSearchQuery.toLowerCase()) ||
+      screen.location.toLowerCase().includes(screenSearchQuery.toLowerCase());
+    
+    const matchesStore = selectedStore === "all" || screen.store === selectedStore;
+    
+    return matchesSearch && matchesStore;
+  });
 
   const toggleScreen = (screenId: string) => {
     if (selectedScreenIds.includes(screenId)) {
@@ -281,8 +298,21 @@ export default function PublishDirectModal({ open, onOpenChange }: PublishDirect
                           />
                         </div>
 
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Badge variant="secondary">
+                        <div className="flex items-center gap-2">
+                          <Select value={selectedStore} onValueChange={setSelectedStore}>
+                            <SelectTrigger className="w-[200px]">
+                              <SelectValue placeholder="Filter by store" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">All Stores</SelectItem>
+                              {storeNames.map((store) => (
+                                <SelectItem key={store} value={store}>
+                                  {store}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <Badge variant="secondary" className="text-sm text-muted-foreground">
                             {selectedScreenIds.length} {selectedScreenIds.length === 1 ? "screen" : "screens"} selected
                           </Badge>
                         </div>
