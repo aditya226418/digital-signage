@@ -14,6 +14,7 @@ import {
 import DataTableView from "./DataTableView";
 import PublishModeSelector from "./PublishModeSelector";
 import PublishDirectModal from "./PublishDirectModal";
+import PublishDefaultModal from "./PublishDefaultModal";
 import CreateScheduleWizard from "./CreateScheduleWizard";
 import { usePublishStore } from "@/hooks/usePublishStore";
 import { DirectPublish, PlannedSchedule } from "@/lib/mockPublishData";
@@ -23,6 +24,7 @@ export default function PublishTable() {
   const [activeTab, setActiveTab] = useState("direct");
   const [showModeSelector, setShowModeSelector] = useState(false);
   const [showDirectModal, setShowDirectModal] = useState(false);
+  const [showDefaultModal, setShowDefaultModal] = useState(false);
   const [showPlannedModal, setShowPlannedModal] = useState(false);
   const [plannedScheduleType, setPlannedScheduleType] = useState<"simple" | "daySequence">("simple");
 
@@ -43,6 +45,10 @@ export default function PublishTable() {
 
   const handleSelectDirect = () => {
     setShowDirectModal(true);
+  };
+
+  const handleSelectDefault = () => {
+    setShowDefaultModal(true);
   };
 
   const handleSelectPlanned = (type: "simple" | "daySequence") => {
@@ -478,10 +484,13 @@ export default function PublishTable() {
         open={showModeSelector}
         onOpenChange={setShowModeSelector}
         onSelectDirect={handleSelectDirect}
+        onSelectDefault={handleSelectDefault}
         onSelectPlanned={handleSelectPlanned}
       />
 
       <PublishDirectModal open={showDirectModal} onOpenChange={setShowDirectModal} />
+
+      <PublishDefaultModal open={showDefaultModal} onOpenChange={setShowDefaultModal} />
 
       <CreateScheduleWizard 
         open={showPlannedModal} 

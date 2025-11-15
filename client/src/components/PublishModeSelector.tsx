@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Zap, Calendar, Clock, Info } from "lucide-react";
+import { Zap, Calendar, Clock, Info, Settings } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -17,6 +17,7 @@ interface PublishModeSelectorProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSelectDirect: () => void;
+  onSelectDefault: () => void;
   onSelectPlanned: (type: "simple" | "daySequence") => void;
 }
 
@@ -24,6 +25,7 @@ export default function PublishModeSelector({
   open,
   onOpenChange,
   onSelectDirect,
+  onSelectDefault,
   onSelectPlanned,
 }: PublishModeSelectorProps) {
   const { orgLevelControls } = useRoles();
@@ -44,9 +46,14 @@ export default function PublishModeSelector({
     onOpenChange(false);
   };
 
+  const handleSelectDefault = () => {
+    onSelectDefault();
+    onOpenChange(false);
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[900px]">
+      <DialogContent className="sm:max-w-[1150px]">
         <DialogHeader>
           <DialogTitle className="text-2xl">Start Publishing</DialogTitle>
           <DialogDescription>
@@ -67,7 +74,7 @@ export default function PublishModeSelector({
           </motion.div>
         )}
 
-        <div className="grid gap-4 py-4 sm:grid-cols-3">
+        <div className="grid gap-4 py-4 sm:grid-cols-2 lg:grid-cols-4">
           {/* Direct Publishing Card */}
           <motion.div
             whileHover={{ scale: 1.02 }}
@@ -207,6 +214,8 @@ export default function PublishModeSelector({
             </Card>
           </motion.div>
 
+         
+
           {/* Day Sequence Card */}
           <motion.div
             whileHover={{ scale: 1.02 }}
@@ -271,6 +280,75 @@ export default function PublishModeSelector({
                 >
                   <Clock className="h-4 w-4" />
                   Continue with Day Sequence
+                </Button>
+              </CardHeader>
+            </Card>
+          </motion.div>
+
+ {/* Default Publishing Card */}
+ <motion.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onHoverStart={() => setHoveredCard("default")}
+            onHoverEnd={() => setHoveredCard(null)}
+          >
+            <Card
+              className={`cursor-pointer transition-all duration-200 ${
+                hoveredCard === "default"
+                  ? "border-primary shadow-lg"
+                  : "border-border/40 hover:border-primary/50"
+              }`}
+              onClick={handleSelectDefault}
+            >
+              <CardHeader className="space-y-4">
+                <div className="flex items-start justify-between">
+                  <div
+                    className={`flex h-12 w-12 items-center justify-center rounded-xl transition-colors duration-200 ${
+                      hoveredCard === "default"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-primary/10 text-primary"
+                    }`}
+                  >
+                    <Settings className="h-6 w-6" />
+                  </div>
+                  <Badge variant="secondary" className="text-xs">
+                    Default
+                  </Badge>
+                </div>
+
+                <div className="space-y-2">
+                  <CardTitle className="text-xl">Default Publishing</CardTitle>
+                  <CardDescription className="text-sm leading-relaxed">
+                    Set content as the default that plays on screens indefinitely. This content will show when no other content is scheduled.
+                  </CardDescription>
+                </div>
+
+                <div className="space-y-2 pt-2">
+                  <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                    Best for:
+                  </h4>
+                  <ul className="space-y-1 text-sm text-muted-foreground">
+                    <li className="flex items-start gap-2">
+                      <span className="text-primary mt-0.5">•</span>
+                      <span>Default menu boards</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-primary mt-0.5">•</span>
+                      <span>Always-on content</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-primary mt-0.5">•</span>
+                      <span>Fallback content</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <Button
+                  className="w-full gap-2 transition-all duration-200"
+                  variant={hoveredCard === "default" ? "default" : "outline"}
+                >
+                  <Settings className="h-4 w-4" />
+                  Continue with Default
                 </Button>
               </CardHeader>
             </Card>
