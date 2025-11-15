@@ -16,8 +16,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { X, CheckCircle2, Sparkles, ArrowLeft } from "lucide-react";
+import { X, CheckCircle2, Sparkles, ArrowLeft, Wand2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import LayoutMakerModal from "@/components/LayoutMakerModal";
 
 interface CompositionBuilderModalProps {
   open: boolean;
@@ -38,15 +39,25 @@ export default function CompositionBuilderModal({
   const [compositionStatus, setCompositionStatus] = useState<"active" | "draft">("draft");
   const [showPreview, setShowPreview] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isLayoutMakerOpen, setIsLayoutMakerOpen] = useState(false);
 
   const handleLayoutSelect = (layout: LayoutTemplate) => {
     setSelectedLayout(layout);
+    // Handle both single-slide and multi-slide layouts
+    const zonesToUse = layout.slides && layout.slides.length > 0 
+      ? layout.slides[0].zones 
+      : layout.zones;
     const initialZones: Record<string, MediaItem[]> = {};
-    layout.zones.forEach((zone) => {
+    zonesToUse.forEach((zone) => {
       initialZones[zone.id] = [];
     });
     setZones(initialZones);
     setStep(2);
+  };
+
+  const handleCustomLayoutSave = (layout: LayoutTemplate) => {
+    handleLayoutSelect(layout);
+    setIsLayoutMakerOpen(false);
   };
 
   const handleSaveComposition = () => {
@@ -136,14 +147,25 @@ export default function CompositionBuilderModal({
                   <CompositionStepProgress currentStep={step} />
                 </div>
 
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleClose}
-                  className="h-8 w-8"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    onClick={() => setIsLayoutMakerOpen(true)}
+                    variant="outline"
+                    size="sm"
+                    className="h-8 gap-1.5 text-xs"
+                  >
+                    <Wand2 className="h-3.5 w-3.5" />
+                    Create Custom Layout
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleClose}
+                    className="h-8 w-8"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </div>
 
@@ -295,6 +317,13 @@ export default function CompositionBuilderModal({
             }}
           />
         )}
+
+        {/* Layout Maker Modal */}
+        <LayoutMakerModal
+          isOpen={isLayoutMakerOpen}
+          onClose={() => setIsLayoutMakerOpen(false)}
+          onSave={handleCustomLayoutSave}
+        />
       </DialogContent>
     </Dialog>
   );
