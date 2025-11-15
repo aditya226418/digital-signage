@@ -333,10 +333,39 @@ export default function LayoutMakerModal({ isOpen, onClose, onSave }: LayoutMake
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-full w-screen h-screen p-0 rounded-none">
         <DialogHeader className="px-6 pt-6 pb-4 border-b">
-          <DialogTitle className="flex items-center gap-2 text-2xl">
-            <LayoutGrid className="h-6 w-6 text-primary" />
-            Custom Layout Builder
-          </DialogTitle>
+          <div className="flex items-center justify-between">
+            <DialogTitle className="flex items-center gap-2 text-2xl">
+              <LayoutGrid className="h-6 w-6 text-primary" />
+              Custom Layout Builder
+            </DialogTitle>
+            <div className="flex items-center gap-2 mr-7">
+              {slides.some(s => s.zones.length === 0) && (
+                <div className="px-3 py-1.5 bg-blue-50 border border-blue-200 rounded text-xs text-blue-800">
+                  ℹ️ Add zones to save
+                </div>
+              )}
+              {hasOverlap && zones.length > 0 && (
+                <div className="px-3 py-1.5 bg-yellow-50 border border-yellow-200 rounded text-xs text-yellow-800">
+                  ⚠️ Zones overlapping
+                </div>
+              )}
+              <Button
+                onClick={onClose}
+                variant="outline"
+                className="h-9"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSave}
+                className="h-9 gap-2"
+                disabled={slides.some(s => s.zones.length === 0)}
+              >
+                <Save className="h-4 w-4" />
+                Save Layout
+              </Button>
+            </div>
+          </div>
         </DialogHeader>
 
         <div className="flex h-[calc(100vh-100px)]">
@@ -591,37 +620,6 @@ export default function LayoutMakerModal({ isOpen, onClose, onSave }: LayoutMake
                 </div>
               </div>
             </ScrollArea>
-
-            {/* Footer Actions */}
-            <div className="p-4 border-t bg-white">
-              {slides.some(s => s.zones.length === 0) && (
-                <div className="mb-3 p-2 bg-blue-50 border border-blue-200 rounded text-[10px] text-blue-800">
-                  ℹ️ Add at least one zone to each slide to save your layout
-                </div>
-              )}
-              {hasOverlap && zones.length > 0 && (
-                <div className="mb-3 p-2 bg-yellow-50 border border-yellow-200 rounded text-[10px] text-yellow-800">
-                  ⚠️ Warning: Zones are overlapping in current slide
-                </div>
-              )}
-              <div className="flex gap-2">
-                <Button
-                  onClick={onClose}
-                  variant="outline"
-                  className="flex-1 h-9"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={handleSave}
-                  className="flex-1 h-9 gap-2"
-                  disabled={slides.some(s => s.zones.length === 0)}
-                >
-                  <Save className="h-4 w-4" />
-                  Save Layout
-                </Button>
-              </div>
-            </div>
           </div>
 
           {/* Right Panel - Canvas */}
