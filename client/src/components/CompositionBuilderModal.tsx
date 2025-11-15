@@ -148,7 +148,7 @@ export default function CompositionBuilderModal({
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <Button
+                {step === 1 && <Button
                     onClick={() => setIsLayoutMakerOpen(true)}
                     variant="outline"
                     size="sm"
@@ -157,6 +157,7 @@ export default function CompositionBuilderModal({
                     <Wand2 className="h-3.5 w-3.5" />
                     Create Custom Layout
                   </Button>
+                  }
                   <Button
                     variant="ghost"
                     size="icon"
