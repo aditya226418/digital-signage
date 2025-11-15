@@ -382,9 +382,9 @@ export default function LayoutMakerModal({ isOpen, onClose, onSave }: LayoutMake
           </div>
         </DialogHeader>
 
-        <div className="flex h-[calc(100vh-100px)]">
+        <div className="flex h-[calc(100vh-100px)] overflow-hidden">
           {/* Left Panel - Controls */}
-          <div className="w-80 border-r bg-neutral-50/50 flex flex-col">
+          <div className="w-80 border-r bg-neutral-50/50 flex flex-col min-h-0 overflow-hidden">
             <ScrollArea className="flex-1 p-4">
               {/* Slides Section */}
               <div className="mb-6">
