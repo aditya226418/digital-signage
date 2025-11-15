@@ -36,6 +36,9 @@ interface LayoutMakerModalProps {
 export default function LayoutMakerModal({ isOpen, onClose, onSave }: LayoutMakerModalProps) {
   const [layoutName, setLayoutName] = useState("Custom Layout");
   const [layoutDescription, setLayoutDescription] = useState("My custom layout");
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [tempLayoutName, setTempLayoutName] = useState("Custom Layout");
+  const [tempLayoutDescription, setTempLayoutDescription] = useState("My custom layout");
   const [slides, setSlides] = useState<LayoutSlide[]>([
     {
       id: `slide-${Date.now()}`,
@@ -275,18 +278,27 @@ export default function LayoutMakerModal({ isOpen, onClose, onSave }: LayoutMake
     setActiveZoneId(null);
   };
 
-  const handleSave = () => {
+  const handleSaveClick = () => {
     // Validate that all slides have at least one zone
     const hasEmptySlides = slides.some(slide => slide.zones.length === 0);
     if (hasEmptySlides) {
-      // Could show an error message here
       return;
     }
+    // Initialize temp values with current values
+    setTempLayoutName(layoutName);
+    setTempLayoutDescription(layoutDescription);
+    setShowSaveModal(true);
+  };
+
+  const handleSaveConfirm = () => {
+    // Update the actual values
+    setLayoutName(tempLayoutName);
+    setLayoutDescription(tempLayoutDescription);
 
     const customLayout: LayoutTemplate = {
       id: `custom-${Date.now()}`,
-      name: layoutName,
-      description: layoutDescription,
+      name: tempLayoutName || "Custom Layout",
+      description: tempLayoutDescription || "My custom layout",
       resolution: "1920x1080",
       type: "multi-zone",
       // If only one slide, save as backward-compatible format (zones directly)
@@ -309,6 +321,7 @@ export default function LayoutMakerModal({ isOpen, onClose, onSave }: LayoutMake
             })),
           }),
     };
+    setShowSaveModal(false);
     onSave(customLayout);
     onClose();
   };
@@ -330,8 +343,9 @@ export default function LayoutMakerModal({ isOpen, onClose, onSave }: LayoutMake
   const hasOverlap = isOverlapping(zones);
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-full w-screen h-screen p-0 rounded-none">
+    <>
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="max-w-full w-screen h-screen p-0 rounded-none">
         <DialogHeader className="px-6 pt-6 pb-4 border-b">
           <div className="flex items-center justify-between">
             <DialogTitle className="flex items-center gap-2 text-2xl">
@@ -357,7 +371,7 @@ export default function LayoutMakerModal({ isOpen, onClose, onSave }: LayoutMake
                 Cancel
               </Button>
               <Button
-                onClick={handleSave}
+                onClick={handleSaveClick}
                 className="h-9 gap-2"
                 disabled={slides.some(s => s.zones.length === 0)}
               >
@@ -451,36 +465,6 @@ export default function LayoutMakerModal({ isOpen, onClose, onSave }: LayoutMake
                       </div>
                     </div>
                   ))}
-                </div>
-              </div>
-
-              {/* Layout Info */}
-              <div className="mb-6">
-                <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
-                  <FileText className="h-4 w-4" />
-                  Layout Info
-                </h3>
-                <div className="space-y-3">
-                  <div>
-                    <Label htmlFor="layout-name" className="text-xs">Name</Label>
-                    <Input
-                      id="layout-name"
-                      value={layoutName}
-                      onChange={(e) => setLayoutName(e.target.value)}
-                      placeholder="My Custom Layout"
-                      className="h-8 text-xs mt-1"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="layout-desc" className="text-xs">Description</Label>
-                    <Input
-                      id="layout-desc"
-                      value={layoutDescription}
-                      onChange={(e) => setLayoutDescription(e.target.value)}
-                      placeholder="Description..."
-                      className="h-8 text-xs mt-1"
-                    />
-                  </div>
                 </div>
               </div>
 
@@ -882,8 +866,64 @@ export default function LayoutMakerModal({ isOpen, onClose, onSave }: LayoutMake
             </div>
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
+
+      {/* Save Layout Info Modal */}
+      <Dialog open={showSaveModal} onOpenChange={setShowSaveModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Save className="h-5 w-5 text-primary" />
+              Save Layout
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <Label htmlFor="save-layout-name" className="text-sm font-medium">
+                Layout Name
+              </Label>
+              <Input
+                id="save-layout-name"
+                value={tempLayoutName}
+                onChange={(e) => setTempLayoutName(e.target.value)}
+                placeholder="My Custom Layout"
+                className="mt-2"
+                autoFocus
+              />
+            </div>
+            <div>
+              <Label htmlFor="save-layout-desc" className="text-sm font-medium">
+                Description
+              </Label>
+              <Input
+                id="save-layout-desc"
+                value={tempLayoutDescription}
+                onChange={(e) => setTempLayoutDescription(e.target.value)}
+                placeholder="Description..."
+                className="mt-2"
+              />
+            </div>
+          </div>
+          <div className="flex items-center justify-end gap-2 pt-4 border-t">
+            <Button
+              variant="outline"
+              onClick={() => setShowSaveModal(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSaveConfirm}
+              disabled={!tempLayoutName.trim()}
+              className="gap-2"
+            >
+              <Save className="h-4 w-4" />
+              Save Layout
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 
