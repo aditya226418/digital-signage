@@ -151,7 +151,7 @@ export default function EngagedDashboard({
         <SidebarContent className="bg-gradient-to-b from-sidebar via-sidebar to-sidebar-accent/20">
           <SidebarGroup>
             <SidebarGroupLabel className="text-xs uppercase tracking-wider text-muted-foreground/70">
-              Main Menu
+              Menu
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
