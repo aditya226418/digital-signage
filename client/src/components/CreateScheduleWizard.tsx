@@ -33,6 +33,7 @@ import SchedulePreview from "./SchedulePreview";
 import ApprovalModal from "./ApprovalModal";
 import { usePublishStore } from "@/hooks/usePublishStore";
 import { useRoles } from "@/contexts/RolesContext";
+import { useNps } from "@/hooks/useNpsStore";
 import { PlannedSchedule, TimeSlot, mockCompositions, mockScreens } from "@/lib/mockPublishData";
 import { mockMediaLibrary } from "@/lib/mockCompositionData";
 import { toast } from "sonner";
@@ -73,6 +74,7 @@ export default function CreateScheduleWizard({ open, onOpenChange, initialType =
 
   const { addPlannedSchedule } = usePublishStore();
   const { requiresApproval } = useRoles();
+  const { showNpsWidget } = useNps();
 
   // Sync scheduleType with initialType when dialog opens
   useEffect(() => {
@@ -229,6 +231,10 @@ export default function CreateScheduleWizard({ open, onOpenChange, initialType =
         description: `${name} has been scheduled successfully.`,
       });
       handleClose();
+      // Show NPS widget after successful schedule creation
+      setTimeout(() => {
+        showNpsWidget();
+      }, 500);
     }
   };
 
@@ -237,6 +243,10 @@ export default function CreateScheduleWizard({ open, onOpenChange, initialType =
       addPlannedSchedule(pendingSchedule);
     }
     handleClose();
+    // Show NPS widget after successful approval
+    setTimeout(() => {
+      showNpsWidget();
+    }, 500);
   };
 
   const progressValue = (step / 3) * 100;

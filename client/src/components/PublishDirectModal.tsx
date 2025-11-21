@@ -26,6 +26,7 @@ import {
 import ContentPicker from "./ContentPicker";
 import { usePublishStore } from "@/hooks/usePublishStore";
 import { useRoles } from "@/contexts/RolesContext";
+import { useNps } from "@/hooks/useNpsStore";
 import { mockScreens, mockCompositions, DirectPublish } from "@/lib/mockPublishData";
 import { mockMediaLibrary } from "@/lib/mockCompositionData";
 import { toast } from "sonner";
@@ -52,6 +53,7 @@ export default function PublishDirectModal({ open, onOpenChange }: PublishDirect
 
   const { addDirectPublish } = usePublishStore();
   const { requiresApproval } = useRoles();
+  const { showNpsWidget } = useNps();
 
   const resetForm = () => {
     setStep(1);
@@ -196,6 +198,10 @@ export default function PublishDirectModal({ open, onOpenChange }: PublishDirect
     });
 
     handleClose();
+    // Show NPS widget after successful publish
+    setTimeout(() => {
+      showNpsWidget();
+    }, 500);
   };
 
   const progressValue = (step / 3) * 100;

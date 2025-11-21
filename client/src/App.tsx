@@ -6,7 +6,9 @@ import { Toaster as Sonner } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { PublishStoreProvider } from "@/hooks/usePublishStore";
 import { RolesProvider } from "@/contexts/RolesContext";
+import { NpsProvider } from "@/hooks/useNpsStore";
 import ActiveQuickplayBar from "@/components/ActiveQuickplayBar";
+import FloatingNpsWidget from "@/components/FloatingNpsWidget";
 import Dashboard from "@/pages/Dashboard";
 import NotFound from "@/pages/not-found";
 
@@ -60,10 +62,13 @@ function App() {
       <TooltipProvider>
         <RolesProvider>
           <PublishStoreProvider>
-            <Toaster />
-            <Sonner position="top-right" richColors />
-            <ActiveQuickplayBar />
-            <Router />
+            <NpsProvider>
+              <Toaster />
+              <Sonner position="top-right" richColors />
+              <ActiveQuickplayBar />
+              <FloatingNpsWidget />
+              <Router />
+            </NpsProvider>
           </PublishStoreProvider>
         </RolesProvider>
       </TooltipProvider>
